@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext.jsx';
+import { Link } from 'react-router-dom';
+import RecruiterSidebar from '../components/RecruiterSidebar.jsx';
 
 export default function CandidateSearch() {
-  const { logout } = useAuth();
-  const navigate = useNavigate();
   const [scoreValue, setScoreValue] = useState(85);
 
   const candidates = [
@@ -18,48 +16,8 @@ export default function CandidateSearch() {
   ];
 
   return (
-    <div className="bg-background-light text-text-main font-sans min-h-screen flex flex-col overflow-hidden">
-      {/* Top Navigation */}
-      <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-gray-200 bg-surface-light px-6 py-3 shadow-sm z-20">
-        <div className="flex items-center gap-8">
-          <div className="flex items-center gap-3 text-text-main">
-            <div className="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
-              <span className="material-symbols-outlined">school</span>
-            </div>
-            <h2 className="text-text-main text-xl font-bold leading-tight tracking-tight">EvolvEd</h2>
-          </div>
-          <label className="hidden md:flex flex-col min-w-64 !h-10 max-w-80">
-            <div className="flex w-full flex-1 items-stretch rounded-lg h-full border border-gray-200 bg-background-light focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
-              <div className="text-text-muted flex border-none items-center justify-center pl-3">
-                <span className="material-symbols-outlined text-[20px]">search</span>
-              </div>
-              <input
-                className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg bg-transparent border-none text-text-main focus:outline-0 focus:ring-0 placeholder:text-text-muted px-3 text-sm font-normal leading-normal"
-                placeholder="Search candidates, skills..."
-              />
-            </div>
-          </label>
-        </div>
-        <div className="flex flex-1 justify-end gap-6 items-center">
-          <nav className="hidden lg:flex items-center gap-6">
-            <Link to="/recruiter" className="text-text-muted hover:text-primary transition-colors text-sm font-medium">Dashboard</Link>
-            <span className="text-primary text-sm font-semibold border-b-2 border-primary pb-0.5">Candidates</span>
-            <a href="#" className="text-text-muted hover:text-primary transition-colors text-sm font-medium">Interviews</a>
-            <a href="#" className="text-text-muted hover:text-primary transition-colors text-sm font-medium">Analytics</a>
-          </nav>
-          <div className="flex items-center gap-4">
-            <Link to="/recruiter/jobs/new">
-              <button className="hidden sm:flex items-center justify-center rounded-lg h-9 px-4 bg-primary hover:bg-yellow-600 transition-colors text-white text-sm font-semibold shadow-sm">
-                <span className="truncate">Post Job</span>
-              </button>
-            </Link>
-            <div
-              className="bg-gray-200 bg-center bg-no-repeat bg-cover rounded-full size-9 cursor-pointer ring-2 ring-transparent hover:ring-primary transition-all"
-              style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuB4Ty05XbyLNeTEpkdJK5juUEkxS3WWzpVs9AJwMgKcEttzHlrCDNBSSzcTjtS4aNBv3bu_FNmd2efWKp3o0a6SA2TiwevGCAz2tCYOi_SeNrACcM5ax4FEdEvNlBofwqINMCz8nsd2O03P3oSuQ3ocjl8SlcYeUg9bUlo01702sndcwwetuMJRqsh7MWO1cW_3VmLtJ8i1NNmSP-ElH_78LbVpZ0AFI4dFaOPN67qseAubycKcUv5eKwPji-G9PWKDXukvdW4iHfdN')" }}
-            />
-          </div>
-        </div>
-      </header>
+    <div className="bg-background-light text-text-main font-sans min-h-screen flex flex-row overflow-hidden">
+      <RecruiterSidebar />
 
       {/* Main Layout */}
       <div className="flex flex-1 overflow-hidden">

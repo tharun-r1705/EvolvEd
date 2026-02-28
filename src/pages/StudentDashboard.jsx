@@ -1,119 +1,18 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import StudentSidebar from '../components/StudentSidebar.jsx';
 
 export default function StudentDashboard() {
-  const { logout, user } = useAuth();
-  const navigate = useNavigate();
-
-  function handleLogout() {
-    logout();
-    navigate('/login');
-  }
+  const { user } = useAuth();
 
   return (
     <div className="flex min-h-screen w-full flex-row overflow-hidden bg-background-light font-display">
       {/* ── Sidebar ── */}
-      <aside className="hidden w-72 flex-col justify-between bg-secondary p-6 text-white shadow-xl lg:flex">
-        <div className="flex flex-col gap-8">
-          {/* Logo */}
-          <div className="flex items-center gap-3 px-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-secondary">
-              <span className="material-symbols-outlined text-3xl">school</span>
-            </div>
-            <span className="text-xl font-bold tracking-tight text-white">EvolvEd</span>
-          </div>
-          {/* Navigation */}
-          <nav className="flex flex-col gap-2">
-            <Link
-              to="/student"
-              className="flex items-center gap-3 rounded-lg bg-white/10 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-white/20"
-            >
-              <span className="material-symbols-outlined">dashboard</span>
-              Dashboard
-            </Link>
-            <Link
-              to="/student/assessments/latest"
-              className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              <span className="material-symbols-outlined">description</span>
-              Assessments
-            </Link>
-            <a
-              href="#"
-              className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              <span className="material-symbols-outlined">verified</span>
-              Skills Profile
-            </a>
-            <a
-              href="#"
-              className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              <span className="material-symbols-outlined">work</span>
-              Jobs &amp; Placements
-            </a>
-            <a
-              href="#"
-              className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              <span className="material-symbols-outlined">analytics</span>
-              Analytics
-            </a>
-          </nav>
-        </div>
-
-        {/* Bottom Actions */}
-        <div className="flex flex-col gap-4">
-          <div className="rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 p-4 border border-primary/10">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-                <span className="material-symbols-outlined text-sm">stars</span>
-              </div>
-              <p className="text-xs font-bold text-primary uppercase tracking-wider">Pro Tip</p>
-            </div>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Update your GitHub links to boost your technical score by 5%.
-            </p>
-          </div>
-          <div className="h-px bg-white/10" />
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-slate-300 hover:text-white"
-          >
-            <span className="material-symbols-outlined">logout</span>
-            Sign Out
-          </button>
-          {/* Profile Snippet */}
-          <div className="flex items-center gap-3 pt-2">
-            <div
-              className="h-10 w-10 rounded-full bg-cover bg-center"
-              style={{
-                backgroundImage:
-                  "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDCrZJKLhl8RTIQpkrAF7a4lJ1fB6xVt9WoZYc1XhyIhkvbXqkI0SKWUxLSN8QlHy-2DKy-MB3ASBCXbFfVajufE6pA3aA223SiZpLA1fanVPooiDg7Nd4J26QV0cUtS8LTBmjHUizHxLt6OYMBzrjKyjxem6NYNnmBacQEyCdPPHUwQ-y-7CTN8fIJV_u013JUIIoGDDpprR49BKMudxpxnP3oTfLtrOjUF09BjnFkljIS0cQRiUUuVnJHspZystILPFvz3EtRuWN0')",
-              }}
-            />
-            <div className="flex flex-col">
-              <p className="text-sm font-medium text-white">{user?.name || 'Alex Morgan'}</p>
-              <p className="text-xs text-slate-400">Comp Sci, Year 4</p>
-            </div>
-          </div>
-        </div>
-      </aside>
+      <StudentSidebar />
 
       {/* ── Main Content ── */}
       <main className="flex h-screen flex-1 flex-col overflow-y-auto bg-background-light p-4 md:p-8">
-        {/* Mobile Header */}
-        <div className="mb-8 flex items-center justify-between lg:hidden">
-          <div className="flex items-center gap-2 text-secondary">
-            <span className="material-symbols-outlined text-3xl">school</span>
-            <span className="text-xl font-bold">EvolvEd</span>
-          </div>
-          <button className="text-secondary">
-            <span className="material-symbols-outlined">menu</span>
-          </button>
-        </div>
-
         <div className="mx-auto w-full max-w-6xl">
           {/* Top Header */}
           <header className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">

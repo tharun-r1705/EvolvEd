@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import RecruiterSidebar from '../components/RecruiterSidebar.jsx';
 
 export default function PostJob() {
   const [skills, setSkills] = useState(['Python', 'React Native', 'UI/UX Design']);
@@ -19,42 +20,11 @@ export default function PostJob() {
   }
 
   return (
-    <div className="font-sans bg-background-light min-h-screen flex flex-col">
-      <div className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
-        {/* Header */}
-        <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#e4e2dd] px-10 py-4 bg-white">
-          <div className="flex items-center gap-4 text-text-main">
-            <div className="size-8 text-primary flex items-center justify-center">
-              <span className="material-symbols-outlined text-3xl">school</span>
-            </div>
-            <h2 className="text-text-main text-xl font-bold leading-tight tracking-[-0.015em]">EvolvEd</h2>
-          </div>
-          <div className="flex flex-1 justify-end gap-8 items-center">
-            <div className="hidden lg:flex items-center gap-9">
-              <Link to="/recruiter" className="text-text-main text-sm font-medium leading-normal hover:text-primary transition-colors">Dashboard</Link>
-              <Link to="/recruiter/candidates" className="text-text-main text-sm font-medium leading-normal hover:text-primary transition-colors">Candidates</Link>
-              <Link to="/recruiter/jobs/new" className="text-text-main text-sm font-medium leading-normal hover:text-primary transition-colors">Jobs</Link>
-              <a className="text-text-main text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Analytics</a>
-              <a className="text-text-main text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Profile</a>
-            </div>
-            <div className="flex gap-2 items-center">
-              <div className="relative">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">search</span>
-                <input className="h-10 pl-10 pr-4 rounded-lg bg-background-light border-none text-sm w-40 focus:ring-1 focus:ring-primary" placeholder="Search" type="text" />
-              </div>
-              <button className="flex items-center justify-center overflow-hidden rounded-lg h-10 w-10 bg-[#f4f3f1] text-text-main hover:bg-gray-200 transition-colors">
-                <span className="material-symbols-outlined text-xl">notifications</span>
-              </button>
-              <div
-                className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-white shadow-sm cursor-pointer"
-                style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBqHjbbMY2XmoZSbt6RRjMftsDN2cxysN2QEHWEP-vMfoAVjolIqSShlwbld2S4rNMoNmVs9daLI3S68C8xtRcd0GC-vSQH7nXi7JIIy8sCUSMgcuYClyy_ZRC86Qq1ffQM9dwxR0lUdOECpV6n6dLIAZrPZv9Q5VmCZ_-7XgkAl7YirbnAvEBakZyOKI6pHyIC1tpd9LPtRSyfspk4pSSeVWFkhx56zY41H3ObFtUIi_kaJI9CuQG2L62mdcxMiNSu5ZM6-vziQZJh')" }}
-              />
-            </div>
-          </div>
-        </header>
+    <div className="font-sans bg-background-light min-h-screen flex flex-row">
+      <RecruiterSidebar />
 
-        {/* Main Content */}
-        <main className="flex-1 flex justify-center py-10 px-6 sm:px-10 lg:px-40">
+      {/* Main Content */}
+      <main className="flex-1 flex justify-center py-10 px-6 sm:px-10 lg:px-16 overflow-y-auto">
           <div className="flex flex-col max-w-[960px] w-full gap-8">
             {/* Page Title */}
             <div className="flex flex-col gap-2">
@@ -236,7 +206,6 @@ export default function PostJob() {
             </div>
           </div>
         </main>
-      </div>
     </div>
   );
 }

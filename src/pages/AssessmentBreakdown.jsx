@@ -1,62 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import StudentSidebar from '../components/StudentSidebar.jsx';
 
 export default function AssessmentBreakdown() {
   return (
-    <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex flex-col overflow-x-hidden">
-      {/* ── Header ── */}
-      <header className="sticky top-0 z-50 w-full border-b border-primary/20 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-8">
-            <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded bg-primary/20 text-primary">
-                <span className="material-symbols-outlined">school</span>
-              </div>
-              <Link to="/student">
-                <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">EvolvEd</span>
-              </Link>
-            </div>
-            <nav className="hidden md:flex items-center gap-6">
-              <Link
-                to="/student"
-                className="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-primary transition-colors"
-              >
-                Dashboard
-              </Link>
-              <span className="text-sm font-medium text-primary">Assessments</span>
-              <a className="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-primary transition-colors" href="#">
-                Jobs
-              </a>
-              <a className="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-primary transition-colors" href="#">
-                Resources
-              </a>
-            </nav>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="relative hidden sm:block">
-              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                <span className="material-symbols-outlined text-[20px]">search</span>
-              </span>
-              <input
-                className="h-10 w-64 rounded-lg border-none bg-slate-200/50 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-primary dark:bg-white/5 dark:text-white dark:placeholder-slate-400"
-                placeholder="Search assessments..."
-                type="text"
-              />
-            </div>
-            <button className="relative size-10 overflow-hidden rounded-full ring-2 ring-primary/20 transition-all hover:ring-primary">
-              <div
-                className="bg-center bg-no-repeat bg-cover h-full w-full"
-                style={{
-                  backgroundImage:
-                    'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBZo-_m9ynWiC5GvZkcMWzingt6hD-aQixssqSRdwc49WtJpQVOieLV48vCgAXRSju0AlU3XS1wbgLsCj1v_ImU1SpbHKiVCsx6IVriZMeZ3ECjOzF5c-Vwn3sB7Df3Mt-okcDL-uLmGM0YakSHRcVvT27IXBGQc2VOFJqmdd3TgWNV_rNTTFGt7sCJLVnYPx2r4rYtSkdh_X0UAXjRnWS1_SFXW-SZu6bKVpeB3v8g29rzkMxMRG-IWaM1wQVcggRNafaMmwf1AXua")',
-                }}
-              />
-            </button>
-          </div>
-        </div>
-      </header>
+    <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex flex-row overflow-x-hidden">
+      <StudentSidebar />
 
-      <main className="flex-1 py-8">
+      <main className="flex-1 overflow-y-auto py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Page Header */}
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">

@@ -1,51 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import RecruiterSidebar from '../components/RecruiterSidebar.jsx';
 
 export default function CandidateProfile() {
   return (
-    <div className="bg-background-light font-sans text-midnight-navy min-h-screen flex flex-col overflow-x-hidden">
-      {/* Top Navbar */}
-      <div className="sticky top-0 z-50 bg-white border-b border-[#f4f3f1]">
-        <header className="flex items-center justify-between px-6 lg:px-10 py-3 mx-auto max-w-7xl w-full">
-          <div className="flex items-center gap-8">
-            <div className="flex items-center gap-3 text-midnight-navy">
-              <div className="size-6 text-primary">
-                <span className="material-symbols-outlined" style={{ fontSize: '1.875rem' }}>school</span>
-              </div>
-              <h2 className="text-xl font-bold tracking-tight">EvolvEd</h2>
-            </div>
-            <div className="hidden md:flex relative w-64">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
-                <span className="material-symbols-outlined" style={{ fontSize: '1.25rem' }}>search</span>
-              </div>
-              <input
-                className="block w-full rounded-lg border-0 bg-[#f4f3f1] py-2 pl-10 pr-3 text-sm text-midnight-navy focus:ring-2 focus:ring-primary placeholder:text-slate-400"
-                placeholder="Search candidates..."
-                type="text"
-              />
-            </div>
-          </div>
-          <div className="flex items-center gap-6">
-            <nav className="hidden lg:flex items-center gap-6">
-              <Link to="/recruiter" className="text-sm font-medium hover:text-primary transition-colors">Dashboard</Link>
-              <Link to="/recruiter/candidates" className="text-sm font-medium text-primary">Candidates</Link>
-              <Link to="/recruiter/jobs/new" className="text-sm font-medium hover:text-primary transition-colors">Jobs</Link>
-              <a href="#" className="text-sm font-medium hover:text-primary transition-colors">Analytics</a>
-            </nav>
-            <div className="flex gap-3">
-              <button className="flex items-center justify-center size-9 rounded-full bg-[#f4f3f1] hover:bg-slate-200 transition-colors text-midnight-navy">
-                <span className="material-symbols-outlined" style={{ fontSize: '1.25rem' }}>notifications</span>
-              </button>
-              <button className="flex items-center justify-center size-9 rounded-full bg-[#f4f3f1] hover:bg-slate-200 transition-colors text-midnight-navy">
-                <span className="material-symbols-outlined" style={{ fontSize: '1.25rem' }}>account_circle</span>
-              </button>
-            </div>
-          </div>
-        </header>
-      </div>
+    <div className="bg-background-light font-sans text-midnight-navy min-h-screen flex flex-row overflow-x-hidden">
+      <RecruiterSidebar />
 
       {/* Main Content */}
-      <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-grow w-full overflow-y-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Column */}
           <div className="lg:col-span-4 flex flex-col gap-6">

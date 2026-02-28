@@ -1,10 +1,8 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext.jsx';
+import { Link } from 'react-router-dom';
+import AdminSidebar from '../components/AdminSidebar.jsx';
 
 export default function ManageStudents() {
-  const { logout } = useAuth();
-  const navigate = useNavigate();
 
   const students = [
     { initials: 'PS', initBg: 'bg-slate-200 text-slate-600', name: 'Priya Sharma', cls: '2024', id: '2021001', dept: 'Computer Science', gpa: 3.9, score: 92, barW: '92%', barColor: 'bg-emerald-500', scoreLabel: '92/100 (Excellent)', scoreColor: 'text-emerald-600', badge: 'Ready', badgeCls: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
@@ -15,38 +13,11 @@ export default function ManageStudents() {
   ];
 
   return (
-    <div className="bg-background-light font-sans text-slate-900 antialiased min-h-screen flex flex-col">
-      {/* Header */}
-      <header className="bg-midnight border-b border-slate-700/30 px-6 py-4 sticky top-0 z-50 shadow-md">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3 text-white">
-            <div className="size-8 bg-primary/20 rounded-lg flex items-center justify-center text-primary">
-              <span className="material-symbols-outlined">school</span>
-            </div>
-            <h2 className="text-white text-xl font-bold tracking-tight">EvolvEd</h2>
-          </div>
-          <nav className="hidden md:flex items-center gap-8">
-            <Link to="/admin" className="text-slate-300 hover:text-primary transition-colors text-sm font-medium">Dashboard</Link>
-            <Link to="/admin/students" className="text-white border-b-2 border-primary pb-0.5 text-sm font-medium">Students</Link>
-            <a href="#" className="text-slate-300 hover:text-primary transition-colors text-sm font-medium">Recruiters</a>
-            <a href="#" className="text-slate-300 hover:text-primary transition-colors text-sm font-medium">Placements</a>
-            <a href="#" className="text-slate-300 hover:text-primary transition-colors text-sm font-medium">Settings</a>
-          </nav>
-          <div className="flex items-center gap-4">
-            <button className="relative p-2 text-slate-300 hover:text-white transition-colors">
-              <span className="material-symbols-outlined">notifications</span>
-              <span className="absolute top-2 right-2 size-2 bg-primary rounded-full" />
-            </button>
-            <div
-              className="bg-center bg-no-repeat bg-cover rounded-full size-9 ring-2 ring-primary/30"
-              style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuD6R-ejN2l4yFQ7V_Y7N4Yw-Kvz8pKhtYtlgfUSWQ0h0XcN-07ET00kbAa-22dWym4jbzDmLK9Edo7ZQPc18asH-vYFHYIhdsj2m51OLYFSaXG8sULPG3fDDMAq8-GhkKmwTjIhRr50zklRsSq23NUqyeX3fPr8gdbjMn6RNa4yK2S_36229C86Bj2VfDcltS9CrDfN_afN7EI36-L_-_eIWnvd7RHkKN_VYrLz7pj5mE18BzLVKSUA5g8aUSmBmDbVgJCgRnjxh9QU')" }}
-            />
-          </div>
-        </div>
-      </header>
+    <div className="bg-background-light font-sans text-slate-900 antialiased min-h-screen flex flex-row">
+      <AdminSidebar />
 
       {/* Main Content */}
-      <main className="flex-1 px-4 py-8 md:px-8">
+      <main className="flex-1 overflow-y-auto px-4 py-8 md:px-8">
         <div className="max-w-7xl mx-auto flex flex-col gap-6">
           {/* Page Title */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">

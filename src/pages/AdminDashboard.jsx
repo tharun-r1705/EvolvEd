@@ -1,103 +1,18 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import AdminSidebar from '../components/AdminSidebar.jsx';
 
 export default function AdminDashboard() {
-  const { logout, user } = useAuth();
-  const navigate = useNavigate();
-
-  function handleLogout() {
-    logout();
-    navigate('/login');
-  }
+  const { user } = useAuth();
 
   return (
-    <div className="bg-background-light text-text-main font-sans antialiased min-h-screen flex flex-col">
-      {/* Top Navigation */}
-      <div className="w-full bg-surface-light border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-[1440px] mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="size-8 bg-primary rounded-lg flex items-center justify-center text-primary-content">
-              <span className="material-symbols-outlined">school</span>
-            </div>
-            <h1 className="text-xl font-bold tracking-tight text-secondary">EvolvEd</h1>
-          </div>
-          <div className="flex-1 max-w-xl px-12">
-            <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span className="material-symbols-outlined text-text-muted">search</span>
-              </div>
-              <input
-                className="block w-full pl-10 pr-3 py-2 border-none rounded-lg leading-5 bg-background-light text-text-main placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary sm:text-sm transition duration-150 ease-in-out"
-                placeholder="Search students, recruiters, or drives..."
-                type="text"
-              />
-            </div>
-          </div>
-          <div className="flex items-center gap-6">
-            <button className="relative p-2 text-text-muted hover:text-secondary transition-colors">
-              <span className="material-symbols-outlined">notifications</span>
-              <span className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full border-2 border-surface-light" />
-            </button>
-            <div className="h-8 w-px bg-gray-200" />
-            <div className="flex items-center gap-3">
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-medium text-secondary">{user?.name || 'Alex Morgan'}</p>
-                <p className="text-xs text-text-muted">Placement Officer</p>
-              </div>
-              <div
-                className="h-10 w-10 rounded-full bg-gray-200 bg-cover bg-center border-2 border-white shadow-sm"
-                style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDt47R6dTB7pGUnquj1hpZbcYarpFyBeSO4qfXy0qdRSNBTwhnUAkCy24Su6CssXotJBspSzYur5qBiSOhWvE1qW4UD7Rs0a39GtrHf9XwfvFq2GkPB9hbPH4J4pOLPBFYr_jeZBQiY86OTzGhuPjsKEV1qGEXnfc2OmQdysMv69EeI7rEFtNEX1oDSaXDDG3Vd9cS-J7IGrmrDIJEilLkzDwVMEjDJXfFkGqiFOP4CXD-QhS9bh1iheBiJP9Yg055CAX0VVO05dsoc')" }}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="bg-background-light text-text-main font-sans antialiased min-h-screen flex flex-row">
+      {/* ── Sidebar ── */}
+      <AdminSidebar />
 
-      <div className="flex flex-1 max-w-[1440px] mx-auto w-full">
-        {/* Sidebar */}
-        <aside className="w-64 bg-surface-light border-r border-gray-200 hidden lg:flex flex-col py-6 sticky top-16 h-[calc(100vh-4rem)]">
-          <div className="px-4 mb-8">
-            <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4 px-2">Main Menu</p>
-            <nav className="space-y-1">
-              <Link to="/admin" className="flex items-center gap-3 px-3 py-2.5 bg-primary/10 text-primary rounded-lg font-medium">
-                <span className="material-symbols-outlined">dashboard</span>
-                Dashboard
-              </Link>
-              <Link to="/admin/students" className="flex items-center gap-3 px-3 py-2.5 text-text-muted hover:bg-gray-50 hover:text-secondary rounded-lg font-medium transition-colors">
-                <span className="material-symbols-outlined">school</span>
-                Students
-              </Link>
-              <a href="#" className="flex items-center gap-3 px-3 py-2.5 text-text-muted hover:bg-gray-50 hover:text-secondary rounded-lg font-medium transition-colors">
-                <span className="material-symbols-outlined">work</span>
-                Recruiters
-              </a>
-              <a href="#" className="flex items-center gap-3 px-3 py-2.5 text-text-muted hover:bg-gray-50 hover:text-secondary rounded-lg font-medium transition-colors">
-                <span className="material-symbols-outlined">event_available</span>
-                Placement Drives
-              </a>
-            </nav>
-          </div>
-          <div className="px-4 mt-auto">
-            <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4 px-2">Settings</p>
-            <nav className="space-y-1">
-              <a href="#" className="flex items-center gap-3 px-3 py-2.5 text-text-muted hover:bg-gray-50 hover:text-secondary rounded-lg font-medium transition-colors">
-                <span className="material-symbols-outlined">settings</span>
-                System Settings
-              </a>
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors mt-2"
-              >
-                <span className="material-symbols-outlined">logout</span>
-                Log Out
-              </button>
-            </nav>
-          </div>
-        </aside>
-
-        {/* Main Content */}
-        <main className="flex-1 p-8 overflow-y-auto">
+      {/* ── Main Content ── */}
+      <main className="flex-1 p-8 overflow-y-auto">
           <header className="mb-8">
             <h2 className="text-3xl font-bold text-secondary mb-2">System Overview</h2>
             <p className="text-text-muted">Welcome back, here's what's happening across the campus today.</p>
@@ -274,8 +189,7 @@ export default function AdminDashboard() {
               <button className="text-sm text-primary font-medium hover:underline">View All Placements</button>
             </div>
           </div>
-        </main>
-      </div>
+      </main>
     </div>
   );
 }

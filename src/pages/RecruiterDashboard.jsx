@@ -1,116 +1,18 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import RecruiterSidebar from '../components/RecruiterSidebar.jsx';
 
 export default function RecruiterDashboard() {
-  const { logout, user } = useAuth();
-  const navigate = useNavigate();
-
-  function handleLogout() {
-    logout();
-    navigate('/login');
-  }
+  const { user } = useAuth();
 
   return (
     <div className="flex min-h-screen w-full bg-background-light">
       {/* ── Sidebar ── */}
-      <aside className="flex w-64 flex-col justify-between bg-midnight px-4 py-6 border-r border-slate-800 text-slate-100 flex-shrink-0 fixed h-full z-10">
-        <div className="flex flex-col gap-8">
-          {/* Logo */}
-          <div className="flex items-center gap-3 px-2">
-            <div className="flex items-center justify-center rounded-lg bg-primary size-10 shadow-lg shadow-primary/20">
-              <span className="material-symbols-outlined text-white text-2xl">school</span>
-            </div>
-            <div className="flex flex-col">
-              <h1 className="text-white text-lg font-bold leading-tight tracking-tight">EvolvEd</h1>
-              <p className="text-slate-400 text-xs font-normal">Recruiter Portal</p>
-            </div>
-          </div>
-          {/* Navigation */}
-          <nav className="flex flex-col gap-2">
-            <Link
-              to="/recruiter"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/20 text-primary border border-primary/10"
-            >
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>dashboard</span>
-              <p className="text-sm font-medium">Dashboard</p>
-            </Link>
-            <Link
-              to="/recruiter/jobs/new"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
-            >
-              <span className="material-symbols-outlined">work</span>
-              <p className="text-sm font-medium">Jobs</p>
-            </Link>
-            <Link
-              to="/recruiter/candidates"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
-            >
-              <span className="material-symbols-outlined">group</span>
-              <p className="text-sm font-medium">Candidates</p>
-            </Link>
-            <a
-              href="#"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
-            >
-              <span className="material-symbols-outlined">calendar_month</span>
-              <p className="text-sm font-medium">Interviews</p>
-            </a>
-            <a
-              href="#"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
-            >
-              <span className="material-symbols-outlined">analytics</span>
-              <p className="text-sm font-medium">Reports</p>
-            </a>
-          </nav>
-        </div>
-        {/* Bottom Actions */}
-        <div className="flex flex-col gap-2">
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors w-full text-left"
-          >
-            <span className="material-symbols-outlined">logout</span>
-            <p className="text-sm font-medium">Sign Out</p>
-          </button>
-          <div className="mt-4 border-t border-slate-700 pt-4 px-3 flex items-center gap-3">
-            <div
-              className="size-8 rounded-full bg-slate-600 bg-cover bg-center"
-              style={{
-                backgroundImage:
-                  "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCPP7j22FyeRJxcRCZoZ0LtmefnbkePCpYKhE3dUdLeyr-ykzyGYWHlpo3fqlFAd3iaNAx8huH-ZWJmQAQJT1o5KL0e_EUrrk-YZcVSFNWfcizCBlD4qKXIMgSE3jUJQhSVO1ndiiKWyqaAMobOzQXSpJYUFJWZQWtSmD0I50hBLWE8QwXGSxzYRqnul6FQSr-Jhp6MThy9xcdKDqOdY2KoU-JVKnPd8OcdeF3QP9wu7fdzZvOywyoseWwTMsYQRxGxwqMPJoe3WPWO')",
-              }}
-            />
-            <div className="flex flex-col">
-              <p className="text-sm font-medium text-white">{user?.name || 'Alex Morgan'}</p>
-              <p className="text-xs text-slate-400">Tech Recruiter</p>
-            </div>
-          </div>
-        </div>
-      </aside>
+      <RecruiterSidebar />
 
       {/* ── Main Content ── */}
-      <main className="flex-1 flex flex-col ml-64">
-        {/* Header */}
-        <header className="h-16 bg-white border-b border-slate-200 sticky top-0 z-20 px-8 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h2 className="text-xl font-semibold text-midnight">Dashboard Overview</h2>
-          </div>
-          <div className="flex items-center gap-4">
-            <button className="p-2 rounded-full text-slate-500 hover:bg-slate-100 transition-colors relative">
-              <span className="material-symbols-outlined">notifications</span>
-              <span className="absolute top-2 right-2 size-2 bg-red-500 rounded-full border border-white" />
-            </button>
-            <Link to="/recruiter/jobs/new">
-              <button className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-yellow-600 transition-colors shadow-sm shadow-primary/30">
-                <span className="material-symbols-outlined text-[18px]">add</span>
-                Post New Job
-              </button>
-            </Link>
-          </div>
-        </header>
-
+      <main className="flex-1 flex flex-col">
         <div className="p-8 max-w-[1400px] mx-auto w-full flex flex-col gap-8">
           {/* Welcome */}
           <div>
