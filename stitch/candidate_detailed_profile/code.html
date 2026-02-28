@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Candidate Detailed Profile - EvolvEd</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#c6a43f",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#1f1c13",
+                        "midnight-navy": "#171612", 
+                        "deep-teal": "#1a4d4d", 
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-midnight-navy dark:text-slate-100 min-h-screen flex flex-col overflow-x-hidden">
+<!-- Top Navbar -->
+<div class="sticky top-0 z-50 bg-white dark:bg-background-dark border-b border-[#f4f3f1] dark:border-[#2e2b21]">
+<header class="flex items-center justify-between px-6 lg:px-10 py-3 mx-auto max-w-7xl w-full">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-midnight-navy dark:text-white">
+<div class="size-6 text-primary">
+<span class="material-symbols-outlined !text-3xl">school</span>
+</div>
+<h2 class="text-xl font-bold tracking-tight">EvolvEd</h2>
+</div>
+<div class="hidden md:flex relative w-64">
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+<span class="material-symbols-outlined !text-[20px]">search</span>
+</div>
+<input class="block w-full rounded-lg border-0 bg-[#f4f3f1] dark:bg-[#2a271d] py-2 pl-10 pr-3 text-sm text-midnight-navy dark:text-white focus:ring-2 focus:ring-primary placeholder:text-slate-400" placeholder="Search candidates..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden lg:flex items-center gap-6">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-sm font-medium text-primary" href="#">Candidates</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Jobs</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Analytics</a>
+</nav>
+<div class="flex gap-3">
+<button class="flex items-center justify-center size-9 rounded-full bg-[#f4f3f1] dark:bg-[#2a271d] hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors text-midnight-navy dark:text-white">
+<span class="material-symbols-outlined !text-[20px]">notifications</span>
+</button>
+<button class="flex items-center justify-center size-9 rounded-full bg-[#f4f3f1] dark:bg-[#2a271d] hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors text-midnight-navy dark:text-white">
+<span class="material-symbols-outlined !text-[20px]">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+</div>
+<!-- Main Content -->
+<main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column: Profile Card & Quick Stats -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Profile Card -->
+<div class="bg-white dark:bg-[#25221a] rounded-xl p-6 shadow-sm border border-[#e4e2dd] dark:border-[#3a362b]">
+<div class="flex flex-col items-center text-center">
+<div class="relative mb-4">
+<div class="w-32 h-32 rounded-full bg-cover bg-center border-4 border-primary/20 shadow-inner" data-alt="Portrait of Alex Chen" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCoW58IdsinvMXNpkzH6YtVVqWc-eXNS3HGqHFslU-gMTqp-kXgm4pVvQ8LHiNGgJISm9e8GbBbe053RSUcrybSQ9sey0Q8C2dw0Yj6VDcMHPUtJEjletOOSHzvrOvonRJk6MFq3foXw03rTWyG-E8k0L1gerqaNcSTDKUVe9QTK1c7fGnYYreaAcTPx7ljQGBrrYmO0vTfa0b-wSwgVAZzMMGFAKMWFPvfcc3_XzElT36OnV-cCa8t1hh7WJLhGn4zBwykeS4-I2Wk');"></div>
+<div class="absolute bottom-1 right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-white dark:border-[#25221a]" title="Active"></div>
+</div>
+<h1 class="text-2xl font-bold text-midnight-navy dark:text-white mb-1">Alex Chen</h1>
+<p class="text-sm text-slate-500 dark:text-slate-400 font-medium mb-3">CS Senior @ Stanford University</p>
+<div class="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-6">
+                            Looking for Software Engineering Roles
+                        </div>
+<div class="flex gap-3 w-full">
+<button class="flex-1 h-10 rounded-lg bg-[#f4f3f1] dark:bg-[#3a362b] text-midnight-navy dark:text-white font-semibold text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined !text-[18px]">mail</span>
+                                Contact
+                            </button>
+<button class="flex-1 h-10 rounded-lg bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 shadow-sm">
+<span class="material-symbols-outlined !text-[18px]">bookmark</span>
+                                Shortlist
+                            </button>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-[#e4e2dd] dark:border-[#3a362b] grid grid-cols-1 gap-4">
+<div class="flex justify-between items-center">
+<span class="text-slate-500 dark:text-slate-400 text-sm">Location</span>
+<span class="text-midnight-navy dark:text-white text-sm font-medium">San Francisco, CA</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-slate-500 dark:text-slate-400 text-sm">GPA</span>
+<span class="text-midnight-navy dark:text-white text-sm font-medium">3.8/4.0</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-slate-500 dark:text-slate-400 text-sm">Experience</span>
+<span class="text-midnight-navy dark:text-white text-sm font-medium">2 Internships</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-slate-500 dark:text-slate-400 text-sm">Expected Grad</span>
+<span class="text-midnight-navy dark:text-white text-sm font-medium">May 2024</span>
+</div>
+</div>
+<div class="mt-6 pt-6 border-t border-[#e4e2dd] dark:border-[#3a362b]">
+<h4 class="text-sm font-bold text-midnight-navy dark:text-white mb-3">Contact Information</h4>
+<div class="flex items-center gap-3 mb-2 text-sm text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined !text-[18px] text-primary">call</span>
+<span>+1 (555) 123-4567</span>
+</div>
+<div class="flex items-center gap-3 mb-2 text-sm text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined !text-[18px] text-primary">link</span>
+<a class="hover:underline" href="#">linkedin.com/in/alexc</a>
+</div>
+<div class="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined !text-[18px] text-primary">language</span>
+<a class="hover:underline" href="#">alexchen.dev</a>
+</div>
+</div>
+</div>
+<!-- Quick Download Action -->
+<div class="bg-[#171612] dark:bg-black rounded-xl p-6 shadow-md text-white flex flex-col items-start gap-4 bg-[url('https://placeholder.pics/svg/600/171612/282828-p-20')] bg-no-repeat bg-right-bottom bg-[length:50%]" data-alt="Abstract geometric pattern">
+<div>
+<h3 class="font-bold text-lg mb-1">Full Candidate Report</h3>
+<p class="text-sm text-slate-300">Get a detailed PDF analysis including psychometric evaluation.</p>
+</div>
+<button class="w-full h-11 rounded-lg bg-white/10 border border-white/20 hover:bg-white/20 text-white font-semibold text-sm flex items-center justify-center gap-2 transition-colors">
+<span class="material-symbols-outlined !text-[20px]">download</span>
+                        Download PDF Report
+                    </button>
+</div>
+</div>
+<!-- Right Column: Detailed Stats & Sections -->
+<div class="lg:col-span-8 flex flex-col gap-8">
+<!-- Readiness Score Header -->
+<div class="bg-white dark:bg-[#25221a] rounded-xl p-6 md:p-8 shadow-sm border border-[#e4e2dd] dark:border-[#3a362b] flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-64 h-full bg-gradient-to-l from-primary/5 to-transparent pointer-events-none"></div>
+<div class="flex-1 z-10">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined !text-[24px] text-primary">verified</span>
+<span class="text-sm font-bold text-primary tracking-wide uppercase">EvolvEd Readiness Score</span>
+</div>
+<h2 class="text-3xl md:text-4xl font-bold text-midnight-navy dark:text-white mb-2">Excellent Match</h2>
+<p class="text-slate-500 dark:text-slate-400 text-sm md:text-base max-w-md">
+                            Alex ranks in the top 5% of candidates for Full-stack roles based on assessment history and project complexity.
+                        </p>
+</div>
+<div class="relative flex-shrink-0 z-10">
+<svg class="size-32 md:size-40 transform -rotate-90" viewbox="0 0 100 100">
+<circle class="text-[#f4f3f1] dark:text-[#3a362b]" cx="50" cy="50" fill="transparent" r="42" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-primary" cx="50" cy="50" fill="transparent" r="42" stroke="currentColor" stroke-dasharray="264" stroke-dashoffset="40" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
+<span class="text-3xl md:text-4xl font-bold text-midnight-navy dark:text-white">85</span>
+<span class="text-xs font-medium text-slate-500 uppercase">Score</span>
+</div>
+</div>
+</div>
+<!-- Skills Section -->
+<section>
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-xl font-bold text-midnight-navy dark:text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">code_blocks</span>
+                            Skills Proficiency
+                        </h3>
+</div>
+<div class="bg-white dark:bg-[#25221a] rounded-xl p-6 shadow-sm border border-[#e4e2dd] dark:border-[#3a362b]">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+<!-- Skill Item -->
+<div>
+<div class="flex justify-between mb-1">
+<span class="text-sm font-semibold text-midnight-navy dark:text-white">React / Next.js</span>
+<span class="text-sm text-primary font-bold">Expert</span>
+</div>
+<div class="w-full bg-[#f4f3f1] dark:bg-[#3a362b] rounded-full h-2.5">
+<div class="bg-primary h-2.5 rounded-full" style="width: 95%"></div>
+</div>
+</div>
+<!-- Skill Item -->
+<div>
+<div class="flex justify-between mb-1">
+<span class="text-sm font-semibold text-midnight-navy dark:text-white">TypeScript</span>
+<span class="text-sm text-primary font-bold">Advanced</span>
+</div>
+<div class="w-full bg-[#f4f3f1] dark:bg-[#3a362b] rounded-full h-2.5">
+<div class="bg-primary h-2.5 rounded-full" style="width: 85%"></div>
+</div>
+</div>
+<!-- Skill Item -->
+<div>
+<div class="flex justify-between mb-1">
+<span class="text-sm font-semibold text-midnight-navy dark:text-white">Python / Django</span>
+<span class="text-sm text-primary font-bold">Advanced</span>
+</div>
+<div class="w-full bg-[#f4f3f1] dark:bg-[#3a362b] rounded-full h-2.5">
+<div class="bg-primary h-2.5 rounded-full" style="width: 80%"></div>
+</div>
+</div>
+<!-- Skill Item -->
+<div>
+<div class="flex justify-between mb-1">
+<span class="text-sm font-semibold text-midnight-navy dark:text-white">PostgreSQL</span>
+<span class="text-sm text-primary font-bold">Intermediate</span>
+</div>
+<div class="w-full bg-[#f4f3f1] dark:bg-[#3a362b] rounded-full h-2.5">
+<div class="bg-primary h-2.5 rounded-full" style="width: 65%"></div>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-6 border-t border-[#e4e2dd] dark:border-[#3a362b]">
+<p class="text-xs font-bold text-slate-500 uppercase mb-3">Soft Skills</p>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-[#f4f3f1] dark:bg-[#3a362b] rounded-md text-sm text-midnight-navy dark:text-white border border-[#e4e2dd] dark:border-transparent">Leadership</span>
+<span class="px-3 py-1 bg-[#f4f3f1] dark:bg-[#3a362b] rounded-md text-sm text-midnight-navy dark:text-white border border-[#e4e2dd] dark:border-transparent">Communication</span>
+<span class="px-3 py-1 bg-[#f4f3f1] dark:bg-[#3a362b] rounded-md text-sm text-midnight-navy dark:text-white border border-[#e4e2dd] dark:border-transparent">Problem Solving</span>
+<span class="px-3 py-1 bg-[#f4f3f1] dark:bg-[#3a362b] rounded-md text-sm text-midnight-navy dark:text-white border border-[#e4e2dd] dark:border-transparent">Agile Methodology</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Projects Section -->
+<section>
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-xl font-bold text-midnight-navy dark:text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">folder_open</span>
+                            Featured Projects
+                        </h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Project Card 1 -->
+<div class="bg-white dark:bg-[#25221a] rounded-xl overflow-hidden shadow-sm border border-[#e4e2dd] dark:border-[#3a362b] flex flex-col h-full group">
+<div class="h-40 bg-slate-200 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Dashboard interface screenshot" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA_7lEV0aiYmlRrWwfuETDYgAdzeuTr9ta-Tbs1tuLXgpflgddJ308Gen57xGmopcOtJ9INrMT1fjsks_rf6socwvpnrnTqb9P3qwO0nF6bvYKsb585NKgZ0dLGCvISqKin_gpiALY5rgn1d5t5L4PNrMNMyb1OqdcaU0Fbf8ems9rdrZoBU-_MNoJJKxD0DgDnHkoj6epb_N8MT62I9QnDAjqVhDiU4vnf6K1gS8gHvrNJ8afMkIR5sz2mrK1UsJTuUFNQxVo-KRKc');"></div>
+<div class="p-5 flex-1 flex flex-col">
+<h4 class="text-lg font-bold text-midnight-navy dark:text-white mb-2">E-commerce Analytics Dashboard</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-4 line-clamp-3">Built a real-time analytics dashboard for e-commerce vendors using React, D3.js, and Node.js. Handled data visualization for over 10k daily transactions.</p>
+<div class="mt-auto flex flex-wrap gap-2 mb-4">
+<span class="text-[10px] font-bold uppercase px-2 py-1 bg-primary/10 text-primary rounded">React</span>
+<span class="text-[10px] font-bold uppercase px-2 py-1 bg-primary/10 text-primary rounded">Node.js</span>
+</div>
+<a class="text-sm font-semibold text-midnight-navy hover:text-primary transition-colors flex items-center gap-1" href="#">
+                                    View Project <span class="material-symbols-outlined !text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Project Card 2 -->
+<div class="bg-white dark:bg-[#25221a] rounded-xl overflow-hidden shadow-sm border border-[#e4e2dd] dark:border-[#3a362b] flex flex-col h-full group">
+<div class="h-40 bg-slate-200 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Mobile app interface screenshot" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCJQM9wwQ3vVDMLIBa8IzWx7zttth8DI_SL0lInNcJpNhavqkwZ3-vswOUD_QiLqNZFoeBtNm1q4HIhrJX4ENvMyoARURYW2Quq6SL-P1P-DH_Fue1CwEP5qcrTgZ0nmhFXpkq8983hDobhZPfnwthl6FbUx97tr2QA7Psz7bu_f8gn-0AumqAZhG7J0d-rz6WL368KUtWBTAUolifKNyKxHtyUVFO5bVUdW_RJG0CVUA4NbHmXA75F_vMeOWeLI1Qioqo7o3ssiBLm');"></div>
+<div class="p-5 flex-1 flex flex-col">
+<h4 class="text-lg font-bold text-midnight-navy dark:text-white mb-2">HealthTrack Mobile App</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-4 line-clamp-3">Developed a cross-platform mobile application for tracking fitness goals using React Native. Integrated with Apple HealthKit and Google Fit APIs.</p>
+<div class="mt-auto flex flex-wrap gap-2 mb-4">
+<span class="text-[10px] font-bold uppercase px-2 py-1 bg-primary/10 text-primary rounded">React Native</span>
+<span class="text-[10px] font-bold uppercase px-2 py-1 bg-primary/10 text-primary rounded">Firebase</span>
+</div>
+<a class="text-sm font-semibold text-midnight-navy hover:text-primary transition-colors flex items-center gap-1" href="#">
+                                    View Project <span class="material-symbols-outlined !text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- Assessment History -->
+<section>
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-xl font-bold text-midnight-navy dark:text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">history_edu</span>
+                            Assessment History
+                        </h3>
+<a class="text-sm font-medium text-primary hover:underline" href="#">View All</a>
+</div>
+<div class="bg-white dark:bg-[#25221a] rounded-xl shadow-sm border border-[#e4e2dd] dark:border-[#3a362b] overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left text-sm">
+<thead class="bg-[#f4f3f1] dark:bg-[#2e2b21] border-b border-[#e4e2dd] dark:border-[#3a362b]">
+<tr>
+<th class="px-6 py-3 font-semibold text-midnight-navy dark:text-white" scope="col">Assessment Name</th>
+<th class="px-6 py-3 font-semibold text-midnight-navy dark:text-white" scope="col">Date</th>
+<th class="px-6 py-3 font-semibold text-midnight-navy dark:text-white" scope="col">Score</th>
+<th class="px-6 py-3 font-semibold text-midnight-navy dark:text-white text-right" scope="col">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#e4e2dd] dark:divide-[#3a362b]">
+<tr class="hover:bg-background-light dark:hover:bg-background-dark/50 transition-colors">
+<td class="px-6 py-4 font-medium text-midnight-navy dark:text-white">
+<div class="flex items-center gap-3">
+<div class="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg text-blue-600 dark:text-blue-400">
+<span class="material-symbols-outlined !text-[20px]">terminal</span>
+</div>
+<div>
+<div class="font-semibold">Advanced Algorithms</div>
+<div class="text-xs text-slate-500">Coding Challenge</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-slate-500 dark:text-slate-400">Oct 24, 2023</td>
+<td class="px-6 py-4 font-bold text-midnight-navy dark:text-white">92%</td>
+<td class="px-6 py-4 text-right">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                                Passed
+                                            </span>
+</td>
+</tr>
+<tr class="hover:bg-background-light dark:hover:bg-background-dark/50 transition-colors">
+<td class="px-6 py-4 font-medium text-midnight-navy dark:text-white">
+<div class="flex items-center gap-3">
+<div class="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-lg text-purple-600 dark:text-purple-400">
+<span class="material-symbols-outlined !text-[20px]">psychology</span>
+</div>
+<div>
+<div class="font-semibold">Cognitive Aptitude</div>
+<div class="text-xs text-slate-500">Psychometric</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-slate-500 dark:text-slate-400">Oct 10, 2023</td>
+<td class="px-6 py-4 font-bold text-midnight-navy dark:text-white">88%</td>
+<td class="px-6 py-4 text-right">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                                Passed
+                                            </span>
+</td>
+</tr>
+<tr class="hover:bg-background-light dark:hover:bg-background-dark/50 transition-colors">
+<td class="px-6 py-4 font-medium text-midnight-navy dark:text-white">
+<div class="flex items-center gap-3">
+<div class="bg-orange-100 dark:bg-orange-900/30 p-2 rounded-lg text-orange-600 dark:text-orange-400">
+<span class="material-symbols-outlined !text-[20px]">database</span>
+</div>
+<div>
+<div class="font-semibold">System Design Basics</div>
+<div class="text-xs text-slate-500">Technical Interview</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-slate-500 dark:text-slate-400">Sep 28, 2023</td>
+<td class="px-6 py-4 font-bold text-midnight-navy dark:text-white">76%</td>
+<td class="px-6 py-4 text-right">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
+                                                Average
+                                            </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="mt-auto border-t border-[#e4e2dd] dark:border-[#2e2b21] bg-white dark:bg-background-dark py-8">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-sm text-slate-500 dark:text-slate-400">© 2024 EvolvEd Inc. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="text-sm text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-sm text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="text-sm text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="#">Help Center</a>
+</div>
+</div>
+</footer>
+</body></html>

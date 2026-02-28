@@ -1,0 +1,45 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  darkMode: 'class',
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        primary: '#c6a43f',
+        'primary-dark': '#b08e30',
+        'primary-light': '#ebdcb2',
+        'background-light': '#f8f7f6',
+        'background-dark': '#1f1c13',
+        'midnight-navy': '#0B1E33',
+        'warm-white': '#F9F6F0',
+        'deep-teal': '#1E5F5F',
+        midnight: '#0f172a',
+        'teal-deep': '#0f766e',
+        navy: '#0B1E33',
+        'navy-light': '#152a42',
+        charcoal: '#2E3B4E',
+        secondary: '#1e293b',
+        accent: '#0d9488',
+        'surface-light': '#ffffff',
+        'surface-dark': '#2d2a24',
+        'text-main': '#171612',
+        'text-secondary': '#827c68',
+        'text-muted': '#64748b',
+      },
+      fontFamily: {
+        serif: ['Playfair Display', 'serif'],
+        sans: ['Inter', 'sans-serif'],
+        display: ['Inter', 'sans-serif'],
+        body: ['Inter', 'sans-serif'],
+      },
+      borderRadius: {
+        DEFAULT: '0.25rem',
+        lg: '0.5rem',
+        xl: '0.75rem',
+        '2xl': '1rem',
+        full: '9999px',
+      },
+    },
+  },
+  plugins: [],
+};

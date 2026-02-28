@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EvolvEd - Candidate Search</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#c6a43f",
+                        "primary-light": "#e4cd83",
+                        "primary-dark": "#8f762c",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#1f1c13",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#2d2a20",
+                        "text-main": "#171612",
+                        "text-muted": "#827c68",
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "sans-serif"],
+                        display: ["Inter", "sans-serif"],
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom Range Slider Styling */
+        input[type=range] {
+            -webkit-appearance: none; 
+            width: 100%; 
+            background: transparent; 
+        }
+        
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #c6a43f;
+            cursor: pointer;
+            margin-top: -6px; 
+            box-shadow: 0 0 2px rgba(0,0,0,0.2);
+        }
+        
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #e5e7eb;
+            border-radius: 2px;
+        }
+        
+        input[type=range]:focus::-webkit-slider-runnable-track {
+            background: #d1d5db;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background-light text-text-main font-sans min-h-screen flex flex-col overflow-hidden">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-gray-200 bg-surface-light px-6 py-3 shadow-sm z-20">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-text-main">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">school</span>
+</div>
+<h2 class="text-text-main text-xl font-bold leading-tight tracking-tight">EvolvEd</h2>
+</div>
+<label class="hidden md:flex flex-col min-w-64 !h-10 max-w-80">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full border border-gray-200 bg-background-light focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+<div class="text-text-muted flex border-none items-center justify-center pl-3" data-weight="regular">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg bg-transparent border-none text-text-main focus:outline-0 focus:ring-0 placeholder:text-text-muted px-3 text-sm font-normal leading-normal" placeholder="Search candidates, skills..." value=""/>
+</div>
+</label>
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<nav class="hidden lg:flex items-center gap-6">
+<a class="text-text-muted hover:text-primary transition-colors text-sm font-medium" href="#">Dashboard</a>
+<a class="text-primary text-sm font-semibold border-b-2 border-primary pb-0.5" href="#">Candidates</a>
+<a class="text-text-muted hover:text-primary transition-colors text-sm font-medium" href="#">Interviews</a>
+<a class="text-text-muted hover:text-primary transition-colors text-sm font-medium" href="#">Analytics</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="hidden sm:flex items-center justify-center rounded-lg h-9 px-4 bg-primary hover:bg-primary-dark transition-colors text-white text-sm font-semibold shadow-sm">
+<span class="truncate">Post Job</span>
+</button>
+<div class="bg-gray-200 bg-center bg-no-repeat bg-cover rounded-full size-9 cursor-pointer ring-2 ring-transparent hover:ring-primary transition-all" data-alt="User profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB4Ty05XbyLNeTEpkdJK5juUEkxS3WWzpVs9AJwMgKcEttzHlrCDNBSSzcTjtS4aNBv3bu_FNmd2efWKp3o0a6SA2TiwevGCAz2tCYOi_SeNrACcM5ax4FEdEvNlBofwqINMCz8nsd2O03P3oSuQ3ocjl8SlcYeUg9bUlo01702sndcwwetuMJRqsh7MWO1cW_3VmLtJ8i1NNmSP-ElH_78LbVpZ0AFI4dFaOPN67qseAubycKcUv5eKwPji-G9PWKDXukvdW4iHfdN");'></div>
+</div>
+</div>
+</header>
+<!-- Main Layout -->
+<div class="flex flex-1 overflow-hidden">
+<!-- Sidebar Filters -->
+<aside class="w-72 bg-surface-light border-r border-gray-200 flex flex-col overflow-y-auto hidden md:flex shrink-0">
+<div class="p-6 border-b border-gray-100 flex justify-between items-center">
+<h3 class="font-bold text-lg text-text-main">Filters</h3>
+<button class="text-xs font-medium text-text-muted hover:text-primary flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[14px]">restart_alt</span>
+                    Reset
+                </button>
+</div>
+<div class="p-6 flex flex-col gap-8">
+<!-- Readiness Score Slider -->
+<div class="flex flex-col gap-3">
+<div class="flex justify-between items-center">
+<label class="text-sm font-semibold text-text-main">Readiness Score</label>
+<span class="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">85 - 100</span>
+</div>
+<div class="relative pt-2">
+<input class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary" max="100" min="0" type="range" value="85"/>
+<div class="flex justify-between text-[10px] text-text-muted mt-2 font-medium">
+<span>0</span>
+<span>50</span>
+<span>100</span>
+</div>
+</div>
+</div>
+<!-- Skills Filter -->
+<div class="flex flex-col gap-3">
+<label class="text-sm font-semibold text-text-main">Skills</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2.5 top-2.5 text-text-muted text-[18px]">search</span>
+<input class="w-full bg-background-light border-gray-200 rounded-lg pl-9 pr-3 py-2 text-sm focus:border-primary focus:ring-primary" placeholder="Find skill..." type="text"/>
+</div>
+<div class="flex flex-col gap-2 mt-1">
+<label class="flex items-center gap-2 cursor-pointer group">
+<input checked="" class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm text-text-muted group-hover:text-text-main transition-colors">Python</span>
+<span class="ml-auto text-xs text-text-muted bg-gray-100 px-1.5 py-0.5 rounded">124</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input checked="" class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm text-text-muted group-hover:text-text-main transition-colors">React</span>
+<span class="ml-auto text-xs text-text-muted bg-gray-100 px-1.5 py-0.5 rounded">86</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm text-text-muted group-hover:text-text-main transition-colors">Java</span>
+<span class="ml-auto text-xs text-text-muted bg-gray-100 px-1.5 py-0.5 rounded">54</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm text-text-muted group-hover:text-text-main transition-colors">Machine Learning</span>
+<span class="ml-auto text-xs text-text-muted bg-gray-100 px-1.5 py-0.5 rounded">42</span>
+</label>
+<button class="text-xs text-primary font-medium text-left mt-1 hover:underline">+ Show more</button>
+</div>
+</div>
+<!-- Department Filter -->
+<div class="flex flex-col gap-3">
+<label class="text-sm font-semibold text-text-main">Department</label>
+<div class="flex flex-col gap-2">
+<label class="flex items-center gap-2 cursor-pointer group">
+<input checked="" class="border-gray-300 text-primary focus:ring-primary" name="dept" type="radio"/>
+<span class="text-sm text-text-muted group-hover:text-text-main transition-colors">All Departments</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="border-gray-300 text-primary focus:ring-primary" name="dept" type="radio"/>
+<span class="text-sm text-text-muted group-hover:text-text-main transition-colors">Computer Science</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="border-gray-300 text-primary focus:ring-primary" name="dept" type="radio"/>
+<span class="text-sm text-text-muted group-hover:text-text-main transition-colors">Data Science</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="border-gray-300 text-primary focus:ring-primary" name="dept" type="radio"/>
+<span class="text-sm text-text-muted group-hover:text-text-main transition-colors">Electrical Eng.</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="border-gray-300 text-primary focus:ring-primary" name="dept" type="radio"/>
+<span class="text-sm text-text-muted group-hover:text-text-main transition-colors">Business Admin</span>
+</label>
+</div>
+</div>
+<!-- Availability -->
+<div class="flex flex-col gap-3 pb-8">
+<label class="text-sm font-semibold text-text-main">Availability</label>
+<div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-background-light">
+<span class="text-sm text-text-main">Ready for hire</span>
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer transition-transform duration-200 ease-in-out checked:translate-x-full checked:border-primary" id="toggle" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer checked:bg-primary" for="toggle"></label>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col h-full bg-background-light overflow-hidden relative">
+<!-- Content Header -->
+<div class="px-8 py-6 pb-2 shrink-0">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+<div>
+<h1 class="text-3xl font-bold text-text-main tracking-tight">Candidate Search</h1>
+<p class="text-text-muted mt-1 text-sm">Showing <span class="font-semibold text-text-main">412</span> candidates matching your criteria</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium hover:border-primary hover:text-primary transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">file_download</span>
+                            Export
+                        </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">save</span>
+                            Save Search
+                        </button>
+</div>
+</div>
+<!-- Active Filter Tags -->
+<div class="flex flex-wrap gap-2 items-center mb-4">
+<span class="text-xs font-semibold uppercase text-text-muted mr-1">Active:</span>
+<div class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm text-text-main shadow-sm">
+<span>Score: 85+</span>
+<button class="hover:text-red-500 transition-colors flex items-center"><span class="material-symbols-outlined text-[16px]">close</span></button>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm text-text-main shadow-sm">
+<span>Python</span>
+<button class="hover:text-red-500 transition-colors flex items-center"><span class="material-symbols-outlined text-[16px]">close</span></button>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm text-text-main shadow-sm">
+<span>React</span>
+<button class="hover:text-red-500 transition-colors flex items-center"><span class="material-symbols-outlined text-[16px]">close</span></button>
+</div>
+<button class="text-xs text-primary font-medium hover:underline ml-2">Clear all</button>
+</div>
+</div>
+<!-- Table Container -->
+<div class="flex-1 px-8 pb-8 overflow-hidden flex flex-col">
+<div class="bg-surface-light rounded-xl border border-gray-200 shadow-sm flex flex-col h-full overflow-hidden">
+<!-- Table Header -->
+<div class="grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-100 bg-gray-50/50 text-xs font-semibold text-text-muted uppercase tracking-wider items-center shrink-0">
+<div class="col-span-1">Rank</div>
+<div class="col-span-3">Candidate</div>
+<div class="col-span-2">Department</div>
+<div class="col-span-3">Top Skills</div>
+<div class="col-span-2 text-center">Readiness Score</div>
+<div class="col-span-1 text-right">Action</div>
+</div>
+<!-- Table Body (Scrollable) -->
+<div class="overflow-y-auto flex-1 scrollbar-hide">
+<!-- Row 1 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+<div class="col-span-1 font-medium text-text-muted">#1</div>
+<div class="col-span-3 flex items-center gap-3">
+<div class="size-10 rounded-full bg-gray-200 bg-cover bg-center shrink-0" data-alt="Portrait of Aarav Patel" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBAnI43zRATT05WelXNdxZJXWvK0s-o7xNLhGLZLaDQ61YTixv_SHr8bb2hEjAjGjZixGF2Jbw0UMGjspTWIRGMrNBhKWqFZ20XL9sEDPQwFwm-dm7FPjz6y49ySrbp6u_I1owjXZ-OnBpbwS_aEiek77YQKa6qrjnHimT5GNZ6ZTTMsXbRtxJ7shOobcFgPx1B445mlGbPvJGYVFCY-yUeDXkOWQbkf1CWQ1kchq-lr-tyB2HXBir0WLnZqv9E_tbnp37dqcUpcZs5')"></div>
+<div>
+<h4 class="font-semibold text-text-main">Aarav Patel</h4>
+<p class="text-xs text-text-muted">Class of 2024</p>
+</div>
+</div>
+<div class="col-span-2 text-sm text-text-main">Computer Science</div>
+<div class="col-span-3 flex flex-wrap gap-1.5">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">Python</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">React</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">AWS</span>
+</div>
+<div class="col-span-2 flex justify-center">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+<span class="font-bold text-primary">98/100</span>
+</div>
+</div>
+<div class="col-span-1 flex justify-end">
+<button class="text-primary hover:text-white hover:bg-primary border border-primary rounded-lg p-2 transition-all" title="Shortlist">
+<span class="material-symbols-outlined text-[20px]">bookmark_add</span>
+</button>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+<div class="col-span-1 font-medium text-text-muted">#2</div>
+<div class="col-span-3 flex items-center gap-3">
+<div class="size-10 rounded-full bg-gray-200 bg-cover bg-center shrink-0" data-alt="Portrait of Priya Sharma" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAkjG3EXtluiHNTQVZLH7UVOgilkMKOfoYhMTNB_t0tqmapCdVvNUSfgz94PbU-NUveNu-egqQCVplD_WUmG4KTpKH8xUdrt9IFJhRsZ5DycYb9LudxFow1Iqx7usxhAJ_avTUzBgQf3JiJ06RMipcRMx6KCnLRc6y8rDBVvZd6xB0gPb3nAu6BbrwutWP183FXx1EYfV7BN5UM_zyBsnptPbymGVOVKZ-5jYKJFGKVU4CkylwTwWL029IQBf3NjVABiYVCbkds4d2e')"></div>
+<div>
+<h4 class="font-semibold text-text-main">Priya Sharma</h4>
+<p class="text-xs text-text-muted">Class of 2024</p>
+</div>
+</div>
+<div class="col-span-2 text-sm text-text-main">Data Science</div>
+<div class="col-span-3 flex flex-wrap gap-1.5">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">SQL</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">Python</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">ML</span>
+</div>
+<div class="col-span-2 flex justify-center">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+<span class="font-bold text-primary">96/100</span>
+</div>
+</div>
+<div class="col-span-1 flex justify-end">
+<button class="text-primary hover:text-white hover:bg-primary border border-primary rounded-lg p-2 transition-all" title="Shortlist">
+<span class="material-symbols-outlined text-[20px]">bookmark_add</span>
+</button>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+<div class="col-span-1 font-medium text-text-muted">#3</div>
+<div class="col-span-3 flex items-center gap-3">
+<div class="size-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">
+                                    RG
+                                </div>
+<div>
+<h4 class="font-semibold text-text-main">Rohan Gupta</h4>
+<p class="text-xs text-text-muted">Class of 2025</p>
+</div>
+</div>
+<div class="col-span-2 text-sm text-text-main">Electrical Eng.</div>
+<div class="col-span-3 flex flex-wrap gap-1.5">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">C++</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">IoT</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">Embedded</span>
+</div>
+<div class="col-span-2 flex justify-center">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+<span class="font-bold text-primary">94/100</span>
+</div>
+</div>
+<div class="col-span-1 flex justify-end">
+<button class="text-primary hover:text-white hover:bg-primary border border-primary rounded-lg p-2 transition-all" title="Shortlist">
+<span class="material-symbols-outlined text-[20px]">bookmark_add</span>
+</button>
+</div>
+</div>
+<!-- Row 4 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+<div class="col-span-1 font-medium text-text-muted">#4</div>
+<div class="col-span-3 flex items-center gap-3">
+<div class="size-10 rounded-full bg-gray-200 bg-cover bg-center shrink-0" data-alt="Portrait of Sneha Reddy" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD3-T6ewtUkdjI31M88LUZM3LyZg_uN1mZlHNBGCyLd6PdSpfyDFCvb3502S5E4FkQ6phrdtNxvk80jUsiggm8qIrU840rkNNoAv2EEemIdsWutuvhSkvyLX-YiaPEAVUZJayGynr8TLSZvAA-M_3swZ9UOMc7SdK2OLH8d1pci2LL6mg3H-WDP7If47pq6VbTzFpu0xdZKSoMt-1jNRICcvsyJhWjanyWiHVkwpOMBcA2m62m9nkEymSTwC2g1x0R8r2zDGEJ5UIPn')"></div>
+<div>
+<h4 class="font-semibold text-text-main">Sneha Reddy</h4>
+<p class="text-xs text-text-muted">Class of 2024</p>
+</div>
+</div>
+<div class="col-span-2 text-sm text-text-main">Computer Science</div>
+<div class="col-span-3 flex flex-wrap gap-1.5">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">Java</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">Spring</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">Docker</span>
+</div>
+<div class="col-span-2 flex justify-center">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+<span class="font-bold text-primary">92/100</span>
+</div>
+</div>
+<div class="col-span-1 flex justify-end">
+<button class="text-primary hover:text-white hover:bg-primary border border-primary rounded-lg p-2 transition-all" title="Shortlist">
+<span class="material-symbols-outlined text-[20px]">bookmark_add</span>
+</button>
+</div>
+</div>
+<!-- Row 5 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+<div class="col-span-1 font-medium text-text-muted">#5</div>
+<div class="col-span-3 flex items-center gap-3">
+<div class="size-10 rounded-full bg-gray-200 bg-cover bg-center shrink-0" data-alt="Portrait of Vikram Singh" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBArt_-GFLMtXPyvPvZs9eoKu6cSnfKHFHN9m70-mzYtwDEUePIEwKJ8OG_u1Sh507yF35dEcm2sv_Z5-XQyzvr66H84EhTWaIPzDdzthMLoB527w-Mvv-DA_gI1oKeS5NIHnlS7MdnSGDkp_Vv18ezxnVdTZ45AgscipEKIVFkSgB8HdT9CxosCEIY696B2KvLnqnpKPoUZGsh8z-IfRCPbdO5nykXJkNaF0YZMfeubX-R0kxUAyQAibcH-km4HwaOYJ01p3fQWKrq')"></div>
+<div>
+<h4 class="font-semibold text-text-main">Vikram Singh</h4>
+<p class="text-xs text-text-muted">Class of 2024</p>
+</div>
+</div>
+<div class="col-span-2 text-sm text-text-main">Mechanical Eng.</div>
+<div class="col-span-3 flex flex-wrap gap-1.5">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">AutoCAD</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">SolidWorks</span>
+</div>
+<div class="col-span-2 flex justify-center">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+<span class="font-bold text-primary">90/100</span>
+</div>
+</div>
+<div class="col-span-1 flex justify-end">
+<button class="text-primary hover:text-white hover:bg-primary border border-primary rounded-lg p-2 transition-all" title="Shortlist">
+<span class="material-symbols-outlined text-[20px]">bookmark_add</span>
+</button>
+</div>
+</div>
+<!-- Row 6 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+<div class="col-span-1 font-medium text-text-muted">#6</div>
+<div class="col-span-3 flex items-center gap-3">
+<div class="size-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">
+                                    AD
+                                </div>
+<div>
+<h4 class="font-semibold text-text-main">Ananya Das</h4>
+<p class="text-xs text-text-muted">Class of 2025</p>
+</div>
+</div>
+<div class="col-span-2 text-sm text-text-main">Information Tech</div>
+<div class="col-span-3 flex flex-wrap gap-1.5">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">Figma</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">UI/UX</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">CSS</span>
+</div>
+<div class="col-span-2 flex justify-center">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 border border-gray-200">
+<span class="font-bold text-gray-600">89/100</span>
+</div>
+</div>
+<div class="col-span-1 flex justify-end">
+<button class="text-primary hover:text-white hover:bg-primary border border-primary rounded-lg p-2 transition-all" title="Shortlist">
+<span class="material-symbols-outlined text-[20px]">bookmark_add</span>
+</button>
+</div>
+</div>
+<!-- Row 7 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+<div class="col-span-1 font-medium text-text-muted">#7</div>
+<div class="col-span-3 flex items-center gap-3">
+<div class="size-10 rounded-full bg-gray-200 bg-cover bg-center shrink-0" data-alt="Portrait of Karthik Iyer" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAztE4JuVHwyZP93NnwskOHm7G6p_aepnpfXUS4QSW-5ZdMaxVypKobHyu92Gd_OxxDOgQLRv2fAg49HsyNuiShX34YZialKyxO-kgq83QrHkmu0BZr5XpOMskZ7XXsRGuRztwUWrZ_7BGBTBL642qiddP70V5GoPNhc8q1dAFFJFT1pLwB9wiZ_uEbAxZT6LeiBJ2bYRneHJhpmqlkpZGn_IkFkyc9Er-2PhEBMjp05HpRIOyzbzPYSF0LlrguaDsXd0e1ROFhNHtq')"></div>
+<div>
+<h4 class="font-semibold text-text-main">Karthik Iyer</h4>
+<p class="text-xs text-text-muted">Class of 2024</p>
+</div>
+</div>
+<div class="col-span-2 text-sm text-text-main">Computer Science</div>
+<div class="col-span-3 flex flex-wrap gap-1.5">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">Node.js</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">MongoDB</span>
+</div>
+<div class="col-span-2 flex justify-center">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 border border-gray-200">
+<span class="font-bold text-gray-600">88/100</span>
+</div>
+</div>
+<div class="col-span-1 flex justify-end">
+<button class="text-primary hover:text-white hover:bg-primary border border-primary rounded-lg p-2 transition-all" title="Shortlist">
+<span class="material-symbols-outlined text-[20px]">bookmark_add</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="border-t border-gray-200 p-4 flex items-center justify-between shrink-0">
+<div class="text-sm text-text-muted">
+                            Showing <span class="font-medium text-text-main">1-7</span> of <span class="font-medium text-text-main">412</span>
+</div>
+<div class="flex gap-2">
+<button class="px-3 py-1 rounded border border-gray-200 text-sm text-text-muted hover:border-primary hover:text-primary disabled:opacity-50">Previous</button>
+<button class="px-3 py-1 rounded border border-gray-200 text-sm text-text-muted hover:border-primary hover:text-primary">Next</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

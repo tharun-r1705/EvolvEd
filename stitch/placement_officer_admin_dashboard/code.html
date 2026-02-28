@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EvolvEd - Placement Officer Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#c6a43f",
+                        "primary-content": "#1f1c13",
+                        "secondary": "#1e293b", // Midnight Navy
+                        "accent": "#0d9488", // Deep Teal
+                        "background-light": "#f8f7f6", // Warm Whiteish
+                        "background-dark": "#1f1c13",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#2d2a24",
+                        "text-main": "#1e293b", // Midnight Navy for text
+                        "text-muted": "#64748b",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light text-text-main font-body antialiased min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<div class="w-full bg-surface-light border-b border-gray-200 sticky top-0 z-50">
+<div class="max-w-[1440px] mx-auto px-6 h-16 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-primary-content">
+<span class="material-symbols-outlined">school</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight text-secondary">EvolvEd</h1>
+</div>
+<div class="flex-1 max-w-xl px-12">
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-text-muted">search</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-2 border-none rounded-lg leading-5 bg-background-light text-text-main placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary sm:text-sm transition duration-150 ease-in-out" placeholder="Search students, recruiters, or drives..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="relative p-2 text-text-muted hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full border-2 border-surface-light"></span>
+</button>
+<div class="h-8 w-px bg-gray-200"></div>
+<div class="flex items-center gap-3">
+<div class="text-right hidden sm:block">
+<p class="text-sm font-medium text-secondary">Alex Morgan</p>
+<p class="text-xs text-text-muted">Placement Officer</p>
+</div>
+<div class="h-10 w-10 rounded-full bg-gray-200 bg-cover bg-center border-2 border-white shadow-sm" data-alt="Profile picture of the admin user" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDt47R6dTB7pGUnquj1hpZbcYarpFyBeSO4qfXy0qdRSNBTwhnUAkCy24Su6CssXotJBspSzYur5qBiSOhWvE1qW4UD7Rs0a39GtrHf9XwfvFq2GkPB9hbPH4J4pOLPBFYr_jeZBQiY86OTzGhuPjsKEV1qGEXnfc2OmQdysMv69EeI7rEFtNEX1oDSaXDDG3Vd9cS-J7IGrmrDIJEilLkzDwVMEjDJXfFkGqiFOP4CXD-QhS9bh1iheBiJP9Yg055CAX0VVO05dsoc");'>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-1 max-w-[1440px] mx-auto w-full">
+<!-- Sidebar -->
+<aside class="w-64 bg-surface-light border-r border-gray-200 hidden lg:flex flex-col py-6 sticky top-16 h-[calc(100vh-4rem)]">
+<div class="px-4 mb-8">
+<p class="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4 px-2">Main Menu</p>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 bg-primary/10 text-primary rounded-lg font-medium" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                        Dashboard
+                    </a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-text-muted hover:bg-gray-50 hover:text-secondary rounded-lg font-medium transition-colors" href="#">
+<span class="material-symbols-outlined">school</span>
+                        Students
+                    </a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-text-muted hover:bg-gray-50 hover:text-secondary rounded-lg font-medium transition-colors" href="#">
+<span class="material-symbols-outlined">work</span>
+                        Recruiters
+                    </a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-text-muted hover:bg-gray-50 hover:text-secondary rounded-lg font-medium transition-colors" href="#">
+<span class="material-symbols-outlined">event_available</span>
+                        Placement Drives
+                    </a>
+</nav>
+</div>
+<div class="px-4 mt-auto">
+<p class="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4 px-2">Settings</p>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 text-text-muted hover:bg-gray-50 hover:text-secondary rounded-lg font-medium transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+                        System Settings
+                    </a>
+<button class="w-full flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors mt-2">
+<span class="material-symbols-outlined">logout</span>
+                        Log Out
+                    </button>
+</nav>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 p-8 overflow-y-auto">
+<header class="mb-8">
+<h2 class="text-3xl font-bold text-secondary mb-2">System Overview</h2>
+<p class="text-text-muted">Welcome back, here's what's happening across the campus today.</p>
+</header>
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<!-- KPI 1 -->
+<div class="bg-surface-light p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between h-40 group hover:border-primary/50 transition-colors">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-text-muted font-medium mb-1">Total Students</p>
+<h3 class="text-4xl font-bold text-secondary">1,240</h3>
+</div>
+<div class="p-2 bg-blue-50 text-blue-600 rounded-lg group-hover:bg-primary group-hover:text-primary-content transition-colors">
+<span class="material-symbols-outlined">groups</span>
+</div>
+</div>
+<div class="flex items-center gap-2 mt-4">
+<span class="flex items-center text-emerald-600 text-sm font-medium bg-emerald-50 px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-sm mr-1">trending_up</span>
+                            +5%
+                        </span>
+<span class="text-text-muted text-sm">vs last semester</span>
+</div>
+</div>
+<!-- KPI 2 -->
+<div class="bg-surface-light p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between h-40 group hover:border-primary/50 transition-colors">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-text-muted font-medium mb-1">Active Recruiters</p>
+<h3 class="text-4xl font-bold text-secondary">85</h3>
+</div>
+<div class="p-2 bg-purple-50 text-purple-600 rounded-lg group-hover:bg-primary group-hover:text-primary-content transition-colors">
+<span class="material-symbols-outlined">business_center</span>
+</div>
+</div>
+<div class="flex items-center gap-2 mt-4">
+<span class="flex items-center text-emerald-600 text-sm font-medium bg-emerald-50 px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-sm mr-1">trending_up</span>
+                            +12%
+                        </span>
+<span class="text-text-muted text-sm">new partners</span>
+</div>
+</div>
+<!-- KPI 3 -->
+<div class="bg-surface-light p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between h-40 group hover:border-primary/50 transition-colors">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-text-muted font-medium mb-1">Avg Readiness Score</p>
+<h3 class="text-4xl font-bold text-secondary">78%</h3>
+</div>
+<div class="p-2 bg-amber-50 text-amber-600 rounded-lg group-hover:bg-primary group-hover:text-primary-content transition-colors">
+<span class="material-symbols-outlined">speed</span>
+</div>
+</div>
+<div class="flex items-center gap-2 mt-4">
+<span class="flex items-center text-emerald-600 text-sm font-medium bg-emerald-50 px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-sm mr-1">arrow_upward</span>
+                            +3.5%
+                        </span>
+<span class="text-text-muted text-sm">improvement</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Main Chart Section -->
+<div class="lg:col-span-2 bg-surface-light rounded-xl border border-gray-100 shadow-sm p-6">
+<div class="flex flex-wrap items-center justify-between mb-8 gap-4">
+<div>
+<h3 class="text-lg font-bold text-secondary">Department Performance</h3>
+<p class="text-text-muted text-sm">Average readiness score by department</p>
+</div>
+<select class="bg-background-light border-none text-sm rounded-lg py-2 pl-3 pr-8 focus:ring-primary focus:ring-2">
+<option>Current Semester</option>
+<option>Last Semester</option>
+<option>Year to Date</option>
+</select>
+</div>
+<!-- Chart Container -->
+<div class="relative h-64 w-full flex items-end justify-between gap-2 sm:gap-6 px-4 pb-2 border-b border-gray-200">
+<!-- Y-axis lines background -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none pb-2 text-xs text-text-muted">
+<div class="w-full border-t border-gray-100 dashed flex items-center"><span class="-ml-8">100%</span></div>
+<div class="w-full border-t border-gray-100 dashed flex items-center"><span class="-ml-8">75%</span></div>
+<div class="w-full border-t border-gray-100 dashed flex items-center"><span class="-ml-8">50%</span></div>
+<div class="w-full border-t border-gray-100 dashed flex items-center"><span class="-ml-8">25%</span></div>
+<div class="w-full border-t border-gray-100 dashed flex items-center"><span class="-ml-8">0%</span></div>
+</div>
+<!-- Bar 1: CS -->
+<div class="relative z-10 flex flex-col items-center flex-1 h-full justify-end group cursor-pointer">
+<div class="w-full max-w-[60px] bg-accent rounded-t-sm transition-all duration-500 hover:opacity-80 relative group-hover:shadow-lg" style="height: 85%;">
+<div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-secondary text-white text-xs py-1 px-2 rounded whitespace-nowrap transition-opacity">
+                                    85% Score
+                                </div>
+</div>
+<span class="mt-3 text-xs font-semibold text-text-muted group-hover:text-secondary">CS</span>
+</div>
+<!-- Bar 2: IT -->
+<div class="relative z-10 flex flex-col items-center flex-1 h-full justify-end group cursor-pointer">
+<div class="w-full max-w-[60px] bg-accent/80 rounded-t-sm transition-all duration-500 hover:opacity-80 relative group-hover:shadow-lg" style="height: 72%;">
+<div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-secondary text-white text-xs py-1 px-2 rounded whitespace-nowrap transition-opacity">
+                                    72% Score
+                                </div>
+</div>
+<span class="mt-3 text-xs font-semibold text-text-muted group-hover:text-secondary">IT</span>
+</div>
+<!-- Bar 3: ECE -->
+<div class="relative z-10 flex flex-col items-center flex-1 h-full justify-end group cursor-pointer">
+<div class="w-full max-w-[60px] bg-accent/60 rounded-t-sm transition-all duration-500 hover:opacity-80 relative group-hover:shadow-lg" style="height: 65%;">
+<div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-secondary text-white text-xs py-1 px-2 rounded whitespace-nowrap transition-opacity">
+                                    65% Score
+                                </div>
+</div>
+<span class="mt-3 text-xs font-semibold text-text-muted group-hover:text-secondary">ECE</span>
+</div>
+<!-- Bar 4: ME -->
+<div class="relative z-10 flex flex-col items-center flex-1 h-full justify-end group cursor-pointer">
+<div class="w-full max-w-[60px] bg-accent/40 rounded-t-sm transition-all duration-500 hover:opacity-80 relative group-hover:shadow-lg" style="height: 58%;">
+<div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-secondary text-white text-xs py-1 px-2 rounded whitespace-nowrap transition-opacity">
+                                    58% Score
+                                </div>
+</div>
+<span class="mt-3 text-xs font-semibold text-text-muted group-hover:text-secondary">ME</span>
+</div>
+<!-- Bar 5: CE -->
+<div class="relative z-10 flex flex-col items-center flex-1 h-full justify-end group cursor-pointer">
+<div class="w-full max-w-[60px] bg-accent/30 rounded-t-sm transition-all duration-500 hover:opacity-80 relative group-hover:shadow-lg" style="height: 62%;">
+<div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-secondary text-white text-xs py-1 px-2 rounded whitespace-nowrap transition-opacity">
+                                    62% Score
+                                </div>
+</div>
+<span class="mt-3 text-xs font-semibold text-text-muted group-hover:text-secondary">CE</span>
+</div>
+</div>
+</div>
+<!-- Secondary Widgets Column -->
+<div class="flex flex-col gap-6">
+<!-- Upcoming Drives -->
+<div class="bg-surface-light rounded-xl border border-gray-100 shadow-sm p-6 flex-1">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-bold text-secondary">Upcoming Drives</h3>
+<a class="text-sm text-primary font-medium hover:underline" href="#">View All</a>
+</div>
+<div class="space-y-4">
+<!-- Drive Item 1 -->
+<div class="flex gap-4 items-start p-3 rounded-lg hover:bg-background-light transition-colors cursor-pointer">
+<div class="size-12 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-gray-500">domain</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-secondary truncate">TechCorp Inc.</p>
+<p class="text-xs text-text-muted">Software Engineer Role</p>
+<div class="flex items-center gap-2 mt-2">
+<span class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-medium">Tomorrow</span>
+<span class="text-[10px] text-text-muted">10:00 AM</span>
+</div>
+</div>
+</div>
+<!-- Drive Item 2 -->
+<div class="flex gap-4 items-start p-3 rounded-lg hover:bg-background-light transition-colors cursor-pointer">
+<div class="size-12 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-gray-500">apartment</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-secondary truncate">BuildWell Const.</p>
+<p class="text-xs text-text-muted">Civil Engineer Trainee</p>
+<div class="flex items-center gap-2 mt-2">
+<span class="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-medium">Oct 24</span>
+<span class="text-[10px] text-text-muted">09:00 AM</span>
+</div>
+</div>
+</div>
+<!-- Drive Item 3 -->
+<div class="flex gap-4 items-start p-3 rounded-lg hover:bg-background-light transition-colors cursor-pointer">
+<div class="size-12 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-gray-500">factory</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-secondary truncate">AutoMotive Ltd</p>
+<p class="text-xs text-text-muted">Mechanical Design</p>
+<div class="flex items-center gap-2 mt-2">
+<span class="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded font-medium">Oct 28</span>
+<span class="text-[10px] text-text-muted">11:00 AM</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Actions -->
+<div class="bg-secondary rounded-xl shadow-md p-6 text-white relative overflow-hidden">
+<div class="absolute -right-4 -top-4 opacity-10">
+<span class="material-symbols-outlined text-[120px]">bolt</span>
+</div>
+<h3 class="text-lg font-bold mb-4 relative z-10">Quick Actions</h3>
+<div class="grid grid-cols-2 gap-3 relative z-10">
+<button class="bg-white/10 hover:bg-white/20 p-3 rounded-lg text-left transition-colors flex flex-col gap-2">
+<span class="material-symbols-outlined text-primary text-xl">add_circle</span>
+<span class="text-xs font-medium">Add Student</span>
+</button>
+<button class="bg-white/10 hover:bg-white/20 p-3 rounded-lg text-left transition-colors flex flex-col gap-2">
+<span class="material-symbols-outlined text-primary text-xl">post_add</span>
+<span class="text-xs font-medium">New Drive</span>
+</button>
+<button class="bg-white/10 hover:bg-white/20 p-3 rounded-lg text-left transition-colors flex flex-col gap-2">
+<span class="material-symbols-outlined text-primary text-xl">analytics</span>
+<span class="text-xs font-medium">Generate Report</span>
+</button>
+<button class="bg-white/10 hover:bg-white/20 p-3 rounded-lg text-left transition-colors flex flex-col gap-2">
+<span class="material-symbols-outlined text-primary text-xl">mail</span>
+<span class="text-xs font-medium">Bulk Email</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity Table -->
+<div class="mt-8 bg-surface-light rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+<div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+<h3 class="text-lg font-bold text-secondary">Recent Placements</h3>
+<div class="flex gap-2">
+<button class="p-1 hover:bg-background-light rounded transition-colors text-text-muted">
+<span class="material-symbols-outlined text-xl">filter_list</span>
+</button>
+<button class="p-1 hover:bg-background-light rounded transition-colors text-text-muted">
+<span class="material-symbols-outlined text-xl">download</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-sm">
+<thead class="bg-background-light text-text-muted font-medium">
+<tr>
+<th class="px-6 py-3">Student Name</th>
+<th class="px-6 py-3">Department</th>
+<th class="px-6 py-3">Company</th>
+<th class="px-6 py-3">Package (LPA)</th>
+<th class="px-6 py-3">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-gray-100">
+<tr class="hover:bg-gray-50 transition-colors">
+<td class="px-6 py-4 font-medium text-secondary">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-gray-200 bg-cover bg-center" data-alt="Student avatar placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBkUqZOd55-x3idVvBf42LVvCKuJbFu8f5kk2gEz2NVhbTR0CEbZSc6CrhQ0EVzhK27mYont_Je9bvZaolvXpQ_GI0XmZ0xcTSnI08cYaQ2ZRCHvxXkcrOv10DILEjVsip5N-opovzcwkNi0NZvOUZq0sMrFppAKBJquN6RVPRJBDMseDYxK8tjDDZu8AgZFeE7QO7DROFjNAMiFrQOGWbiLqMC5MITbcyo9Km1wKgQpfRJnngQlhNdEXMlATBUtEuHecOgENvTiorY");'></div>
+                                        Sarah Johnson
+                                    </div>
+</td>
+<td class="px-6 py-4 text-text-muted">Computer Science</td>
+<td class="px-6 py-4 text-text-muted">Google</td>
+<td class="px-6 py-4 text-secondary font-semibold">24.0</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
+<span class="size-1.5 rounded-full bg-green-600"></span>
+                                        Placed
+                                    </span>
+</td>
+</tr>
+<tr class="hover:bg-gray-50 transition-colors">
+<td class="px-6 py-4 font-medium text-secondary">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-gray-200 bg-cover bg-center" data-alt="Student avatar placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCDoiVb0aYdyYy3qPyxiKzm9E-NWebgBk9odK-VPrW4RRRyduGiv2iwBe2Jo9E4M1M73t4MBk-2iW3156YxiJfzECqJ1G21U5QtejuPXxjZZ3hIArStQNnVSkxnW5z8gSK-0Dcb8VhL66qVRFdiuxBIcZDmdmi1ij7azxMG6RPJIiXi_LL0M_kBYbiur8aXrM4F0q5sZ1UOEIRpAOV7NQRDud1f6PInVCxzUF-Hz6Lp9_y5ivvezxrhEde_COIgUsj97B1ouAjTGnvV");'></div>
+                                        Michael Chen
+                                    </div>
+</td>
+<td class="px-6 py-4 text-text-muted">Information Tech</td>
+<td class="px-6 py-4 text-text-muted">Microsoft</td>
+<td class="px-6 py-4 text-secondary font-semibold">22.5</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
+<span class="size-1.5 rounded-full bg-green-600"></span>
+                                        Placed
+                                    </span>
+</td>
+</tr>
+<tr class="hover:bg-gray-50 transition-colors">
+<td class="px-6 py-4 font-medium text-secondary">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-gray-200 bg-cover bg-center" data-alt="Student avatar placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCV4gynwhTDN-99ix4JsV_hge-zMatouahCVYARZPVNFEtCjal97nswQyhtOt9kCIT83YLgQ8YJ225clC0ZB7rfDhFaNNBldeKTDRJI0VLMkoDqoQjhsd2WvnO2pQPHX3MPXCTPW-JkalVKwrHU41BFd9fjOC84zjF73NwNV-H3gWzRfkPUUHRYUW6PGJhZJ94lk_N2OXxjTVkAhiSjnolIctXQ2nZioaCbubyVNxVisNY3FfuddyA064qNoBHxL6DxDbi5yNfRTgkY");'></div>
+                                        Jessica Williams
+                                    </div>
+</td>
+<td class="px-6 py-4 text-text-muted">Mechanical Eng</td>
+<td class="px-6 py-4 text-text-muted">Tesla</td>
+<td class="px-6 py-4 text-secondary font-semibold">18.0</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700">
+<span class="size-1.5 rounded-full bg-amber-600"></span>
+                                        Offer Pending
+                                    </span>
+</td>
+</tr>
+<tr class="hover:bg-gray-50 transition-colors">
+<td class="px-6 py-4 font-medium text-secondary">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-gray-200 bg-cover bg-center" data-alt="Student avatar placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBHknwsZHWo4zpIP5tyIpwkKf2RzJJ0jeqSsZOdHgdm3uyygkEsnQ8cc1izzZCSATR3_iH4tzyycF3-3cog7eEugem2p0nZ1hQaITdeX3EIomoLGPErP18xLSCzkdKeEAqZFQF2h0BIu835cMKPz7G8K7zmh0qPCXLqSpJq2o4d1RS3HDSfueT97Te7bKteu_d89LwLImfV0r1XO0N0P4aq_0QXfGo3fPHaOZ6MzbV6ZPSP7nMlETCMQVxCOoZTFCqdOPLjlh0fEZT0");'></div>
+                                        David Kim
+                                    </div>
+</td>
+<td class="px-6 py-4 text-text-muted">Electrical Eng</td>
+<td class="px-6 py-4 text-text-muted">Samsung</td>
+<td class="px-6 py-4 text-secondary font-semibold">16.5</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
+<span class="size-1.5 rounded-full bg-green-600"></span>
+                                        Placed
+                                    </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-6 py-4 border-t border-gray-100 flex justify-center">
+<button class="text-sm text-primary font-medium hover:underline">View All Placements</button>
+</div>
+</div>
+</main>
+</div>
+</body></html>
