@@ -237,7 +237,7 @@ export default function Login() {
 
           <p className="text-center text-sm text-charcoal/70 mt-4">
             Don't have an account?{' '}
-            <Link className="font-semibold text-primary hover:text-navy transition-colors" to="/login">
+            <Link className="font-semibold text-primary hover:text-navy transition-colors" to="/signup">
               Apply for Access
             </Link>
           </p>

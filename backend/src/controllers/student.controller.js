@@ -1,0 +1,195 @@
+'use strict';
+
+const studentService = require('../services/student.service');
+const { sendCsvResponse } = require('../utils/csvExport');
+const { exportStudentReport } = require('../services/export.service');
+
+// GET /api/student/dashboard
+async function getDashboard(req, res, next) {
+  try {
+    const data = await studentService.getDashboard(req.user.userId);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// GET /api/student/readiness-score
+async function getReadinessScore(req, res, next) {
+  try {
+    const data = await studentService.getReadinessScore(req.user.userId);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// GET /api/student/profile
+async function getProfile(req, res, next) {
+  try {
+    const data = await studentService.getProfile(req.user.userId);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// PUT /api/student/profile
+async function updateProfile(req, res, next) {
+  try {
+    const data = await studentService.updateProfile(req.user.userId, req.body);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// GET /api/student/skills
+async function getSkills(req, res, next) {
+  try {
+    const data = await studentService.getSkills(req.user.userId);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// POST /api/student/skills
+async function addSkill(req, res, next) {
+  try {
+    const data = await studentService.addSkill(req.user.userId, req.body);
+    res.status(201).json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// DELETE /api/student/skills/:skillId
+async function removeSkill(req, res, next) {
+  try {
+    const data = await studentService.removeSkill(req.user.userId, req.params.skillId);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// POST /api/student/projects
+async function addProject(req, res, next) {
+  try {
+    const data = await studentService.addProject(req.user.userId, req.body);
+    res.status(201).json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// DELETE /api/student/projects/:projectId
+async function removeProject(req, res, next) {
+  try {
+    const data = await studentService.removeProject(req.user.userId, req.params.projectId);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// POST /api/student/internships
+async function addInternship(req, res, next) {
+  try {
+    const data = await studentService.addInternship(req.user.userId, req.body);
+    res.status(201).json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// DELETE /api/student/internships/:internshipId
+async function removeInternship(req, res, next) {
+  try {
+    const data = await studentService.removeInternship(req.user.userId, req.params.internshipId);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// POST /api/student/certifications
+async function addCertification(req, res, next) {
+  try {
+    const data = await studentService.addCertification(req.user.userId, req.body);
+    res.status(201).json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// DELETE /api/student/certifications/:certId
+async function removeCertification(req, res, next) {
+  try {
+    const data = await studentService.removeCertification(req.user.userId, req.params.certId);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// GET /api/student/assessments
+async function getAssessments(req, res, next) {
+  try {
+    const data = await studentService.getAssessments(req.user.userId, req.query);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// GET /api/student/assessments/:id
+async function getAssessmentById(req, res, next) {
+  try {
+    const data = await studentService.getAssessmentById(req.user.userId, req.params.id);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// GET /api/student/applications
+async function getApplications(req, res, next) {
+  try {
+    const data = await studentService.getApplications(req.user.userId, req.query);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// GET /api/student/report/export
+async function exportReport(req, res, next) {
+  try {
+    const csv = await exportStudentReport(req.user.userId);
+    sendCsvResponse(res, csv, 'student_report');
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = {
+  getDashboard,
+  getReadinessScore,
+  getProfile,
+  updateProfile,
+  getSkills,
+  addSkill,
+  removeSkill,
+  addProject,
+  removeProject,
+  addInternship,
+  removeInternship,
+  addCertification,
+  removeCertification,
+  getAssessments,
+  getAssessmentById,
+  getApplications,
+  exportReport,
+};

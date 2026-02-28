@@ -7,6 +7,7 @@ import Layout from './components/Layout.jsx';
 // Public Pages
 import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
+import Signup from './pages/Signup.jsx';
 import NotFound from './pages/NotFound.jsx';
 
 // Student Pages
@@ -33,6 +34,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
           </Route>
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
 
           {/* ── Student Routes (protected) ── */}
           <Route

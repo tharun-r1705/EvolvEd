@@ -1,18 +1,39 @@
+# ──────────────────────────────────────────
 # Dependencies
+# ──────────────────────────────────────────
 node_modules/
+**/node_modules/
 
-# Build output
+# ──────────────────────────────────────────
+# Frontend build output (Vite)
+# ──────────────────────────────────────────
 dist/
 dist-ssr/
+.vite/
 
-# Environment variables
+# ──────────────────────────────────────────
+# Environment variables (NEVER commit these)
+# ──────────────────────────────────────────
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+backend/.env
+backend/.env.*
 
+# ──────────────────────────────────────────
+# Prisma
+# ──────────────────────────────────────────
+# Keep schema.prisma and migrations in VCS
+# Ignore generated client (auto-generated on install)
+backend/node_modules/.prisma/
+backend/prisma/dev.db
+backend/prisma/dev.db-journal
+
+# ──────────────────────────────────────────
 # Logs
+# ──────────────────────────────────────────
 logs/
 *.log
 npm-debug.log*
@@ -20,12 +41,19 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# ──────────────────────────────────────────
 # Editor / OS
+# ──────────────────────────────────────────
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Vite cache
-.vite/
+# ──────────────────────────────────────────
+# Misc
+# ──────────────────────────────────────────
 *.local
+*.pem
+coverage/
+.nyc_output/
