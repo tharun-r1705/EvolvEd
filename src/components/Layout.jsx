@@ -10,7 +10,7 @@ export default function Layout() {
 
   useEffect(() => {
     function onScroll() {
-      setIsScrolled(window.scrollY > 60);
+      setIsScrolled(window.scrollY > 50);
     }
 
     onScroll();
@@ -25,15 +25,23 @@ export default function Layout() {
     return '/';
   }
 
-  const headerClass = isScrolled
-    ? 'fixed inset-x-0 top-0 flex items-center justify-between whitespace-nowrap px-6 py-4 lg:px-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-[0_8px_24px_rgba(15,23,42,0.08)] z-50 transition-all duration-300'
-    : 'fixed inset-x-0 top-0 flex items-center justify-between whitespace-nowrap px-6 py-4 lg:px-40 bg-transparent border-b border-transparent shadow-none z-50 transition-all duration-300';
+  const headerClass = [
+    'fixed top-4 left-1/2 -translate-x-1/2',
+    'w-[95%] max-w-7xl',
+    'flex items-center justify-between whitespace-nowrap',
+    'px-8 py-4',
+    'rounded-2xl',
+    'border border-[rgba(255,215,0,0.15)]',
+    'shadow-[0_8px_30px_rgba(0,0,0,0.4)]',
+    'z-50 transition-all duration-300',
+    isScrolled
+      ? 'bg-[rgba(7,22,43,0.85)] backdrop-blur-md'
+      : 'bg-[rgba(7,22,43,0.55)] backdrop-blur-xl',
+  ].join(' ');
 
-  const brandClass = isScrolled ? 'flex items-center gap-3 text-midnight-navy' : 'flex items-center gap-3 text-white';
-  const navLinkClass = isScrolled
-    ? 'text-slate-700 text-sm font-medium hover:text-primary transition-colors'
-    : 'text-white/85 text-sm font-medium hover:text-primary transition-colors';
-  const mobileMenuButtonClass = isScrolled ? 'lg:hidden text-midnight-navy' : 'lg:hidden text-white';
+  const brandClass = 'flex items-center gap-3 text-white';
+  const navLinkClass = 'nav-link-premium text-white/80 text-sm font-medium hover:text-primary transition-colors duration-300';
+  const mobileMenuButtonClass = 'lg:hidden text-white';
 
   return (
     <div className="relative flex flex-col min-h-screen overflow-x-hidden bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased">
@@ -61,7 +69,7 @@ export default function Layout() {
           </div>
           {!isAuthenticated && (
             <Link to="/signup">
-              <button className="flex items-center justify-center rounded-lg h-10 px-6 bg-primary hover:bg-primary/90 text-midnight-navy text-sm font-bold tracking-wide transition-colors shadow-lg shadow-primary/20">
+              <button className="bg-gradient-to-r from-yellow-500 to-yellow-400 text-black text-sm font-semibold px-6 py-2 rounded-lg shadow-lg hover:scale-105 hover:shadow-yellow-500/40 transition-all duration-300">
                 Get Started
               </button>
             </Link>

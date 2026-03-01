@@ -51,3 +51,28 @@ input[type=range]:focus::-webkit-slider-runnable-track {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+.nav-link-premium {
+  position: relative;
+  padding-bottom: 3px;
+}
+
+.nav-link-premium::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 100%;
+  height: 1.5px;
+  background: linear-gradient(90deg, rgba(255, 215, 0, 0.85), rgba(255, 215, 0, 0.55));
+  transform: scaleX(0);
+  transform-origin: left;
+  opacity: 0;
+  transition: transform 300ms ease, opacity 300ms ease;
+}
+
+.nav-link-premium:hover::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
