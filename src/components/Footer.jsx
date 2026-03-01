@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 
 /**
  * Global footer used on public-facing pages.
@@ -55,7 +55,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-slate-100 dark:border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="border-t border-slate-200 dark:border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-slate-400 text-sm font-sans">© 2023 EvolvEd Inc. All rights reserved.</p>
           <div className="flex gap-4 text-slate-400">
             <a className="hover:text-primary transition-colors" href="#">

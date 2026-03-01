@@ -58,10 +58,8 @@ const updateProfileSchema = z.object({
   expectedGrad: z
     .string()
     .trim()
-    .regex(
-      /^(January|February|March|April|May|June|July|August|September|October|November|December)\s\d{4}$/,
-      'Use format: Month Year (e.g., May 2026).'
-    )
+    .regex(/^\d{4}$/, 'Enter a valid graduation year (e.g. 2026).')
+    .refine((v) => { const y = parseInt(v, 10); return y >= 2020 && y <= 2040; }, 'Year must be between 2020 and 2040.')
     .optional()
     .nullable(),
   bio: z
@@ -304,13 +302,13 @@ const addResumeSchema = z.object({
       errorMap: () => ({ message: `Category must be one of: ${RESUME_CATEGORIES.join(', ')}` }),
     })
     .default('general'),
-  isDefault: z.boolean().optional().default(false),
+  isDefault: z.preprocess((v) => v === 'true' || v === true, z.boolean()).optional().default(false),
 });
 
 const updateResumeSchema = z.object({
   name: z.string().trim().min(2).max(100).optional(),
   category: z.enum(RESUME_CATEGORIES).optional(),
-  isDefault: z.boolean().optional(),
+  isDefault: z.preprocess((v) => v === 'true' || v === true, z.boolean()).optional(),
 });
 
 // ─── QUERY SCHEMAS ────────────────────────────────────────────────

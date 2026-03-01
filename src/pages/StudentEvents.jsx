@@ -143,7 +143,7 @@ function EventModal({ event, onClose, onSave }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[92vh] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 flex-shrink-0">
           <h2 className="text-lg font-bold text-secondary">
             {isEdit ? 'Edit Event' : 'Add Event'}
           </h2>
@@ -226,7 +226,7 @@ function EventModal({ event, onClose, onSave }) {
                   className={`flex flex-col items-center gap-1.5 py-2.5 px-2 rounded-xl border-2 text-xs font-semibold transition-all ${
                     form.achievement === a.value
                       ? 'border-primary bg-primary/5 text-secondary'
-                      : 'border-slate-100 text-slate-500 hover:border-slate-200'
+                      : 'border-slate-200 text-slate-500 hover:border-slate-200'
                   }`}
                 >
                   <span className="material-symbols-outlined text-lg">{a.icon}</span>
@@ -262,7 +262,7 @@ function EventModal({ event, onClose, onSave }) {
         </form>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-100 flex-shrink-0">
+        <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-200 flex-shrink-0">
           <button
             type="button"
             onClick={onClose}
@@ -337,7 +337,7 @@ function EventTimelineCard({ event, onEdit, onDelete }) {
       </div>
 
       {/* Card */}
-      <div className="flex-1 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all p-5 mb-5">
+      <div className="flex-1 bg-white rounded-2xl border border-slate-200 shadow-md hover:shadow-md transition-all p-5 mb-5">
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -408,19 +408,19 @@ function StatsBar({ events }) {
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-      <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 text-center">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-md p-4 text-center">
         <p className="text-2xl font-bold text-secondary">{events.length}</p>
         <p className="text-xs text-slate-500 mt-0.5 font-medium">Total Events</p>
       </div>
-      <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 text-center">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-md p-4 text-center">
         <p className="text-2xl font-bold text-amber-600">{winCount}</p>
         <p className="text-xs text-slate-500 mt-0.5 font-medium">Wins</p>
       </div>
-      <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 text-center">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-md p-4 text-center">
         <p className="text-2xl font-bold text-blue-600">{topCount}</p>
         <p className="text-xs text-slate-500 mt-0.5 font-medium">Top 3 Finishes</p>
       </div>
-      <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 text-center">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-md p-4 text-center">
         <p className="text-2xl font-bold text-teal-600">{typeBreakdown.length}</p>
         <p className="text-xs text-slate-500 mt-0.5 font-medium">Event Types</p>
       </div>
@@ -514,7 +514,7 @@ export default function StudentEvents() {
               {[1, 2, 3].map((i) => (
                 <div key={i} className="flex gap-4">
                   <div className="h-9 w-9 bg-slate-100 rounded-full animate-pulse flex-shrink-0" />
-                  <div className="flex-1 bg-white rounded-2xl border border-slate-100 h-24 animate-pulse" />
+                  <div className="flex-1 bg-white rounded-2xl border border-slate-200 h-24 animate-pulse" />
                 </div>
               ))}
             </div>

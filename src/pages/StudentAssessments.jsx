@@ -19,7 +19,7 @@ function statusBadgeClass(status) {
 
 function SkeletonRow() {
   return (
-    <div className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm">
+    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-md">
       <div className="animate-pulse space-y-2">
         <div className="h-4 w-1/3 rounded bg-slate-200" />
         <div className="h-3 w-1/4 rounded bg-slate-200" />
@@ -88,7 +88,7 @@ export default function StudentAssessments() {
         ) : (
           <div className="space-y-3">
             {items.map((a) => (
-              <div key={a.id} className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm hover:bg-slate-50 transition-colors">
+              <div key={a.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-md hover:bg-slate-50 transition-colors">
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="text-base font-semibold text-secondary">{a.title}</p>

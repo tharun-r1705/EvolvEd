@@ -47,7 +47,7 @@ function Skeleton({ className = '' }) {
 
 function CardSkeleton() {
   return (
-    <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-100 space-y-3">
+    <div className="rounded-xl bg-white p-5 shadow-md ring-1 ring-slate-200 space-y-3">
       <div className="flex gap-2">
         <Skeleton className="h-5 w-16 rounded-full" />
         <Skeleton className="h-5 w-12 rounded-full" />
@@ -85,7 +85,7 @@ function QuestionCard({ q, practiceMode }) {
   useEffect(() => { setShowAnswer(!practiceMode); }, [practiceMode]);
 
   return (
-    <div className="rounded-xl bg-white shadow-sm ring-1 ring-slate-100 overflow-hidden transition-shadow hover:shadow-md">
+    <div className="rounded-xl bg-white shadow-md ring-1 ring-slate-200 overflow-hidden transition-shadow hover:shadow-md">
       {/* Header */}
       <div className="flex items-start justify-between gap-3 px-5 pt-4 pb-3">
         <div className="flex flex-wrap gap-1.5">
@@ -126,7 +126,7 @@ function QuestionCard({ q, practiceMode }) {
         </button>
 
         {showAnswer && (
-          <div className="mt-3 text-sm text-slate-600 leading-relaxed bg-slate-50 rounded-lg p-4 border border-slate-100">
+          <div className="mt-3 text-sm text-slate-600 leading-relaxed bg-slate-50 rounded-lg p-4 border border-slate-200">
             {q.answer}
           </div>
         )}
@@ -273,7 +273,7 @@ export default function InterviewPrep() {
               <button
                 key={s.label}
                 onClick={() => handleCategoryChange(category === s.label.toLowerCase() ? '' : s.label.toLowerCase())}
-                className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-100 hover:shadow-md transition-shadow text-left"
+                className="rounded-xl bg-white p-4 shadow-md ring-1 ring-slate-200 hover:shadow-md transition-shadow text-left"
               >
                 <div className={`mb-2 inline-flex h-8 w-8 items-center justify-center rounded-lg ${s.color}`}>
                   <span className="material-symbols-outlined text-[18px]">{s.icon}</span>
@@ -285,7 +285,7 @@ export default function InterviewPrep() {
           </div>
 
           {/* ── Filters ── */}
-          <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100 mb-6">
+          <div className="rounded-2xl bg-white p-4 shadow-md ring-1 ring-slate-200 mb-6">
             <div className="flex flex-col md:flex-row gap-3">
               {/* Search */}
               <div className="flex-1 relative">
@@ -339,7 +339,7 @@ export default function InterviewPrep() {
 
             {/* Active filter chips */}
             {(category || difficulty || search || bookmarksOnly) && (
-              <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-slate-100">
+              <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-slate-200">
                 {category && (
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary/10 text-secondary text-xs font-medium">
                     {CATEGORIES.find((c) => c.value === category)?.label}
@@ -384,7 +384,7 @@ export default function InterviewPrep() {
 
           {/* ── Practice mode banner ── */}
           {practiceMode && (
-            <div className="flex items-center gap-3 rounded-xl bg-secondary text-white px-5 py-3 mb-4 text-sm font-medium shadow">
+            <div className="flex items-center gap-3 rounded-xl bg-secondary text-white px-5 py-3 mb-4 text-sm font-medium shadow-md">
               <span className="material-symbols-outlined text-primary text-xl">quiz</span>
               <span>Practice Mode is ON — answers are hidden by default. Click "Show Answer" to reveal.</span>
               <button
@@ -413,7 +413,7 @@ export default function InterviewPrep() {
               </button>
             </div>
           ) : questions.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-2xl ring-1 ring-slate-100">
+            <div className="text-center py-16 bg-white rounded-2xl ring-1 ring-slate-200">
               <span className="material-symbols-outlined text-5xl text-slate-300 mb-3 block">
                 {bookmarksOnly ? 'bookmark_border' : 'search_off'}
               </span>

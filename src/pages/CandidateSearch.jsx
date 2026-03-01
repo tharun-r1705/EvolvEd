@@ -103,7 +103,7 @@ export default function CandidateSearch() {
                 <p className="text-text-muted mt-1 text-sm">Showing <span className="font-semibold text-text-main">412</span> candidates matching your criteria</p>
               </div>
               <div className="flex gap-3">
-                <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium hover:border-primary hover:text-primary transition-colors shadow-sm">
+                <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium hover:border-primary hover:text-primary transition-colors shadow-md">
                   <span className="material-symbols-outlined text-[18px]">file_download</span>
                   Export
                 </button>
@@ -117,7 +117,7 @@ export default function CandidateSearch() {
             <div className="flex flex-wrap gap-2 items-center mb-4">
               <span className="text-xs font-semibold uppercase text-text-muted mr-1">Active:</span>
               {['Score: 85+', 'Python', 'React'].map((tag) => (
-                <div key={tag} className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm text-text-main shadow-sm">
+                <div key={tag} className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm text-text-main shadow-md">
                   <span>{tag}</span>
                   <button className="hover:text-red-500 transition-colors flex items-center">
                     <span className="material-symbols-outlined text-[16px]">close</span>
@@ -130,7 +130,7 @@ export default function CandidateSearch() {
 
           {/* Table Container */}
           <div className="flex-1 px-8 pb-8 overflow-hidden flex flex-col">
-            <div className="bg-surface-light rounded-xl border border-gray-200 shadow-sm flex flex-col h-full overflow-hidden">
+            <div className="bg-surface-light rounded-xl border border-gray-200 shadow-md flex flex-col h-full overflow-hidden">
               {/* Table Header */}
               <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-100 bg-gray-50/50 text-xs font-semibold text-text-muted uppercase tracking-wider items-center shrink-0">
                 <div className="col-span-1">Rank</div>

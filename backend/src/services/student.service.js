@@ -1,6 +1,7 @@
 'use strict';
 
 const prisma = require('../lib/prisma');
+const { withRetry } = require('../lib/prisma');
 const AppError = require('../utils/AppError');
 const { recalculateScore, getScoreLabel, getReadinessClassification } = require('./scoring.service');
 const { recalculateGlobalRankings, getStudentGlobalRank } = require('./ranking.service');
@@ -54,7 +55,7 @@ async function getDashboard(userId) {
     monthlyAssessments,
     leetcodeProfile,
     githubProfile,
-  ] = await prisma.$transaction([
+  ] = await withRetry(() => prisma.$transaction([
     prisma.assessment.count({ where: { studentId: student.id } }),
     prisma.application.count({ where: { studentId: student.id } }),
     prisma.application.count({ where: { studentId: student.id, status: { in: ['applied', 'shortlisted'] } } }),
@@ -66,7 +67,7 @@ async function getDashboard(userId) {
     }),
     prisma.leetCodeProfile.findUnique({ where: { studentId: student.id } }),
     prisma.gitHubProfile.findUnique({ where: { studentId: student.id } }),
-  ]);
+  ]));
 
   const [rankInfo, learningPaceData] = await Promise.all([
     getStudentGlobalRank(student.id),

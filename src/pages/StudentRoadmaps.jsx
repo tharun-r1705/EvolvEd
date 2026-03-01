@@ -134,7 +134,7 @@ function RoadmapCard({ roadmap, onClick }) {
   return (
     <button
       onClick={onClick}
-      className="group text-left w-full bg-white hover:bg-slate-50 border border-slate-100 hover:border-primary/40 rounded-2xl p-5 transition-all duration-200 flex flex-col gap-4 shadow-sm"
+      className="group text-left w-full bg-white hover:bg-slate-50 border border-slate-200 hover:border-primary/40 rounded-2xl p-5 transition-all duration-200 flex flex-col gap-4 shadow-md"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
@@ -231,7 +231,7 @@ export default function StudentRoadmaps() {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-5 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${
-                activeTab === tab ? 'bg-secondary text-white shadow' : 'text-slate-500 hover:bg-slate-50 hover:text-secondary'
+                activeTab === tab ? 'bg-secondary text-white shadow-md' : 'text-slate-500 hover:bg-slate-50 hover:text-secondary'
               }`}
             >
               {tab}

@@ -37,6 +37,13 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
 
 process.on('unhandledRejection', (reason) => {
+  // Don't crash the dev server on transient Supabase/DB connection drops
+  const msg = reason?.message || String(reason);
+  const isDbDrop = /Can't reach database server|ECONNRESET|ETIMEDOUT|P1001|P1002/i.test(msg);
+  if (isDbDrop) {
+    console.warn('[server] Transient DB connection error (server kept alive):', msg);
+    return;
+  }
   console.error('Unhandled Rejection:', reason);
   process.exit(1);
 });

@@ -30,7 +30,7 @@ export default function RecruiterDashboard() {
               { title: 'Total Applications', value: '1,230', badge: '+12% vs last month', badgeColor: 'text-emerald-600 bg-emerald-50', icon: 'folder_open', highlight: false },
               { title: 'Interviews Scheduled', value: '28', badge: '8 pending', badgeColor: 'text-orange-600 bg-orange-50', icon: 'event', highlight: false },
             ].map(({ title, value, badge, badgeColor, icon, highlight }) => (
-              <div key={title} className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group">
+              <div key={title} className="bg-white rounded-xl p-6 border border-slate-200 shadow-md relative overflow-hidden group">
                 <div className={`absolute top-0 left-0 w-1 h-full ${highlight ? 'bg-primary' : 'bg-slate-300'}`} />
                 <div className="flex justify-between items-start mb-4">
                   <div className={`p-2 rounded-lg ${highlight ? 'bg-primary/10 text-primary' : 'bg-slate-100 text-slate-600'}`}>
@@ -49,7 +49,7 @@ export default function RecruiterDashboard() {
             {/* Left Column */}
             <div className="lg:col-span-2 flex flex-col gap-8">
               {/* Application Trends Chart */}
-              <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+              <div className="bg-white rounded-xl border border-slate-200 shadow-md p-6">
                 <div className="flex justify-between items-center mb-6">
                   <div>
                     <h4 className="text-lg font-bold text-midnight">Application Trends</h4>
@@ -77,7 +77,7 @@ export default function RecruiterDashboard() {
                   </div>
                   <div className="absolute inset-0 pointer-events-none flex flex-col justify-between text-xs text-slate-400">
                     {[0, 1, 2, 3, 4].map((i) => (
-                      <div key={i} className="border-b border-slate-100 w-full h-0" />
+                      <div key={i} className="border-b border-slate-200 w-full h-0" />
                     ))}
                   </div>
                 </div>
@@ -90,8 +90,8 @@ export default function RecruiterDashboard() {
               </div>
 
               {/* Recent Applicants Table */}
-              <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+              <div className="bg-white rounded-xl border border-slate-200 shadow-md overflow-hidden">
+                <div className="p-6 border-b border-slate-200 flex justify-between items-center">
                   <h4 className="text-lg font-bold text-midnight">Recent Applicants</h4>
                   <Link to="/recruiter/candidates" className="text-primary text-sm font-medium hover:text-yellow-600">
                     View All
@@ -156,7 +156,7 @@ export default function RecruiterDashboard() {
             {/* Right Column: Pipeline & Actions */}
             <div className="flex flex-col gap-8">
               {/* Hiring Pipeline */}
-              <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+              <div className="bg-white rounded-xl border border-slate-200 shadow-md p-6">
                 <h4 className="text-lg font-bold text-midnight mb-6">Hiring Pipeline</h4>
                 <div className="flex flex-col gap-4">
                   {[
@@ -186,7 +186,7 @@ export default function RecruiterDashboard() {
               </div>
 
               {/* Top Sources */}
-              <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+              <div className="bg-white rounded-xl border border-slate-200 shadow-md p-6">
                 <h4 className="text-lg font-bold text-midnight mb-4">Top Sources</h4>
                 <div className="flex flex-col gap-4">
                   {[

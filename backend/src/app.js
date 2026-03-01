@@ -33,7 +33,7 @@ app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(cookieParser());
 
-// ─── Global rate limiter ─────────────────────────────────────────
+// ─── Global rate limiter (production only) ──────────────────────
 const globalLimiter = rateLimit({
   windowMs: config.rateLimit.windowMs,
   max: config.rateLimit.max,
@@ -44,7 +44,7 @@ const globalLimiter = rateLimit({
     error: 'Too many requests. Please try again later.',
   },
 });
-app.use('/api', globalLimiter);
+if (config.isProd) app.use('/api', globalLimiter);
 
 // ─── Auth-specific stricter rate limiter ─────────────────────────
 const authLimiter = rateLimit({

@@ -65,14 +65,14 @@ function Skeleton({ className = '' }) {
 function PageSkeleton() {
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-slate-100">
+      <div className="rounded-2xl bg-white p-8 shadow-md ring-1 ring-slate-200">
         <Skeleton className="h-8 w-48 mb-3" />
         <Skeleton className="h-20 w-20 rounded-full mb-4" />
         <Skeleton className="h-4 w-64" />
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         {[...Array(6)].map((_, i) => (
-          <div key={i} className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-100 space-y-2">
+          <div key={i} className="rounded-xl bg-white p-4 shadow-md ring-1 ring-slate-200 space-y-2">
             <Skeleton className="h-4 w-32" />
             <Skeleton className="h-2.5 w-full rounded-full" />
           </div>
@@ -146,7 +146,7 @@ function ImprovementTips({ components }) {
   }
 
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+    <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
       <div className="flex items-center gap-2 mb-4">
         <span className="material-symbols-outlined text-primary">tips_and_updates</span>
         <h3 className="text-base font-bold text-secondary">How to improve your pace</h3>
@@ -258,7 +258,7 @@ export default function StudentLearningPace() {
           </header>
 
           {/* Hero */}
-          <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100 mb-6 relative overflow-hidden">
+          <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200 mb-6 relative overflow-hidden">
             <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full opacity-5 blur-3xl" style={{ background: color }} />
             <div className="flex flex-col sm:flex-row items-center gap-8">
               <ScoreCircle score={paceScore} color={color} />
@@ -302,7 +302,7 @@ export default function StudentLearningPace() {
             <div className="lg:col-span-8 flex flex-col gap-6">
 
               {/* Component Scores */}
-              <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
                 <h3 className="text-base font-bold text-secondary mb-5">Pace Components</h3>
                 <div className="grid gap-5 sm:grid-cols-2">
                   {Object.entries(components).map(([key, score]) => {
@@ -329,7 +329,7 @@ export default function StudentLearningPace() {
               </div>
 
               {/* Weekly Trend Chart */}
-              <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
                 <div className="mb-5">
                   <h3 className="text-base font-bold text-secondary">12-Week Activity Trend</h3>
                   <p className="text-xs text-slate-500">Number of learning activities per week</p>
@@ -369,7 +369,7 @@ export default function StudentLearningPace() {
 
             {/* Right: Recent Activities */}
             <div className="lg:col-span-4">
-              <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100 sticky top-6">
+              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200 sticky top-6">
                 <h3 className="text-base font-bold text-secondary mb-4">Recent Activities</h3>
                 {recentActivities.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-10 text-slate-400 text-center">

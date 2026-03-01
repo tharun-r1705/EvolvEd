@@ -48,7 +48,7 @@ function PageSkeleton() {
     <div className="space-y-8">
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-100 space-y-3">
+          <div key={i} className="rounded-xl bg-white p-6 shadow-md ring-1 ring-slate-200 space-y-3">
             <Skeleton className="h-4 w-24" />
             <Skeleton className="h-10 w-20" />
             <Skeleton className="h-2 w-full" />
@@ -56,12 +56,12 @@ function PageSkeleton() {
         ))}
       </div>
       <div className="grid gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-2 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+        <div className="lg:col-span-2 rounded-xl bg-white p-6 shadow-md ring-1 ring-slate-200">
           <Skeleton className="h-6 w-40 mb-2" />
           <Skeleton className="h-4 w-64 mb-6" />
           <Skeleton className="h-52 w-full rounded" />
         </div>
-        <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-100 space-y-4">
+        <div className="rounded-xl bg-white p-6 shadow-md ring-1 ring-slate-200 space-y-4">
           <Skeleton className="h-6 w-36" />
           {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-16 w-full" />)}
         </div>
@@ -193,7 +193,7 @@ export default function AssessmentBreakdown() {
           {/* ── Stats Overview ── */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
             {/* Overall Score */}
-            <div className="rounded-xl border border-slate-100 bg-white p-6 shadow-sm">
+            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-md">
               <div className="flex items-center justify-between mb-3">
                 <p className="text-sm font-medium text-slate-500">Overall Score</p>
                 <span className="material-symbols-outlined text-primary">school</span>
@@ -212,7 +212,7 @@ export default function AssessmentBreakdown() {
             </div>
 
             {/* Percentile */}
-            <div className="rounded-xl border border-slate-100 bg-white p-6 shadow-sm">
+            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-md">
               <div className="flex items-center justify-between mb-3">
                 <p className="text-sm font-medium text-slate-500">Percentile Rank</p>
                 <span className="material-symbols-outlined text-primary">leaderboard</span>
@@ -233,7 +233,7 @@ export default function AssessmentBreakdown() {
             </div>
 
             {/* Time Taken */}
-            <div className="rounded-xl border border-slate-100 bg-white p-6 shadow-sm">
+            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-md">
               <div className="flex items-center justify-between mb-3">
                 <p className="text-sm font-medium text-slate-500">Time Taken</p>
                 <span className="material-symbols-outlined text-primary">schedule</span>
@@ -248,7 +248,7 @@ export default function AssessmentBreakdown() {
             </div>
 
             {/* Status */}
-            <div className="rounded-xl border border-slate-100 bg-white p-6 shadow-sm">
+            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-md">
               <div className="flex items-center justify-between mb-3">
                 <p className="text-sm font-medium text-slate-500">Status</p>
                 <span className="material-symbols-outlined text-primary">verified</span>
@@ -267,7 +267,7 @@ export default function AssessmentBreakdown() {
           {/* ── Chart + Improvements ── */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
             {/* Category Performance Bar Chart */}
-            <div className="lg:col-span-2 rounded-xl border border-slate-100 bg-white p-6 shadow-sm">
+            <div className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-6 shadow-md">
               <div className="mb-5">
                 <h2 className="text-lg font-bold text-secondary">Category Performance</h2>
                 <p className="text-sm text-slate-500">Breakdown of scores across evaluation categories.</p>
@@ -324,7 +324,7 @@ export default function AssessmentBreakdown() {
             </div>
 
             {/* Improvement Focus */}
-            <div className="rounded-xl border border-slate-100 bg-white p-6 shadow-sm flex flex-col">
+            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-md flex flex-col">
               <h2 className="text-lg font-bold text-secondary mb-4">Improvement Focus</h2>
               {improvements.length === 0 ? (
                 <div className="flex flex-col items-center justify-center flex-1 text-center text-slate-400 py-6">
@@ -337,7 +337,7 @@ export default function AssessmentBreakdown() {
                   {improvements.map((imp, i) => (
                     <div
                       key={i}
-                      className={`flex gap-3 items-start ${i > 0 ? 'border-t border-slate-100 pt-4' : ''}`}
+                      className={`flex gap-3 items-start ${i > 0 ? 'border-t border-slate-200 pt-4' : ''}`}
                     >
                       <div className="flex-shrink-0 h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                         <span className="material-symbols-outlined text-[18px]">lightbulb</span>
@@ -354,8 +354,8 @@ export default function AssessmentBreakdown() {
           </div>
 
           {/* ── Assessment History ── */}
-          <div className="rounded-xl border border-slate-100 bg-white shadow-sm overflow-hidden">
-            <div className="border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+          <div className="rounded-xl border border-slate-200 bg-white shadow-md overflow-hidden">
+            <div className="border-b border-slate-200 px-6 py-4 flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold text-secondary">Assessment History</h2>
                 <p className="text-sm text-slate-500">Your previous assessment records.</p>

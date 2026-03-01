@@ -23,7 +23,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-6 py-4 lg:px-40 bg-white dark:bg-background-dark sticky top-0 z-50 shadow-sm">
+    <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-6 py-4 lg:px-40 bg-white dark:bg-background-dark sticky top-0 z-50 shadow-md">
       {/* ── Brand ── */}
       <div className="flex items-center gap-4 text-midnight-navy dark:text-white">
         <div className="size-8 flex items-center justify-center rounded bg-primary/20 text-primary">

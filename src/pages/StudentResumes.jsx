@@ -34,7 +34,7 @@ function Skeleton({ className = '' }) {
 
 function ResumeCardSkeleton() {
   return (
-    <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100 space-y-3">
+    <div className="rounded-2xl bg-white p-5 shadow-md ring-1 ring-slate-200 space-y-3">
       <div className="flex items-start justify-between">
         <div className="space-y-2 flex-1">
           <Skeleton className="h-5 w-48" />
@@ -102,7 +102,7 @@ function UploadForm({ onSuccess, onCancel }) {
   }
 
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+    <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
       <div className="mb-5 flex items-center justify-between">
         <h3 className="text-base font-bold text-secondary">Upload New Resume</h3>
         <button onClick={onCancel} className="text-slate-400 hover:text-slate-600 transition-colors">
@@ -311,13 +311,70 @@ function DeleteConfirm({ resume, onConfirm, onCancel, deleting }) {
   );
 }
 
+// ─── PDF Viewer Modal ─────────────────────────────────────────────────────────
+
+function PdfViewerModal({ resume, onClose }) {
+  // Close on Escape key
+  React.useEffect(() => {
+    function onKey(e) { if (e.key === 'Escape') onClose(); }
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex flex-col bg-black/80 backdrop-blur-sm"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      {/* Toolbar */}
+      <div className="flex items-center justify-between bg-secondary px-4 py-3 gap-4 shrink-0">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-500/20 text-red-400 shrink-0">
+            <span className="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-white truncate">{resume.name}</p>
+            <p className="text-[11px] text-slate-400">{getCategoryMeta(resume.category).label}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <a
+            href={resume.url}
+            download
+            className="flex items-center gap-1.5 rounded-lg bg-white/10 hover:bg-white/20 px-3 py-1.5 text-xs font-semibold text-white transition-colors"
+          >
+            <span className="material-symbols-outlined text-[15px]">download</span>
+            Download
+          </a>
+          <button
+            onClick={onClose}
+            className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+            title="Close viewer"
+          >
+            <span className="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        </div>
+      </div>
+
+      {/* PDF frame */}
+      <div className="flex-1 overflow-hidden">
+        <iframe
+          src={`${resume.url}#toolbar=1&navpanes=0`}
+          title={resume.name}
+          className="h-full w-full border-0"
+        />
+      </div>
+    </div>
+  );
+}
+
 // ─── Resume Card ──────────────────────────────────────────────────────────────
 
-function ResumeCard({ resume, onEdit, onDelete, onSetDefault, settingDefault }) {
+function ResumeCard({ resume, onView, onEdit, onDelete, onSetDefault, settingDefault }) {
   const catMeta = getCategoryMeta(resume.category);
 
   return (
-    <div className={`rounded-2xl bg-white p-5 shadow-sm ring-1 transition-shadow hover:shadow-md ${resume.isDefault ? 'ring-primary/40' : 'ring-slate-100'}`}>
+    <div className={`rounded-2xl bg-white p-5 shadow-md ring-1 transition-shadow hover:shadow-md ${resume.isDefault ? 'ring-primary/40' : 'ring-slate-200'}`}>
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex items-start gap-3 min-w-0">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-500">
@@ -337,15 +394,13 @@ function ResumeCard({ resume, onEdit, onDelete, onSetDefault, settingDefault }) 
             </span>
           </div>
         </div>
-        <a
-          href={resume.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          title="Download / View"
+        <button
+          onClick={() => onView(resume)}
+          title="View PDF"
           className="shrink-0 flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 hover:text-primary hover:bg-primary/10 transition-colors"
         >
-          <span className="material-symbols-outlined text-[20px]">open_in_new</span>
-        </a>
+          <span className="material-symbols-outlined text-[20px]">visibility</span>
+        </button>
       </div>
 
       <p className="text-xs text-slate-400 mb-4">
@@ -354,6 +409,12 @@ function ResumeCard({ resume, onEdit, onDelete, onSetDefault, settingDefault }) 
       </p>
 
       <div className="flex flex-wrap gap-2">
+        <button
+          onClick={() => onView(resume)}
+          className="flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100 transition-colors"
+        >
+          <span className="material-symbols-outlined text-[14px]">visibility</span>View
+        </button>
         <a
           href={resume.url}
           download
@@ -398,6 +459,7 @@ export default function StudentResumes() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [settingDefault, setSettingDefault] = useState(false);
+  const [viewTarget, setViewTarget] = useState(null);
 
   const fetchResumes = useCallback(async () => {
     setLoading(true);
@@ -532,6 +594,7 @@ export default function StudentResumes() {
                   <ResumeCard
                     key={r.id}
                     resume={r}
+                    onView={setViewTarget}
                     onEdit={setEditTarget}
                     onDelete={setDeleteTarget}
                     onSetDefault={handleSetDefault}
@@ -543,6 +606,14 @@ export default function StudentResumes() {
           )}
         </div>
       </main>
+
+      {/* PDF Viewer */}
+      {viewTarget && (
+        <PdfViewerModal
+          resume={viewTarget}
+          onClose={() => setViewTarget(null)}
+        />
+      )}
 
       {/* Edit Modal */}
       {editTarget && (

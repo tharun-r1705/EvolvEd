@@ -107,7 +107,7 @@ function CertModal({ cert, onClose, onSave }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[92vh] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 flex-shrink-0">
           <h2 className="text-lg font-bold text-secondary">
             {isEdit ? 'Edit Certification' : 'Add Certification'}
           </h2>
@@ -201,7 +201,7 @@ function CertModal({ cert, onClose, onSave }) {
         </form>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-100 flex-shrink-0">
+        <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-200 flex-shrink-0">
           <button
             type="button"
             onClick={onClose}
@@ -281,7 +281,7 @@ function CertCard({ cert, onEdit, onDelete }) {
   const gradientClass = getIssuerColor(cert.issuer);
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col overflow-hidden">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-md hover:shadow-md transition-all flex flex-col overflow-hidden">
       {/* Color header */}
       <div className={`h-2 bg-gradient-to-r ${gradientClass}`} />
 
@@ -435,7 +435,7 @@ export default function StudentCertifications() {
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="bg-white rounded-2xl border border-slate-100 animate-pulse h-52" />
+                <div key={i} className="bg-white rounded-2xl border border-slate-200 animate-pulse h-52" />
               ))}
             </div>
           ) : certs.length === 0 ? (

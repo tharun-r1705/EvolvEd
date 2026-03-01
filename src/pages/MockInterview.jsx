@@ -182,7 +182,7 @@ function InterviewCard({ interview, onClick }) {
   return (
     <button
       onClick={onClick}
-      className="group text-left w-full bg-white hover:bg-slate-50 border border-slate-100 hover:border-primary/30 rounded-2xl p-5 transition-all flex flex-col gap-3 shadow-sm"
+      className="group text-left w-full bg-white hover:bg-slate-50 border border-slate-200 hover:border-primary/30 rounded-2xl p-5 transition-all flex flex-col gap-3 shadow-md"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2 flex-wrap">
@@ -297,7 +297,7 @@ export default function MockInterview() {
               { label: 'Avg Score', value: avgScore ? `${avgScore}/10` : '—', icon: 'analytics', color: 'text-primary' },
               { label: 'Best Score', value: bestScore ? `${bestScore}/10` : '—', icon: 'emoji_events', color: 'text-amber-500' },
             ].map((s) => (
-              <div key={s.label} className="bg-white border border-slate-100 rounded-2xl p-4 flex items-center gap-3 shadow-sm">
+              <div key={s.label} className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center gap-3 shadow-md">
                 <span className={`material-symbols-outlined text-2xl ${s.color}`}>{s.icon}</span>
                 <div>
                   <p className="text-secondary font-bold text-base">{s.value}</p>
@@ -316,7 +316,7 @@ export default function MockInterview() {
               <button
                 key={tab.value}
                 onClick={() => setActiveTab(tab.value)}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === tab.value ? 'bg-secondary text-white shadow' : 'text-slate-500 hover:bg-slate-50 hover:text-secondary'}`}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === tab.value ? 'bg-secondary text-white shadow-md' : 'text-slate-500 hover:bg-slate-50 hover:text-secondary'}`}
               >
                 {tab.label}
                 <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${activeTab === tab.value ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-500'}`}>{count}</span>

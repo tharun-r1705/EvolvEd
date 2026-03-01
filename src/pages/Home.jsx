@@ -74,7 +74,7 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
           {/* Student Card */}
-          <div className="group flex flex-col gap-6 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 relative overflow-hidden">
+          <div className="group flex flex-col gap-6 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-md hover:shadow-xl transition-all hover:-translate-y-1 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1 bg-deep-teal group-hover:bg-primary transition-colors" />
             <div className="size-12 rounded-full bg-deep-teal/10 flex items-center justify-center text-deep-teal group-hover:bg-primary/10 group-hover:text-primary transition-colors">
               <span className="material-symbols-outlined !text-[28px]">school</span>
@@ -96,7 +96,7 @@ export default function Home() {
           </div>
 
           {/* Recruiter Card */}
-          <div className="group flex flex-col gap-6 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 relative overflow-hidden">
+          <div className="group flex flex-col gap-6 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-md hover:shadow-xl transition-all hover:-translate-y-1 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1 bg-deep-teal group-hover:bg-primary transition-colors" />
             <div className="size-12 rounded-full bg-deep-teal/10 flex items-center justify-center text-deep-teal group-hover:bg-primary/10 group-hover:text-primary transition-colors">
               <span className="material-symbols-outlined !text-[28px]">work</span>
@@ -118,7 +118,7 @@ export default function Home() {
           </div>
 
           {/* Admin Card */}
-          <div className="group flex flex-col gap-6 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 relative overflow-hidden">
+          <div className="group flex flex-col gap-6 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-md hover:shadow-xl transition-all hover:-translate-y-1 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1 bg-deep-teal group-hover:bg-primary transition-colors" />
             <div className="size-12 rounded-full bg-deep-teal/10 flex items-center justify-center text-deep-teal group-hover:bg-primary/10 group-hover:text-primary transition-colors">
               <span className="material-symbols-outlined !text-[28px]">bar_chart</span>

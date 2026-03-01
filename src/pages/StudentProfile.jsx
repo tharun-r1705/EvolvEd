@@ -325,8 +325,7 @@ function AcademicTab({ profile, onSaved }) {
     department: profile.department || '',
     yearOfStudy: profile.yearOfStudy || '',
     gpa: profile.gpa != null ? String(profile.gpa) : '',
-    expectedGradMonth: profile.expectedGrad?.split(' ')[0] || '',
-    expectedGradYear: profile.expectedGrad?.split(' ')[1] || '',
+    expectedGrad: profile.expectedGrad ? profile.expectedGrad.split(' ').pop() : '',
   });
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState({});
@@ -343,11 +342,11 @@ function AcademicTab({ profile, onSaved }) {
       const g = parseFloat(form.gpa);
       if (isNaN(g) || g < 0 || g > 10) errs.gpa = 'GPA must be between 0 and 10.';
     }
-    const hasMonth = !!form.expectedGradMonth;
-    const hasYear = !!form.expectedGradYear;
-    if (hasMonth !== hasYear) errs.expectedGrad = 'Provide both month and year.';
-    if (hasYear && (isNaN(Number(form.expectedGradYear)) || form.expectedGradYear.length !== 4))
-      errs.expectedGrad = 'Enter a valid 4-digit year.';
+    if (form.expectedGrad) {
+      const y = parseInt(form.expectedGrad, 10);
+      if (!/^\d{4}$/.test(form.expectedGrad) || y < 2020 || y > 2040)
+        errs.expectedGrad = 'Enter a valid graduation year between 2020 and 2040.';
+    }
     return errs;
   }
 
@@ -357,15 +356,11 @@ function AcademicTab({ profile, onSaved }) {
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setSaving(true);
     try {
-      const expectedGrad =
-        form.expectedGradMonth && form.expectedGradYear
-          ? `${form.expectedGradMonth} ${form.expectedGradYear}`
-          : null;
       const payload = {
         department: form.department || undefined,
         yearOfStudy: form.yearOfStudy || undefined,
         gpa: form.gpa !== '' ? parseFloat(form.gpa) : null,
-        expectedGrad,
+        expectedGrad: form.expectedGrad.trim() || null,
       };
       const res = await studentService.updateProfile(payload);
       onSaved(res.data);
@@ -418,26 +413,16 @@ function AcademicTab({ profile, onSaved }) {
           <p className="mt-1 text-xs text-slate-400">On a scale of 0–10 (or CGPA out of 10)</p>
         </Field>
 
-        <Field label="Expected Graduation" error={errors.expectedGrad}>
-          <div className="flex gap-2">
-            <select
-              value={form.expectedGradMonth}
-              onChange={(e) => set('expectedGradMonth', e.target.value)}
-              className={`flex-1 ${inputCls(errors.expectedGrad)}`}
-            >
-              <option value="">Month</option>
-              {MONTHS.map((m) => <option key={m} value={m}>{m}</option>)}
-            </select>
-            <input
-              type="number"
-              min="2020"
-              max="2035"
-              value={form.expectedGradYear}
-              onChange={(e) => set('expectedGradYear', e.target.value)}
-              placeholder="2026"
-              className={`w-28 ${inputCls(errors.expectedGrad)}`}
-            />
-          </div>
+        <Field label="Expected Graduation Year" error={errors.expectedGrad}>
+          <input
+            type="number"
+            min="2020"
+            max="2040"
+            value={form.expectedGrad}
+            onChange={(e) => set('expectedGrad', e.target.value)}
+            placeholder="2026"
+            className={inputCls(errors.expectedGrad)}
+          />
         </Field>
       </div>
 
@@ -774,7 +759,7 @@ function IntegrationsTab({ profile, onSaved }) {
               className={`w-11 h-6 rounded-full transition-colors ${form.showOnLeaderboard ? 'bg-primary' : 'bg-slate-200'}`}
               onClick={() => set('showOnLeaderboard', !form.showOnLeaderboard)}
             >
-              <div className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${form.showOnLeaderboard ? 'translate-x-5' : 'translate-x-0'}`} />
+              <div className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-md transition-transform ${form.showOnLeaderboard ? 'translate-x-5' : 'translate-x-0'}`} />
             </div>
           </div>
           <div>
@@ -791,12 +776,70 @@ function IntegrationsTab({ profile, onSaved }) {
   );
 }
 
+// ─── PDF Viewer Modal ────────────────────────────────────────────────────────
+
+function PdfViewerModal({ resume, onClose }) {
+  React.useEffect(() => {
+    function onKey(e) { if (e.key === 'Escape') onClose(); }
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  const catLabel = RESUME_CATEGORIES.find((c) => c.value === resume.category)?.label || resume.category;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex flex-col bg-black/80 backdrop-blur-sm"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      {/* Toolbar */}
+      <div className="flex items-center justify-between bg-secondary px-4 py-3 gap-4 shrink-0">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-500/20 text-red-400 shrink-0">
+            <span className="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-white truncate">{resume.name}</p>
+            <p className="text-[11px] text-slate-400">{catLabel}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <a
+            href={resume.url}
+            download
+            className="flex items-center gap-1.5 rounded-lg bg-white/10 hover:bg-white/20 px-3 py-1.5 text-xs font-semibold text-white transition-colors"
+          >
+            <span className="material-symbols-outlined text-[15px]">download</span>
+            Download
+          </a>
+          <button
+            onClick={onClose}
+            className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+            title="Close"
+          >
+            <span className="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        </div>
+      </div>
+      {/* PDF iframe */}
+      <div className="flex-1 overflow-hidden">
+        <iframe
+          src={`${resume.url}#toolbar=1&navpanes=0`}
+          title={resume.name}
+          className="h-full w-full border-0"
+        />
+      </div>
+    </div>
+  );
+}
+
 // ─── Tab: Resumes ──────────────────────────────────────────────────────────
 
 function ResumesTab({ profile }) {
   const [resumes, setResumes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
+  const [viewingResume, setViewingResume] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadForm, setUploadForm] = useState({ name: '', category: 'general', isDefault: false });
   const [uploadFile, setUploadFile] = useState(null);
@@ -895,6 +938,10 @@ function ResumesTab({ profile }) {
   }
 
   return (
+    <>
+    {viewingResume && (
+      <PdfViewerModal resume={viewingResume} onClose={() => setViewingResume(null)} />
+    )}
     <div className="flex flex-col gap-8">
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
 
@@ -1076,15 +1123,14 @@ function ResumesTab({ profile }) {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <a
-                        href={r.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <button
+                        type="button"
+                        onClick={() => setViewingResume(r)}
                         className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors"
                       >
-                        <span className="material-symbols-outlined text-[14px]">open_in_new</span>
+                        <span className="material-symbols-outlined text-[14px]">visibility</span>
                         View
-                      </a>
+                      </button>
                       <button
                         type="button"
                         onClick={() => { setEditingId(r.id); setEditForm({ name: r.name, category: r.category, isDefault: r.isDefault }); }}
@@ -1115,6 +1161,7 @@ function ResumesTab({ profile }) {
         )}
       </section>
     </div>
+    </>  
   );
 }
 
@@ -1214,7 +1261,7 @@ export default function StudentProfile() {
           </header>
 
           {/* Profile completion banner */}
-          <div className="mb-6 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100">
+          <div className="mb-6 rounded-2xl bg-white p-5 shadow-md ring-1 ring-slate-200">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div>
                 <p className="text-sm font-bold text-secondary">Profile Completion</p>
@@ -1231,7 +1278,7 @@ export default function StudentProfile() {
           </div>
 
           {/* Tab Bar */}
-          <div className="mb-6 flex gap-1 rounded-xl bg-white p-1.5 shadow-sm ring-1 ring-slate-100 overflow-x-auto">
+          <div className="mb-6 flex gap-1 rounded-xl bg-white p-1.5 shadow-md ring-1 ring-slate-200 overflow-x-auto">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
@@ -1248,7 +1295,7 @@ export default function StudentProfile() {
           </div>
 
           {/* Tab Content */}
-          <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+          <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
             {activeTab === 'personal' && (
               <PersonalInfoTab profile={profile} onSaved={handleSaved} />
             )}

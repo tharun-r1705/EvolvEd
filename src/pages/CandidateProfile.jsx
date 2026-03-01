@@ -13,7 +13,7 @@ export default function CandidateProfile() {
           {/* Left Column */}
           <div className="lg:col-span-4 flex flex-col gap-6">
             {/* Profile Card */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-[#e4e2dd]">
+            <div className="bg-white rounded-xl p-6 shadow-md border border-[#c8c3bc]">
               <div className="flex flex-col items-center text-center">
                 <div className="relative mb-4">
                   <div
@@ -79,7 +79,7 @@ export default function CandidateProfile() {
           {/* Right Column */}
           <div className="lg:col-span-8 flex flex-col gap-8">
             {/* Readiness Score Header */}
-            <div className="bg-white rounded-xl p-6 md:p-8 shadow-sm border border-[#e4e2dd] flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
+            <div className="bg-white rounded-xl p-6 md:p-8 shadow-md border border-[#c8c3bc] flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-full bg-gradient-to-l from-primary/5 to-transparent pointer-events-none" />
               <div className="flex-1 z-10">
                 <div className="flex items-center gap-2 mb-2">
@@ -111,7 +111,7 @@ export default function CandidateProfile() {
                   Skills Proficiency
                 </h3>
               </div>
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-[#e4e2dd]">
+              <div className="bg-white rounded-xl p-6 shadow-md border border-[#c8c3bc]">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                   {[['React / Next.js', 95, 'Expert'], ['TypeScript', 85, 'Advanced'], ['Python / Django', 80, 'Advanced'], ['PostgreSQL', 65, 'Intermediate']].map(([skill, pct, level]) => (
                     <div key={skill}>
@@ -159,7 +159,7 @@ export default function CandidateProfile() {
                     img: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCJQM9wwQ3vVDMLIBa8IzWx7zttth8DI_SL0lInNcJpNhavqkwZ3-vswOUD_QiLqNZFoeBtNm1q4HIhrJX4ENvMyoARURYW2Quq6SL-P1P-DH_Fue1CwEP5qcrTgZ0nmhFXpkq8983hDobhZPfnwthl6FbUx97tr2QA7Psz7bu_f8gn-0AumqAZhG7J0d-rz6WL368KUtWBTAUolifKNyKxHtyUVFO5bVUdW_RJG0CVUA4NbHmXA75F_vMeOWeLI1Qioqo7o3ssiBLm')",
                   },
                 ].map(({ title, desc, tags, img }) => (
-                  <div key={title} className="bg-white rounded-xl overflow-hidden shadow-sm border border-[#e4e2dd] flex flex-col h-full group">
+                  <div key={title} className="bg-white rounded-xl overflow-hidden shadow-md border border-[#c8c3bc] flex flex-col h-full group">
                     <div className="h-40 bg-slate-200 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" style={{ backgroundImage: img }} />
                     <div className="p-5 flex-1 flex flex-col">
                       <h4 className="text-lg font-bold text-midnight-navy mb-2">{title}</h4>
@@ -187,7 +187,7 @@ export default function CandidateProfile() {
                 </h3>
                 <a className="text-sm font-medium text-primary hover:underline" href="#">View All</a>
               </div>
-              <div className="bg-white rounded-xl shadow-sm border border-[#e4e2dd] overflow-hidden">
+              <div className="bg-white rounded-xl shadow-md border border-[#c8c3bc] overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-sm">
                     <thead className="bg-[#f4f3f1] border-b border-[#e4e2dd]">

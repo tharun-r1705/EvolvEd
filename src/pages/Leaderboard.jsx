@@ -144,7 +144,7 @@ function LeaderboardTable({ entries, loading, scope, myStudentId, totalPages, pa
     return (
       <div className="space-y-2">
         {[...Array(8)].map((_, i) => (
-          <div key={i} className="flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
+          <div key={i} className="flex items-center gap-4 rounded-xl bg-white p-4 shadow-md ring-1 ring-slate-200">
             <Skeleton className="h-6 w-8" />
             <Skeleton className="h-10 w-10 rounded-full" />
             <div className="flex-1 space-y-2">
@@ -176,10 +176,10 @@ function LeaderboardTable({ entries, loading, scope, myStudentId, totalPages, pa
           return (
             <div
               key={entry.studentId}
-              className={`flex items-center gap-3 rounded-xl p-4 shadow-sm ring-1 transition-all ${
+              className={`flex items-center gap-3 rounded-xl p-4 shadow-md ring-1 transition-all ${`
                 isMe
                   ? 'bg-primary/5 ring-primary/30 shadow-md'
-                  : 'bg-white ring-slate-100 hover:shadow-md hover:ring-primary/20'
+                  : 'bg-white ring-slate-200 hover:shadow-md hover:ring-primary/20'
               }`}
             >
               {/* Rank / Medal */}
@@ -394,7 +394,7 @@ export default function Leaderboard() {
           <MyRankCard myRank={myRank} loading={myRankLoading} />
 
           {/* ── Tab Bar ── */}
-          <div className="flex gap-1 rounded-xl bg-white p-1.5 shadow-sm ring-1 ring-slate-100 mb-6 overflow-x-auto">
+          <div className="flex gap-1 rounded-xl bg-white p-1.5 shadow-md ring-1 ring-slate-200 mb-6 overflow-x-auto">
             {TABS.map((tab) => (
               <button
                 key={tab.id}

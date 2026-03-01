@@ -17,7 +17,7 @@ export default function FloatingChatButton() {
   return (
     <Link
       to="/student/chat"
-      className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-2xl bg-secondary px-4 py-3 text-white shadow-lg hover:bg-secondary/90 transition-all hover:scale-105 active:scale-95"
+      className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-2xl bg-secondary px-4 py-3 text-white shadow-lg hover:bg-secondary/90 transition-all hover:scale-105 active:scale-95"
       title="Open AI Assistant"
     >
       <span className="material-symbols-outlined text-[22px]">smart_toy</span>

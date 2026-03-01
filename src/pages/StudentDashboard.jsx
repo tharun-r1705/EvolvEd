@@ -50,7 +50,7 @@ function DashboardSkeleton() {
   return (
     <div className="space-y-6">
       <div className="grid gap-6 lg:grid-cols-12">
-        <div className="lg:col-span-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+        <div className="lg:col-span-8 rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
           <Skeleton className="h-6 w-48 mb-3" />
           <Skeleton className="h-4 w-72 mb-6" />
           <div className="flex gap-8">
@@ -69,7 +69,7 @@ function DashboardSkeleton() {
       </div>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-100 space-y-2">
+          <div key={i} className="rounded-xl bg-white p-5 shadow-md ring-1 ring-slate-200 space-y-2">
             <Skeleton className="h-6 w-6" />
             <Skeleton className="h-4 w-20" />
             <Skeleton className="h-8 w-12" />
@@ -328,7 +328,7 @@ export default function StudentDashboard() {
           {/* ── Hero: Score + Profile Completion ── */}
           <div className="grid gap-6 lg:grid-cols-12 mb-8">
             {/* Score Card */}
-            <div className="lg:col-span-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100 relative overflow-hidden group">
+            <div className="lg:col-span-8 rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200 relative overflow-hidden group">
               <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/5 blur-3xl transition-all group-hover:bg-primary/10" />
               <div className="flex flex-col items-start justify-between gap-8 sm:flex-row sm:items-center">
                 <div className="flex flex-col gap-3">
@@ -418,7 +418,7 @@ export default function StudentDashboard() {
               { icon: 'pending_actions', label: 'Pending Actions', value: metrics.pendingActions },
               { icon: 'groups', label: 'Profile Views', value: metrics.profileViews },
             ].map(({ icon, label, value }) => (
-              <div key={label} className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-100 hover:shadow-md transition-shadow">
+              <div key={label} className="rounded-xl bg-white p-5 shadow-md ring-1 ring-slate-200 hover:shadow-md transition-shadow">
                 <div className="mb-2 text-slate-400">
                   <span className="material-symbols-outlined">{icon}</span>
                 </div>
@@ -434,7 +434,7 @@ export default function StudentDashboard() {
             <div className="lg:col-span-8 flex flex-col gap-6">
 
               {/* Readiness Trend Chart */}
-              <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
                 <div className="mb-6">
                   <h3 className="text-lg font-bold text-secondary">Readiness Trend</h3>
                   <p className="text-sm text-slate-500">Assessment performance over the last 6 months</p>
@@ -459,7 +459,7 @@ export default function StudentDashboard() {
 
               {/* Score Breakdown Radar */}
               {scoreBreakdown && radarData.length > 0 && (
-                <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+                <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
                   <div className="mb-4">
                     <h3 className="text-lg font-bold text-secondary">Score Breakdown</h3>
                     <p className="text-sm text-slate-500">All 8 readiness components</p>
@@ -505,7 +505,7 @@ export default function StudentDashboard() {
               )}
 
               {/* Tech Trends */}
-              <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
                 <div className="mb-4 flex items-center justify-between">
                   <div>
                     <div className="flex items-center gap-2">
@@ -521,7 +521,7 @@ export default function StudentDashboard() {
                 {trendsLoading ? (
                   <div className="grid grid-cols-2 gap-3">
                     {[...Array(6)].map((_, i) => (
-                      <div key={i} className="rounded-xl border border-slate-100 p-3 space-y-2">
+                      <div key={i} className="rounded-xl border border-slate-200 p-3 space-y-2">
                         <Skeleton className="h-4 w-24" />
                         <Skeleton className="h-3 w-16 rounded-full" />
                         <Skeleton className="h-1.5 w-full rounded-full" />
@@ -536,7 +536,7 @@ export default function StudentDashboard() {
                 ) : (
                   <div className="grid grid-cols-2 gap-3">
                     {techTrends.map((trend) => (
-                      <div key={trend.id} className="rounded-xl border border-slate-100 p-3 hover:border-primary/30 hover:shadow-sm transition-all">
+                      <div key={trend.id} className="rounded-xl border border-slate-200 p-3 hover:border-primary/30 hover:shadow-sm transition-all">
                         <div className="flex items-start justify-between gap-1 mb-1.5">
                           <p className="text-sm font-bold text-secondary leading-tight">{trend.title}</p>
                           <span className="text-xs font-bold text-slate-400 shrink-0">{trend.trendScore}</span>
@@ -558,7 +558,7 @@ export default function StudentDashboard() {
               </div>
 
               {/* Recent Assessments */}
-              <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
                 <div className="mb-4 flex items-center justify-between">
                   <h3 className="text-lg font-bold text-secondary">Recent Assessments</h3>
                   <Link to="/student/assessments" className="text-xs font-semibold text-primary hover:underline">
@@ -603,7 +603,7 @@ export default function StudentDashboard() {
               </div>
 
               {/* Recent Applications */}
-              <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
                 <div className="mb-4 flex items-center justify-between">
                   <h3 className="text-lg font-bold text-secondary">Recent Applications</h3>
                   <Link to="/student/applications" className="text-xs font-semibold text-primary hover:underline">
@@ -624,7 +624,7 @@ export default function StudentDashboard() {
                       >
                         <div className="flex items-center gap-3">
                           {app.companyLogoUrl ? (
-                            <img src={app.companyLogoUrl} alt={app.companyName} className="h-9 w-9 rounded-lg object-contain border border-slate-100" />
+                            <img src={app.companyLogoUrl} alt={app.companyName} className="h-9 w-9 rounded-lg object-contain border border-slate-200" />
                           ) : (
                             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-400 shrink-0">
                               <span className="material-symbols-outlined text-[18px]">business</span>
@@ -649,7 +649,7 @@ export default function StudentDashboard() {
             <div className="lg:col-span-4 flex flex-col gap-6">
 
               {/* Skill Proficiency */}
-              <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
                 <div className="mb-5">
                   <h3 className="text-lg font-bold text-secondary">Skill Proficiency</h3>
                   <p className="text-sm text-slate-500">Top skills by proficiency</p>
@@ -684,7 +684,7 @@ export default function StudentDashboard() {
               </div>
 
               {/* Goals Widget */}
-              <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
                 <div className="mb-4 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
@@ -741,7 +741,7 @@ export default function StudentDashboard() {
               </div>
 
               {/* Daily Tip */}
-              <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
                 <div className="mb-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-yellow-50">
@@ -772,7 +772,7 @@ export default function StudentDashboard() {
               </div>
 
               {/* Interview Question */}
-              <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
                 <div className="mb-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
@@ -803,7 +803,7 @@ export default function StudentDashboard() {
                     </div>
                     <p className="text-sm font-medium text-secondary leading-relaxed">{interviewQuestion.question}</p>
                     {showAnswer && (
-                      <div className="rounded-lg bg-slate-50 border border-slate-100 p-3">
+                      <div className="rounded-lg bg-slate-50 border border-slate-200 p-3">
                         <p className="text-xs text-slate-600 leading-relaxed">{interviewQuestion.answer}</p>
                       </div>
                     )}
@@ -833,7 +833,7 @@ export default function StudentDashboard() {
 
               {/* Learning Pace Widget */}
               {learningPace ? (
-                <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+                <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
                   <div className="mb-4 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
@@ -885,7 +885,7 @@ export default function StudentDashboard() {
                   </div>
                 </div>
               ) : (
-                <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100">
+                <div className="rounded-2xl bg-white p-5 shadow-md ring-1 ring-slate-200">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="material-symbols-outlined text-primary text-[20px]">speed</span>
                     <h3 className="text-base font-bold text-secondary">Learning Pace</h3>
@@ -899,7 +899,7 @@ export default function StudentDashboard() {
 
               {/* LeetCode Summary */}
               {leetcodeSummary ? (
-                <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+                <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
                   <div className="mb-4 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-50">
@@ -932,7 +932,7 @@ export default function StudentDashboard() {
                   </div>
                 </div>
               ) : (
-                <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100">
+                <div className="rounded-2xl bg-white p-5 shadow-md ring-1 ring-slate-200">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="material-symbols-outlined text-orange-400 text-[20px]">code</span>
                     <h3 className="text-base font-bold text-secondary">LeetCode</h3>
@@ -946,7 +946,7 @@ export default function StudentDashboard() {
 
               {/* GitHub Summary */}
               {githubSummary ? (
-                <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+                <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
                   <div className="mb-4 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100">
@@ -975,7 +975,7 @@ export default function StudentDashboard() {
                   </div>
                 </div>
               ) : (
-                <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100">
+                <div className="rounded-2xl bg-white p-5 shadow-md ring-1 ring-slate-200">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="material-symbols-outlined text-slate-500 text-[20px]">commit</span>
                     <h3 className="text-base font-bold text-secondary">GitHub</h3>

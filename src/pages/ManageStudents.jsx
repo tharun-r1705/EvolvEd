@@ -28,7 +28,7 @@ export default function ManageStudents() {
               </p>
             </div>
             <div className="flex gap-3">
-              <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 font-medium text-sm transition-colors shadow-sm">
+              <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 font-medium text-sm transition-colors shadow-md">
                 <span className="material-symbols-outlined text-[20px]">file_upload</span>
                 Import CSV
               </button>
@@ -40,7 +40,7 @@ export default function ManageStudents() {
           </div>
 
           {/* Search & Filters Toolbar */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-md">
             {/* Search */}
             <div className="lg:col-span-4 relative group">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
@@ -73,7 +73,7 @@ export default function ManageStudents() {
           </div>
 
           {/* Data Table */}
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+          <div className="bg-white border border-slate-200 rounded-xl shadow-md overflow-hidden flex flex-col">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -132,7 +132,7 @@ export default function ManageStudents() {
               </table>
             </div>
             {/* Footer */}
-            <div className="px-6 py-4 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="px-6 py-4 border-t border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <p className="text-sm text-slate-500">
                 Showing <span className="font-medium text-slate-900">5</span> of <span className="font-medium text-slate-900">1,240</span> students
               </p>

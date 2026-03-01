@@ -42,7 +42,7 @@ export default function PostJob() {
             {/* Form Container */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Left Column: Form Fields */}
-              <div className="lg:col-span-2 flex flex-col gap-6 bg-white p-8 rounded-xl border border-[#e4e2dd] shadow-sm">
+              <div className="lg:col-span-2 flex flex-col gap-6 bg-white p-8 rounded-xl border border-[#c8c3bc] shadow-md">
                 {/* Basic Info Section */}
                 <div className="flex flex-col gap-6">
                   <h3 className="text-lg font-bold text-text-main border-b border-[#f4f3f1] pb-2">Basic Information</h3>
@@ -165,7 +165,7 @@ export default function PostJob() {
               {/* Right Column */}
               <div className="flex flex-col gap-6">
                 {/* Publishing Actions Card */}
-                <div className="bg-white p-6 rounded-xl border border-[#e4e2dd] shadow-sm flex flex-col gap-4 sticky top-6">
+                <div className="bg-white p-6 rounded-xl border border-[#c8c3bc] shadow-md flex flex-col gap-4 sticky top-6">
                   <h3 className="text-lg font-bold text-text-main">Publishing Actions</h3>
                   <p className="text-sm text-text-secondary">Review your job posting settings before going live.</p>
                   <div className="flex items-center justify-between py-2 border-b border-[#f4f3f1]">

@@ -264,7 +264,7 @@ function LanguageBar({ languages, maxVal }) {
 
 function StatPill({ icon, label, value, accent = false }) {
   return (
-    <div className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border ${accent ? 'bg-primary/10 border-primary/20' : 'bg-slate-50 border-slate-100'}`}>
+    <div className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border ${accent ? 'bg-primary/10 border-primary/20' : 'bg-slate-50 border-slate-200'}`}>
       <span className={`material-symbols-outlined text-xl ${accent ? 'text-primary' : 'text-slate-400'}`}>{icon}</span>
       <div>
         <p className="text-xs text-slate-500">{label}</p>
@@ -279,7 +279,7 @@ function StatPill({ icon, label, value, accent = false }) {
 function LeetCodeCard({ data, loading, onRefresh, refreshing }) {
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 animate-pulse">
+      <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6 animate-pulse">
         <div className="h-6 bg-slate-100 rounded w-1/3 mb-4" />
         <div className="h-32 bg-slate-100 rounded mb-4" />
         <div className="h-4 bg-slate-100 rounded w-1/2" />
@@ -289,7 +289,7 @@ function LeetCodeCard({ data, loading, onRefresh, refreshing }) {
 
   if (!data?.connected) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 flex flex-col items-center justify-center text-center gap-4">
+      <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-8 flex flex-col items-center justify-center text-center gap-4">
         <div className="w-16 h-16 rounded-2xl bg-orange-50 flex items-center justify-center">
           <span className="material-symbols-outlined text-3xl text-orange-400">code</span>
         </div>
@@ -311,7 +311,7 @@ function LeetCodeCard({ data, loading, onRefresh, refreshing }) {
   const totalQ = (d.easyTotal || 0) + (d.mediumTotal || 0) + (d.hardTotal || 0) || d.totalQuestions || 1;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-slate-50">
         <div className="flex items-center gap-3">
@@ -407,7 +407,7 @@ function LeetCodeCard({ data, loading, onRefresh, refreshing }) {
 function GitHubCard({ data, loading, onRefresh, refreshing }) {
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 animate-pulse">
+      <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6 animate-pulse">
         <div className="h-6 bg-slate-100 rounded w-1/3 mb-4" />
         <div className="h-32 bg-slate-100 rounded mb-4" />
         <div className="h-4 bg-slate-100 rounded w-1/2" />
@@ -417,7 +417,7 @@ function GitHubCard({ data, loading, onRefresh, refreshing }) {
 
   if (!data?.connected) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 flex flex-col items-center justify-center text-center gap-4">
+      <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-8 flex flex-col items-center justify-center text-center gap-4">
         <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center">
           <span className="material-symbols-outlined text-3xl text-slate-400">hub</span>
         </div>
@@ -438,7 +438,7 @@ function GitHubCard({ data, loading, onRefresh, refreshing }) {
   const d = data.data;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-slate-50">
         <div className="flex items-center gap-3">
@@ -512,7 +512,7 @@ function GitHubCard({ data, loading, onRefresh, refreshing }) {
                 href={repo.url}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-start gap-2.5 p-3 rounded-xl border border-slate-100 hover:border-primary/30 hover:bg-primary/5 transition-colors group"
+                className="flex items-start gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-primary/30 hover:bg-primary/5 transition-colors group"
               >
                 <span className="material-symbols-outlined text-slate-400 group-hover:text-primary text-base mt-0.5 flex-shrink-0">
                   {repo.fork ? 'fork_right' : 'folder_open'}

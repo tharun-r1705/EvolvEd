@@ -222,7 +222,7 @@ function ProjectModal({ project, onClose, onSave }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 flex-shrink-0">
           <h2 className="text-lg font-bold text-secondary">
             {isEdit ? 'Edit Project' : 'Add Project'}
           </h2>
@@ -358,7 +358,7 @@ function ProjectModal({ project, onClose, onSave }) {
         </form>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-100 flex-shrink-0">
+        <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-200 flex-shrink-0">
           <button
             type="button"
             onClick={onClose}
@@ -425,7 +425,7 @@ function ProjectCard({ project, onEdit, onDelete }) {
     : 'bg-amber-100 text-amber-700';
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col overflow-hidden group">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-md hover:shadow-md transition-all flex flex-col overflow-hidden group">
       {/* Image */}
       <div className="relative h-40 bg-gradient-to-br from-slate-100 to-slate-200 flex-shrink-0 overflow-hidden">
         {project.imageUrl ? (
@@ -629,7 +629,7 @@ export default function StudentProjects() {
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-white rounded-2xl border border-slate-100 shadow-sm animate-pulse">
+                <div key={i} className="bg-white rounded-2xl border border-slate-200 shadow-md animate-pulse">
                   <div className="h-40 bg-slate-100 rounded-t-2xl" />
                   <div className="p-5 space-y-3">
                     <div className="h-4 bg-slate-100 rounded w-3/4" />

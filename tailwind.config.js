@@ -8,7 +8,7 @@ export default {
         primary: '#c6a43f',
         'primary-dark': '#b08e30',
         'primary-light': '#ebdcb2',
-        'background-light': '#f8f7f6',
+        'background-light': '#e8e3de',
         'background-dark': '#1f1c13',
         'midnight-navy': '#0B1E33',
         'warm-white': '#F9F6F0',

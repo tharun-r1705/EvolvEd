@@ -102,7 +102,7 @@ function MessageBubble({ msg }) {
       <div className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed
         ${isUser
           ? 'bg-primary text-white rounded-tr-sm'
-          : 'bg-white text-slate-700 rounded-tl-sm shadow-sm ring-1 ring-slate-100'
+          : 'bg-white text-slate-700 rounded-tl-sm shadow-md ring-1 ring-slate-200'
         }`}>
         {isUser
           ? <p>{msg.content}</p>
@@ -125,7 +125,7 @@ function TypingIndicator() {
       <div className="flex-shrink-0 h-8 w-8 rounded-full bg-secondary flex items-center justify-center">
         <span className="material-symbols-outlined text-white text-[16px]">smart_toy</span>
       </div>
-      <div className="bg-white rounded-2xl rounded-tl-sm shadow-sm ring-1 ring-slate-100 px-4 py-3 flex items-center gap-1">
+      <div className="bg-white rounded-2xl rounded-tl-sm shadow-md ring-1 ring-slate-200 px-4 py-3 flex items-center gap-1">
         {[0, 1, 2].map((i) => (
           <div key={i} className="h-2 w-2 rounded-full bg-slate-400 animate-bounce"
             style={{ animationDelay: `${i * 0.15}s` }} />
@@ -312,7 +312,7 @@ export default function StudentChat() {
       {/* ── Conversation Sidebar ── */}
         <div className={`flex flex-col bg-white border-r border-slate-200 flex-shrink-0 transition-all duration-200
           ${sidebarOpen ? 'w-72' : 'w-0 overflow-hidden'}`}>
-          <div className="flex items-center justify-between p-4 border-b border-slate-100">
+          <div className="flex items-center justify-between p-4 border-b border-slate-200">
             <h2 className="text-sm font-bold text-secondary">Conversations</h2>
             <button
               onClick={startNewConversation}
@@ -428,7 +428,7 @@ export default function StudentChat() {
 
           {/* Quick actions strip (shown when conversation active) */}
           {!isEmpty && !loadingMessages && (
-            <div className="px-6 py-2 flex gap-2 overflow-x-auto border-t border-slate-100 bg-white">
+            <div className="px-6 py-2 flex gap-2 overflow-x-auto border-t border-slate-200 bg-white">
               {QUICK_ACTIONS.map((action) => (
                 <button
                   key={action.label}

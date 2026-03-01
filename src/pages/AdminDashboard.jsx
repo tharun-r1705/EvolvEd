@@ -25,7 +25,7 @@ export default function AdminDashboard() {
               { label: 'Active Recruiters', value: '85', badge: '+12%', note: 'new partners', icon: 'business_center', iconBg: 'bg-purple-50 text-purple-600' },
               { label: 'Avg Readiness Score', value: '78%', badge: '+3.5%', note: 'improvement', icon: 'speed', iconBg: 'bg-amber-50 text-amber-600' },
             ].map(({ label, value, badge, note, icon, iconBg }) => (
-              <div key={label} className="bg-surface-light p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between h-40 group hover:border-primary/50 transition-colors">
+              <div key={label} className="bg-surface-light p-6 rounded-xl border border-gray-200 shadow-md flex flex-col justify-between h-40 group hover:border-primary/50 transition-colors">
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-text-muted font-medium mb-1">{label}</p>
@@ -48,7 +48,7 @@ export default function AdminDashboard() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Department Performance Chart */}
-            <div className="lg:col-span-2 bg-surface-light rounded-xl border border-gray-100 shadow-sm p-6">
+            <div className="lg:col-span-2 bg-surface-light rounded-xl border border-gray-200 shadow-md p-6">
               <div className="flex flex-wrap items-center justify-between mb-8 gap-4">
                 <div>
                   <h3 className="text-lg font-bold text-secondary">Department Performance</h3>
@@ -87,7 +87,7 @@ export default function AdminDashboard() {
             {/* Right Column Widgets */}
             <div className="flex flex-col gap-6">
               {/* Upcoming Drives */}
-              <div className="bg-surface-light rounded-xl border border-gray-100 shadow-sm p-6 flex-1">
+              <div className="bg-surface-light rounded-xl border border-gray-200 shadow-md p-6 flex-1">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-bold text-secondary">Upcoming Drives</h3>
                   <a className="text-sm text-primary font-medium hover:underline" href="#">View All</a>
@@ -134,7 +134,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Recent Placements Table */}
-          <div className="mt-8 bg-surface-light rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="mt-8 bg-surface-light rounded-xl border border-gray-200 shadow-md overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
               <h3 className="text-lg font-bold text-secondary">Recent Placements</h3>
               <div className="flex gap-2">
