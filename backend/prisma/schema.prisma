@@ -54,6 +54,29 @@ enum StudentStatus {
   placed
 }
 
+enum ProjectStatus {
+  in_progress
+  completed
+}
+
+enum EventType {
+  hackathon
+  workshop
+  conference
+  competition
+  seminar
+  other
+}
+
+enum EventAchievement {
+  winner
+  runner_up
+  participant
+  speaker
+  organizer
+  finalist
+}
+
 // ─────────────────────────────────────────────────────────────────
 // USERS (base auth table for all roles)
 // ─────────────────────────────────────────────────────────────────
@@ -138,6 +161,7 @@ model Student {
   projects       Project[]
   internships    Internship[]
   certifications Certification[]
+  events         Event[]
   placements     Placement[]
   resumes        Resume[]
 
@@ -275,15 +299,21 @@ model StudentSkill {
 // ─────────────────────────────────────────────────────────────────
 
 model Project {
-  id          String    @id @default(uuid()) @db.Uuid
-  studentId   String    @map("student_id") @db.Uuid
+  id          String        @id @default(uuid()) @db.Uuid
+  studentId   String        @map("student_id") @db.Uuid
   title       String
   description String?
   tags        String[]
+  techStack   String[]      @map("tech_stack")
   url         String?
-  imageUrl    String?   @map("image_url")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+  githubUrl   String?       @map("github_url")
+  imageUrl    String?       @map("image_url")
+  imagePublicId String?     @map("image_public_id")
+  status      ProjectStatus @default(in_progress)
+  startDate   DateTime?     @map("start_date")
+  endDate     DateTime?     @map("end_date")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
@@ -323,12 +353,39 @@ model Certification {
   issueDate     DateTime  @map("issue_date")
   expiryDate    DateTime? @map("expiry_date")
   credentialUrl String?   @map("credential_url")
+  credentialId  String?   @map("credential_id")
+  imageUrl      String?   @map("image_url")
+  imagePublicId String?   @map("image_public_id")
   createdAt     DateTime  @default(now()) @map("created_at")
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@index([studentId])
   @@map("certifications")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// EVENTS (hackathons, workshops, competitions, conferences)
+// ─────────────────────────────────────────────────────────────────
+
+model Event {
+  id             String           @id @default(uuid()) @db.Uuid
+  studentId      String           @map("student_id") @db.Uuid
+  title          String
+  organizer      String
+  type           EventType        @default(other)
+  date           DateTime
+  description    String?
+  achievement    EventAchievement @default(participant)
+  certificateUrl String?          @map("certificate_url")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([date])
+  @@map("events")
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -398,6 +455,7 @@ model ScoreBreakdown {
   internships      Decimal  @default(0) @db.Decimal(5, 2)
   certifications   Decimal  @default(0) @db.Decimal(5, 2)
   assessments      Decimal  @default(0) @db.Decimal(5, 2)
+  events           Decimal  @default(0) @db.Decimal(5, 2)
   totalScore       Decimal  @default(0) @db.Decimal(5, 2) @map("total_score")
   lastCalculatedAt DateTime @default(now()) @map("last_calculated_at")
 

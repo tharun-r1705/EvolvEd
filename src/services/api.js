@@ -71,6 +71,26 @@ export const studentService = {
     api.post('/student/resumes', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
   updateResume: (id, data) => api.put(`/student/resumes/${id}`, data),
   deleteResume: (id) => api.delete(`/student/resumes/${id}`),
+
+  // Projects
+  getProjects: () => api.get('/student/projects'),
+  addProject: (data) => api.post('/student/projects', data),
+  updateProject: (id, data) => api.put(`/student/projects/${id}`, data),
+  uploadProjectImage: (id, formData) =>
+    api.post(`/student/projects/${id}/image`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  deleteProject: (id) => api.delete(`/student/projects/${id}`),
+
+  // Certifications
+  getCertifications: () => api.get('/student/certifications'),
+  addCertification: (data) => api.post('/student/certifications', data),
+  updateCertification: (id, data) => api.put(`/student/certifications/${id}`, data),
+  deleteCertification: (id) => api.delete(`/student/certifications/${id}`),
+
+  // Events
+  getEvents: () => api.get('/student/events'),
+  addEvent: (data) => api.post('/student/events', data),
+  updateEvent: (id, data) => api.put(`/student/events/${id}`, data),
+  deleteEvent: (id) => api.delete(`/student/events/${id}`),
 };
 
 // ---------------------------------------------------------------------------

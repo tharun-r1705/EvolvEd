@@ -46,6 +46,13 @@ const uploadLinkedinPdf = multer({
   fileFilter: fileFilter(['application/pdf']),
 }).single('linkedinPdf');
 
+// Project image upload: images only, max 5MB
+const uploadProjectImage = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter: fileFilter(['image/jpeg', 'image/png', 'image/webp']),
+}).single('projectImage');
+
 // Wrap multer to produce proper AppErrors instead of multer's raw errors
 function wrapMulter(multerFn) {
   return (req, res, next) => {
@@ -66,4 +73,5 @@ module.exports = {
   uploadAvatar: wrapMulter(uploadAvatar),
   uploadResume: wrapMulter(uploadResume),
   uploadLinkedinPdf: wrapMulter(uploadLinkedinPdf),
+  uploadProjectImage: wrapMulter(uploadProjectImage),
 };

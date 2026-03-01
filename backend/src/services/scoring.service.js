@@ -4,11 +4,12 @@ const prisma = require('../lib/prisma');
 
 // Default score weights (will be overridden by DB values if present)
 const DEFAULT_WEIGHTS = {
-  technical_skills: 30,
+  technical_skills: 28,
   projects: 20,
-  internships: 20,
+  internships: 18,
   certifications: 10,
-  assessments: 20,
+  assessments: 19,
+  events: 5,
 };
 
 /**
@@ -97,6 +98,31 @@ async function calcCertificationsScore(studentId) {
 }
 
 /**
+ * Calculate events score (0-100).
+ * Formula: min(count * 20, 100) — 5 events = 100.
+ * Bonus: +5 per winning/runner_up achievement (capped by overall 100).
+ * @param {string} studentId
+ * @returns {Promise<number>}
+ */
+async function calcEventsScore(studentId) {
+  const events = await prisma.event.findMany({
+    where: { studentId },
+    select: { achievement: true },
+  });
+
+  if (events.length === 0) return 0;
+
+  let score = events.length * 20;
+  for (const ev of events) {
+    if (ev.achievement === 'winner') score += 5;
+    else if (ev.achievement === 'runner_up' || ev.achievement === 'finalist') score += 3;
+    else if (ev.achievement === 'speaker' || ev.achievement === 'organizer') score += 2;
+  }
+
+  return Math.min(score, 100);
+}
+
+/**
  * Calculate assessment score (0-100).
  * Returns the average of (totalScore / maxScore * 100) across all assessments.
  * @param {string} studentId
@@ -154,7 +180,7 @@ function calcProfileCompletion(student) {
  * @returns {Promise<object>} Updated score breakdown
  */
 async function recalculateScore(studentId) {
-  const [weights, skillsScore, projectsScore, internshipsScore, certsScore, assessScore] =
+  const [weights, skillsScore, projectsScore, internshipsScore, certsScore, assessScore, eventsScore] =
     await Promise.all([
       loadWeights(),
       calcTechnicalSkillsScore(studentId),
@@ -162,6 +188,7 @@ async function recalculateScore(studentId) {
       calcInternshipsScore(studentId),
       calcCertificationsScore(studentId),
       calcAssessmentsScore(studentId),
+      calcEventsScore(studentId),
     ]);
 
   // Weighted total (each component is 0-100, weight is a percentage)
@@ -170,7 +197,8 @@ async function recalculateScore(studentId) {
     (projectsScore * weights.projects) / 100 +
     (internshipsScore * weights.internships) / 100 +
     (certsScore * weights.certifications) / 100 +
-    (assessScore * weights.assessments) / 100;
+    (assessScore * weights.assessments) / 100 +
+    (eventsScore * (weights.events || 0)) / 100;
 
   const roundedTotal = Math.round(totalScore * 100) / 100;
 
@@ -204,6 +232,7 @@ async function recalculateScore(studentId) {
       internships: internshipsScore,
       certifications: certsScore,
       assessments: assessScore,
+      events: eventsScore,
       totalScore: roundedTotal,
       lastCalculatedAt: new Date(),
     },
@@ -213,6 +242,7 @@ async function recalculateScore(studentId) {
       internships: internshipsScore,
       certifications: certsScore,
       assessments: assessScore,
+      events: eventsScore,
       totalScore: roundedTotal,
       lastCalculatedAt: new Date(),
     },
@@ -235,6 +265,7 @@ async function recalculateScore(studentId) {
       internships: internshipsScore,
       certifications: certsScore,
       assessments: assessScore,
+      events: eventsScore,
     },
     weights,
     totalScore: roundedTotal,

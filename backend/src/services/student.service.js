@@ -166,6 +166,7 @@ async function getProfile(userId) {
       projects: { orderBy: { createdAt: 'desc' } },
       internships: { orderBy: { startDate: 'desc' } },
       certifications: { orderBy: { issueDate: 'desc' } },
+      events: { orderBy: { date: 'desc' } },
       resumes: { orderBy: { uploadedAt: 'desc' } },
       scoreBreakdown: true,
     },
@@ -207,6 +208,7 @@ async function getProfile(userId) {
     projects: student.projects,
     internships: student.internships,
     certifications: student.certifications,
+    events: student.events,
     resumes: student.resumes,
     scoreBreakdown: student.scoreBreakdown
       ? {
@@ -215,6 +217,7 @@ async function getProfile(userId) {
           internships: Number(student.scoreBreakdown.internships),
           certifications: Number(student.scoreBreakdown.certifications),
           assessments: Number(student.scoreBreakdown.assessments),
+          events: Number(student.scoreBreakdown.events || 0),
           totalScore: Number(student.scoreBreakdown.totalScore),
         }
       : null,
@@ -340,6 +343,14 @@ async function removeSkill(userId, studentSkillId) {
 
 // ─── PROJECTS ────────────────────────────────────────────────────
 
+async function getProjects(userId) {
+  const student = await getStudentByUserId(userId);
+  return prisma.project.findMany({
+    where: { studentId: student.id },
+    orderBy: { createdAt: 'desc' },
+  });
+}
+
 async function addProject(userId, data) {
   const student = await getStudentByUserId(userId);
 
@@ -353,6 +364,54 @@ async function addProject(userId, data) {
   return { message: 'Project added successfully.', project };
 }
 
+async function updateProject(userId, projectId, data) {
+  const student = await getStudentByUserId(userId);
+
+  const project = await prisma.project.findFirst({
+    where: { id: projectId, studentId: student.id },
+  });
+  if (!project) throw AppError.notFound('Project not found.');
+
+  const updated = await prisma.project.update({
+    where: { id: projectId },
+    data,
+  });
+
+  return { message: 'Project updated successfully.', project: updated };
+}
+
+async function uploadProjectImage(userId, projectId, fileBuffer, mimetype) {
+  const student = await getStudentByUserId(userId);
+
+  const project = await prisma.project.findFirst({
+    where: { id: projectId, studentId: student.id },
+  });
+  if (!project) throw AppError.notFound('Project not found.');
+
+  // Delete old image if exists
+  if (project.imagePublicId) {
+    await deleteFromCloudinary(project.imagePublicId).catch(() => {});
+  }
+
+  const result = await uploadFromBuffer(fileBuffer, {
+    folder: 'evolved/projects',
+    public_id: `project_${projectId}`,
+    overwrite: true,
+    resource_type: 'image',
+    transformation: [
+      { width: 1200, height: 800, crop: 'limit' },
+      { quality: 'auto', fetch_format: 'auto' },
+    ],
+  });
+
+  const updated = await prisma.project.update({
+    where: { id: projectId },
+    data: { imageUrl: result.secure_url, imagePublicId: result.public_id },
+  });
+
+  return { message: 'Project image uploaded successfully.', imageUrl: result.secure_url, project: updated };
+}
+
 async function removeProject(userId, projectId) {
   const student = await getStudentByUserId(userId);
 
@@ -360,6 +419,11 @@ async function removeProject(userId, projectId) {
     where: { id: projectId, studentId: student.id },
   });
   if (!project) throw AppError.notFound('Project not found.');
+
+  // Delete image from Cloudinary if present
+  if (project.imagePublicId) {
+    await deleteFromCloudinary(project.imagePublicId).catch(() => {});
+  }
 
   await prisma.project.delete({ where: { id: projectId } });
 
@@ -401,6 +465,14 @@ async function removeInternship(userId, internshipId) {
 
 // ─── CERTIFICATIONS ──────────────────────────────────────────────
 
+async function getCertifications(userId) {
+  const student = await getStudentByUserId(userId);
+  return prisma.certification.findMany({
+    where: { studentId: student.id },
+    orderBy: { issueDate: 'desc' },
+  });
+}
+
 async function addCertification(userId, data) {
   const student = await getStudentByUserId(userId);
 
@@ -412,6 +484,22 @@ async function addCertification(userId, data) {
   await recalculateGlobalRankings().catch(() => {});
 
   return { message: 'Certification added successfully.', certification: cert };
+}
+
+async function updateCertification(userId, certId, data) {
+  const student = await getStudentByUserId(userId);
+
+  const cert = await prisma.certification.findFirst({
+    where: { id: certId, studentId: student.id },
+  });
+  if (!cert) throw AppError.notFound('Certification not found.');
+
+  const updated = await prisma.certification.update({
+    where: { id: certId },
+    data,
+  });
+
+  return { message: 'Certification updated successfully.', certification: updated };
 }
 
 async function removeCertification(userId, certId) {
@@ -427,6 +515,60 @@ async function removeCertification(userId, certId) {
   await recalculateGlobalRankings().catch(() => {});
 
   return { message: 'Certification removed successfully.' };
+}
+
+// ─── EVENTS ──────────────────────────────────────────────────────
+
+async function getEvents(userId) {
+  const student = await getStudentByUserId(userId);
+  return prisma.event.findMany({
+    where: { studentId: student.id },
+    orderBy: { date: 'desc' },
+  });
+}
+
+async function addEvent(userId, data) {
+  const student = await getStudentByUserId(userId);
+
+  const event = await prisma.event.create({
+    data: { studentId: student.id, ...data },
+  });
+
+  await recalculateScore(student.id);
+  await recalculateGlobalRankings().catch(() => {});
+
+  return { message: 'Event added successfully.', event };
+}
+
+async function updateEvent(userId, eventId, data) {
+  const student = await getStudentByUserId(userId);
+
+  const event = await prisma.event.findFirst({
+    where: { id: eventId, studentId: student.id },
+  });
+  if (!event) throw AppError.notFound('Event not found.');
+
+  const updated = await prisma.event.update({
+    where: { id: eventId },
+    data,
+  });
+
+  return { message: 'Event updated successfully.', event: updated };
+}
+
+async function deleteEvent(userId, eventId) {
+  const student = await getStudentByUserId(userId);
+
+  const event = await prisma.event.findFirst({
+    where: { id: eventId, studentId: student.id },
+  });
+  if (!event) throw AppError.notFound('Event not found.');
+
+  await prisma.event.delete({ where: { id: eventId } });
+  await recalculateScore(student.id);
+  await recalculateGlobalRankings().catch(() => {});
+
+  return { message: 'Event deleted successfully.' };
 }
 
 // ─── ASSESSMENTS ─────────────────────────────────────────────────
@@ -817,12 +959,21 @@ module.exports = {
   getSkills,
   addSkill,
   removeSkill,
+  getProjects,
   addProject,
+  updateProject,
+  uploadProjectImage,
   removeProject,
   addInternship,
   removeInternship,
+  getCertifications,
   addCertification,
+  updateCertification,
   removeCertification,
+  getEvents,
+  addEvent,
+  updateEvent,
+  deleteEvent,
   getAssessments,
   getAssessmentById,
   getApplications,

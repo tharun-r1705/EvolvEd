@@ -74,11 +74,47 @@ async function removeSkill(req, res, next) {
   }
 }
 
+// GET /api/student/projects
+async function getProjects(req, res, next) {
+  try {
+    const data = await studentService.getProjects(req.user.userId);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
 // POST /api/student/projects
 async function addProject(req, res, next) {
   try {
     const data = await studentService.addProject(req.user.userId, req.body);
     res.status(201).json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// PUT /api/student/projects/:projectId
+async function updateProject(req, res, next) {
+  try {
+    const data = await studentService.updateProject(req.user.userId, req.params.projectId, req.body);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// POST /api/student/projects/:projectId/image
+async function uploadProjectImage(req, res, next) {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded.' });
+    const data = await studentService.uploadProjectImage(
+      req.user.userId,
+      req.params.projectId,
+      req.file.buffer,
+      req.file.mimetype
+    );
+    res.json(data);
   } catch (err) {
     next(err);
   }
@@ -114,6 +150,16 @@ async function removeInternship(req, res, next) {
   }
 }
 
+// GET /api/student/certifications
+async function getCertifications(req, res, next) {
+  try {
+    const data = await studentService.getCertifications(req.user.userId);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
 // POST /api/student/certifications
 async function addCertification(req, res, next) {
   try {
@@ -124,10 +170,60 @@ async function addCertification(req, res, next) {
   }
 }
 
+// PUT /api/student/certifications/:certId
+async function updateCertification(req, res, next) {
+  try {
+    const data = await studentService.updateCertification(req.user.userId, req.params.certId, req.body);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
 // DELETE /api/student/certifications/:certId
 async function removeCertification(req, res, next) {
   try {
     const data = await studentService.removeCertification(req.user.userId, req.params.certId);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// GET /api/student/events
+async function getEvents(req, res, next) {
+  try {
+    const data = await studentService.getEvents(req.user.userId);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// POST /api/student/events
+async function addEvent(req, res, next) {
+  try {
+    const data = await studentService.addEvent(req.user.userId, req.body);
+    res.status(201).json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// PUT /api/student/events/:eventId
+async function updateEvent(req, res, next) {
+  try {
+    const data = await studentService.updateEvent(req.user.userId, req.params.eventId, req.body);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// DELETE /api/student/events/:eventId
+async function deleteEvent(req, res, next) {
+  try {
+    const data = await studentService.deleteEvent(req.user.userId, req.params.eventId);
     res.json(data);
   } catch (err) {
     next(err);
@@ -251,12 +347,21 @@ module.exports = {
   getSkills,
   addSkill,
   removeSkill,
+  getProjects,
   addProject,
+  updateProject,
+  uploadProjectImage,
   removeProject,
   addInternship,
   removeInternship,
+  getCertifications,
   addCertification,
+  updateCertification,
   removeCertification,
+  getEvents,
+  addEvent,
+  updateEvent,
+  deleteEvent,
   getAssessments,
   getAssessmentById,
   getApplications,

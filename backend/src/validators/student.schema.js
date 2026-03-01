@@ -137,6 +137,8 @@ const updateSkillSchema = z.object({
 
 // ─── PROJECTS ─────────────────────────────────────────────────────
 
+const PROJECT_STATUSES = ['in_progress', 'completed'];
+
 const addProjectSchema = z.object({
   title: z
     .string({ required_error: 'Project title is required.' })
@@ -150,8 +152,31 @@ const addProjectSchema = z.object({
     .optional()
     .nullable(),
   tags: z.array(z.string().trim().max(50)).max(10).optional().default([]),
+  techStack: z.array(z.string().trim().max(50)).max(20).optional().default([]),
   url: z.string().trim().url('Must be a valid URL.').optional().nullable(),
+  githubUrl: z
+    .string()
+    .trim()
+    .url('Must be a valid URL.')
+    .regex(/github\.com/i, 'Must be a GitHub URL.')
+    .optional()
+    .nullable(),
   imageUrl: z.string().trim().url('Must be a valid URL.').optional().nullable(),
+  status: z.enum(PROJECT_STATUSES).optional().default('in_progress'),
+  startDate: z.string().datetime().optional().nullable(),
+  endDate: z.string().datetime().optional().nullable(),
+});
+
+const updateProjectSchema = z.object({
+  title: z.string().trim().min(2).max(200).optional(),
+  description: z.string().trim().max(2000).optional().nullable(),
+  tags: z.array(z.string().trim().max(50)).max(10).optional(),
+  techStack: z.array(z.string().trim().max(50)).max(20).optional(),
+  url: z.string().trim().url().optional().nullable(),
+  githubUrl: z.string().trim().url().regex(/github\.com/i).optional().nullable(),
+  status: z.enum(PROJECT_STATUSES).optional(),
+  startDate: z.string().datetime().optional().nullable(),
+  endDate: z.string().datetime().optional().nullable(),
 });
 
 // ─── INTERNSHIPS ──────────────────────────────────────────────────
@@ -197,6 +222,60 @@ const addCertificationSchema = z.object({
     .datetime({ message: 'Issue date must be a valid ISO date string.' }),
   expiryDate: z.string().datetime().optional().nullable(),
   credentialUrl: z.string().trim().url('Must be a valid URL.').optional().nullable(),
+  credentialId: z.string().trim().max(200).optional().nullable(),
+});
+
+const updateCertificationSchema = z.object({
+  name: z.string().trim().min(1).max(200).optional(),
+  issuer: z.string().trim().min(1).max(200).optional(),
+  issueDate: z.string().datetime().optional(),
+  expiryDate: z.string().datetime().optional().nullable(),
+  credentialUrl: z.string().trim().url().optional().nullable(),
+  credentialId: z.string().trim().max(200).optional().nullable(),
+});
+
+// ─── EVENTS ───────────────────────────────────────────────────────
+
+const EVENT_TYPES = ['hackathon', 'workshop', 'conference', 'competition', 'seminar', 'other'];
+const EVENT_ACHIEVEMENTS = ['winner', 'runner_up', 'participant', 'speaker', 'organizer', 'finalist'];
+
+const addEventSchema = z.object({
+  title: z
+    .string({ required_error: 'Event title is required.' })
+    .trim()
+    .min(2, 'Title must be at least 2 characters.')
+    .max(200, 'Title cannot exceed 200 characters.'),
+  organizer: z
+    .string({ required_error: 'Organizer is required.' })
+    .trim()
+    .min(1, 'Organizer cannot be empty.')
+    .max(200, 'Organizer too long.'),
+  type: z
+    .enum(EVENT_TYPES, { errorMap: () => ({ message: `Type must be one of: ${EVENT_TYPES.join(', ')}` }) })
+    .default('other'),
+  date: z
+    .string({ required_error: 'Event date is required.' })
+    .datetime({ message: 'Date must be a valid ISO date string.' }),
+  description: z
+    .string()
+    .trim()
+    .max(1000, 'Description cannot exceed 1000 characters.')
+    .optional()
+    .nullable(),
+  achievement: z
+    .enum(EVENT_ACHIEVEMENTS, { errorMap: () => ({ message: `Achievement must be one of: ${EVENT_ACHIEVEMENTS.join(', ')}` }) })
+    .default('participant'),
+  certificateUrl: z.string().trim().url('Must be a valid URL.').optional().nullable(),
+});
+
+const updateEventSchema = z.object({
+  title: z.string().trim().min(2).max(200).optional(),
+  organizer: z.string().trim().min(1).max(200).optional(),
+  type: z.enum(EVENT_TYPES).optional(),
+  date: z.string().datetime().optional(),
+  description: z.string().trim().max(1000).optional().nullable(),
+  achievement: z.enum(EVENT_ACHIEVEMENTS).optional(),
+  certificateUrl: z.string().trim().url().optional().nullable(),
 });
 
 // ─── RESUME ───────────────────────────────────────────────────────
@@ -247,12 +326,19 @@ module.exports = {
   addSkillSchema,
   updateSkillSchema,
   addProjectSchema,
+  updateProjectSchema,
   addInternshipSchema,
   addCertificationSchema,
+  updateCertificationSchema,
+  addEventSchema,
+  updateEventSchema,
   assessmentQuerySchema,
   addResumeSchema,
   updateResumeSchema,
   DEPARTMENTS,
   YEARS_OF_STUDY,
   RESUME_CATEGORIES,
+  PROJECT_STATUSES,
+  EVENT_TYPES,
+  EVENT_ACHIEVEMENTS,
 };
