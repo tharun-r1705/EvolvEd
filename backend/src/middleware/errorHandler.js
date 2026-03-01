@@ -34,7 +34,17 @@ function handlePrismaError(err) {
 function errorHandler(err, req, res, next) {
   // Convert Prisma errors to AppErrors
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
-    err = handlePrismaError(err);
+    if (err.code === 'P1001') {
+      err = new AppError('Database is temporarily unreachable. Please try again in a moment.', 503);
+    } else {
+      err = handlePrismaError(err);
+    }
+  } else if (err instanceof Prisma.PrismaClientInitializationError) {
+    err = new AppError('Database connection is unavailable. Please try again in a moment.', 503);
+  } else if (err instanceof Prisma.PrismaClientUnknownRequestError && /Can\'t reach database server/i.test(err.message)) {
+    err = new AppError('Database is temporarily unreachable. Please try again in a moment.', 503);
+  } else if (typeof err?.message === 'string' && /Can\'t reach database server/i.test(err.message)) {
+    err = new AppError('Database is temporarily unreachable. Please try again in a moment.', 503);
   } else if (err instanceof Prisma.PrismaClientValidationError) {
     err = AppError.badRequest('Invalid data provided to the database.');
   }

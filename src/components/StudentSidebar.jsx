@@ -9,7 +9,7 @@ const NAV_ITEMS = [
   { to: '/student/certifications',   icon: 'workspace_premium',  label: 'Certifications' },
   { to: '/student/events',           icon: 'event',              label: 'Events' },
   { to: '/student/coding',           icon: 'terminal',           label: 'Coding Profile' },
-  { to: '/student/assessments/1',    icon: 'description',        label: 'Assessments' },
+  { to: '/student/assessments',      icon: 'description',        label: 'Assessments' },
   { to: '/student/resumes',          icon: 'description',        label: 'Resumes' },
   { to: '/student/learning-pace',    icon: 'speed',              label: 'Learning Pace' },
   { to: '/student/interview-prep',   icon: 'quiz',               label: 'Interview Prep' },

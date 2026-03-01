@@ -16,6 +16,7 @@ const {
   addEventSchema,
   updateEventSchema,
   assessmentQuerySchema,
+  assessmentIdParamSchema,
   addResumeSchema,
   updateResumeSchema,
 } = require('../validators/student.schema');
@@ -61,7 +62,7 @@ router.put('/events/:eventId', validate(updateEventSchema), ctrl.updateEvent);
 router.delete('/events/:eventId', ctrl.deleteEvent);
 
 router.get('/assessments', validate(assessmentQuerySchema, 'query'), ctrl.getAssessments);
-router.get('/assessments/:id', ctrl.getAssessmentById);
+router.get('/assessments/:id', validate(assessmentIdParamSchema, 'params'), ctrl.getAssessmentById);
 
 router.get('/applications', ctrl.getApplications);
 

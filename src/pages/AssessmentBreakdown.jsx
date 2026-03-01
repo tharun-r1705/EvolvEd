@@ -35,6 +35,8 @@ function statusBadgeClass(status) {
   return `inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset ${map[status] ?? 'text-slate-700 bg-slate-50 ring-slate-600/20'}`;
 }
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
 function Skeleton({ className = '' }) {
@@ -95,6 +97,11 @@ export default function AssessmentBreakdown() {
 
   const fetchAssessment = useCallback(async () => {
     if (!id) { setError('No assessment ID provided.'); setLoading(false); return; }
+    if (!UUID_RE.test(id)) {
+      setError('Invalid assessment link. Please open an assessment from the Assessments page.');
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {

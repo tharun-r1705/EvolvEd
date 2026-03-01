@@ -54,9 +54,7 @@ async function getDashboard(userId) {
     monthlyAssessments,
     leetcodeProfile,
     githubProfile,
-    rankInfo,
-    learningPaceData,
-  ] = await Promise.all([
+  ] = await prisma.$transaction([
     prisma.assessment.count({ where: { studentId: student.id } }),
     prisma.application.count({ where: { studentId: student.id } }),
     prisma.application.count({ where: { studentId: student.id, status: { in: ['applied', 'shortlisted'] } } }),
@@ -66,8 +64,11 @@ async function getDashboard(userId) {
       select: { totalScore: true, maxScore: true, completedAt: true },
       orderBy: { completedAt: 'asc' },
     }),
-    prisma.leetCodeProfile.findUnique({ where: { studentId: student.id } }).catch(() => null),
-    prisma.gitHubProfile.findUnique({ where: { studentId: student.id } }).catch(() => null),
+    prisma.leetCodeProfile.findUnique({ where: { studentId: student.id } }),
+    prisma.gitHubProfile.findUnique({ where: { studentId: student.id } }),
+  ]);
+
+  const [rankInfo, learningPaceData] = await Promise.all([
     getStudentGlobalRank(student.id),
     _getLearningPace(student.id).catch(() => null),
   ]);
@@ -664,6 +665,10 @@ async function getAssessments(userId, query) {
 }
 
 async function getAssessmentById(userId, assessmentId) {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(assessmentId)) {
+    throw AppError.badRequest('Invalid assessment ID.');
+  }
+
   const student = await getStudentByUserId(userId);
 
   const assessment = await prisma.assessment.findFirst({

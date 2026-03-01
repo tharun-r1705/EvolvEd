@@ -929,10 +929,10 @@ model TechTrend {
   id            String   @id @default(uuid()) @db.Uuid
   title         String
   description   String   @db.Text
-  category      String   // "language" | "framework" | "tool" | "domain" | "database"
+  category      String   // "language" | "framework" | "tool" | "domain"
   trendScore    Float    @default(0) @map("trend_score")
   source        String   @default("curated")
-  dataPoints    Json?    @map("data_points") // [{ month: "Jan", value: 85 }, ...]
+  dataPoints    Json     @map("data_points") // [{ month: "Jan", value: 85 }, ...]
   lastUpdatedAt DateTime @default(now()) @map("last_updated_at")
   createdAt     DateTime @default(now()) @map("created_at")
 

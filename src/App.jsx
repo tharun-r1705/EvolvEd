@@ -20,6 +20,7 @@ const StudentProjects     = lazy(() => import('./pages/StudentProjects.jsx'));
 const StudentCertifications = lazy(() => import('./pages/StudentCertifications.jsx'));
 const StudentEvents       = lazy(() => import('./pages/StudentEvents.jsx'));
 const StudentCodingProfile = lazy(() => import('./pages/StudentCodingProfile.jsx'));
+const StudentAssessments  = lazy(() => import('./pages/StudentAssessments.jsx'));
 const AssessmentBreakdown = lazy(() => import('./pages/AssessmentBreakdown.jsx'));
 const StudentResumes      = lazy(() => import('./pages/StudentResumes.jsx'));
 const StudentLearningPace = lazy(() => import('./pages/StudentLearningPace.jsx'));
@@ -101,6 +102,7 @@ export default function App() {
               <Route path="certifications" element={<StudentCertifications />} />
               <Route path="events" element={<StudentEvents />} />
               <Route path="coding" element={<StudentCodingProfile />} />
+              <Route path="assessments" element={<StudentAssessments />} />
               <Route path="assessments/:id" element={<AssessmentBreakdown />} />
               <Route path="resumes" element={<StudentResumes />} />
               <Route path="learning-pace" element={<StudentLearningPace />} />

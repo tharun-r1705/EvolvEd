@@ -321,6 +321,10 @@ const assessmentQuerySchema = z.object({
   category: z.string().trim().optional(),
 });
 
+const assessmentIdParamSchema = z.object({
+  id: z.string().uuid('Invalid assessment ID.'),
+});
+
 module.exports = {
   updateProfileSchema,
   addSkillSchema,
@@ -333,6 +337,7 @@ module.exports = {
   addEventSchema,
   updateEventSchema,
   assessmentQuerySchema,
+  assessmentIdParamSchema,
   addResumeSchema,
   updateResumeSchema,
   DEPARTMENTS,
