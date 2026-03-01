@@ -155,6 +155,22 @@ export const interviewService = {
 };
 
 // ---------------------------------------------------------------------------
+// Feed endpoints (Phase 9)
+// ---------------------------------------------------------------------------
+export const feedService = {
+  getInterviewQuestions: (params) =>
+    api.get('/student/feed/interview-questions', { params }),
+  listInterviewQuestions: (params) =>
+    api.get('/student/feed/interview-questions/all', { params }),
+  getInterviewQuestionById: (id) =>
+    api.get(`/student/feed/interview-questions/${id}`),
+  getMarketTrends: (params) =>
+    api.get('/student/feed/market-trends', { params }),
+  getDailyTip: () =>
+    api.get('/student/feed/daily-tip'),
+};
+
+// ---------------------------------------------------------------------------
 // Recruiter endpoints
 // ---------------------------------------------------------------------------
 export const recruiterService = {

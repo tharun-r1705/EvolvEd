@@ -2,6 +2,7 @@
 
 const router = require('express').Router();
 const ctrl = require('../controllers/admin.controller');
+const feedCtrl = require('../controllers/feed.controller');
 const authenticate = require('../middleware/authenticate');
 const authorize = require('../middleware/authorize');
 const validate = require('../middleware/validate');
@@ -45,5 +46,9 @@ router.post('/companies', validate(createCompanySchema), ctrl.createCompany);
 router.get('/stats', ctrl.getSystemStats);
 router.post('/scores/recalculate', ctrl.recalculateAllScores);
 router.get('/reports/generate', ctrl.generateReport);
+
+// Phase 9: Feed admin
+router.post('/interview-questions', feedCtrl.createInterviewQuestion);
+router.post('/trends/refresh', feedCtrl.refreshTrends);
 
 module.exports = router;

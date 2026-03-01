@@ -5,7 +5,7 @@ import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
 } from 'recharts';
 import StudentSidebar from '../components/StudentSidebar.jsx';
-import { studentService, goalsService } from '../services/api.js';
+import { studentService, goalsService, feedService } from '../services/api.js';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -146,6 +146,53 @@ export default function StudentDashboard() {
   const [error, setError] = useState(null);
   const [goalsSummary, setGoalsSummary] = useState(null);
 
+  // Phase 9 widget state
+  const [interviewQuestion, setInterviewQuestion] = useState(null);
+  const [interviewQLoading, setInterviewQLoading] = useState(true);
+  const [techTrends, setTechTrends] = useState([]);
+  const [trendsLoading, setTrendsLoading] = useState(true);
+  const [dailyTip, setDailyTip] = useState(null);
+  const [tipLoading, setTipLoading] = useState(true);
+  const [showAnswer, setShowAnswer] = useState(false);
+
+  const fetchInterviewQuestion = useCallback(async () => {
+    setInterviewQLoading(true);
+    setShowAnswer(false);
+    try {
+      const res = await feedService.getInterviewQuestions({ limit: 1 });
+      const questions = res.data?.data?.questions ?? res.data?.data ?? [];
+      setInterviewQuestion(questions[0] ?? null);
+    } catch (_) {
+      setInterviewQuestion(null);
+    } finally {
+      setInterviewQLoading(false);
+    }
+  }, []);
+
+  const fetchTechTrends = useCallback(async () => {
+    setTrendsLoading(true);
+    try {
+      const res = await feedService.getMarketTrends({ limit: 6 });
+      setTechTrends(res.data?.data?.trends ?? res.data?.data ?? []);
+    } catch (_) {
+      setTechTrends([]);
+    } finally {
+      setTrendsLoading(false);
+    }
+  }, []);
+
+  const fetchDailyTip = useCallback(async () => {
+    setTipLoading(true);
+    try {
+      const res = await feedService.getDailyTip();
+      setDailyTip(res.data?.data ?? null);
+    } catch (_) {
+      setDailyTip(null);
+    } finally {
+      setTipLoading(false);
+    }
+  }, []);
+
   const fetchDashboard = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -165,6 +212,9 @@ export default function StudentDashboard() {
   }, []);
 
   useEffect(() => { fetchDashboard(); }, [fetchDashboard]);
+  useEffect(() => { fetchInterviewQuestion(); }, [fetchInterviewQuestion]);
+  useEffect(() => { fetchTechTrends(); }, [fetchTechTrends]);
+  useEffect(() => { fetchDailyTip(); }, [fetchDailyTip]);
 
   // ── Loading ──
   if (loading) {
@@ -208,6 +258,42 @@ export default function StudentDashboard() {
 
   const { student, readiness, metrics, scoreBreakdown, skills, recentAssessments,
     recentApplications, leetcodeSummary, githubSummary, readinessTrend, learningPace } = data;
+
+  // ── Phase 9 helpers ──
+  const trendCategoryColor = (cat) => {
+    const map = {
+      language:  'bg-blue-50 text-blue-700',
+      framework: 'bg-purple-50 text-purple-700',
+      tool:      'bg-slate-50 text-slate-700',
+      domain:    'bg-orange-50 text-orange-700',
+      database:  'bg-green-50 text-green-700',
+    };
+    return map[cat] ?? 'bg-slate-50 text-slate-600';
+  };
+
+  const trendScoreColor = (score) => {
+    if (score >= 80) return '#22c55e';
+    if (score >= 60) return '#f59e0b';
+    return '#ef4444';
+  };
+
+  const difficultyColor = (d) => {
+    if (d === 'easy')   return 'bg-green-50 text-green-700';
+    if (d === 'medium') return 'bg-yellow-50 text-yellow-700';
+    if (d === 'hard')   return 'bg-red-50 text-red-700';
+    return 'bg-slate-50 text-slate-600';
+  };
+
+  const tipCategoryColor = (cat) => {
+    const map = {
+      interview: 'bg-blue-50 text-blue-700',
+      technical: 'bg-purple-50 text-purple-700',
+      career:    'bg-green-50 text-green-700',
+    };
+    return map[cat] ?? 'bg-slate-50 text-slate-600';
+  };
+
+  const todayLabel = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 
   // Build radar data
   const radarData = scoreBreakdown
@@ -426,6 +512,59 @@ export default function StudentDashboard() {
                 </div>
               )}
 
+              {/* Tech Trends */}
+              <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+                <div className="mb-4 flex items-center justify-between">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-primary text-[20px]">trending_up</span>
+                      <h3 className="text-lg font-bold text-secondary">Tech Trends</h3>
+                    </div>
+                    <p className="text-sm text-slate-500 mt-0.5">What's hot in the industry</p>
+                  </div>
+                  <Link to="/student/interview-prep" className="text-xs font-semibold text-primary hover:underline">
+                    View more
+                  </Link>
+                </div>
+                {trendsLoading ? (
+                  <div className="grid grid-cols-2 gap-3">
+                    {[...Array(6)].map((_, i) => (
+                      <div key={i} className="rounded-xl border border-slate-100 p-3 space-y-2">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-3 w-16 rounded-full" />
+                        <Skeleton className="h-1.5 w-full rounded-full" />
+                      </div>
+                    ))}
+                  </div>
+                ) : techTrends.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-8 text-slate-400">
+                    <span className="material-symbols-outlined text-4xl mb-2">bar_chart</span>
+                    <p className="text-sm">No trend data available.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-3">
+                    {techTrends.map((trend) => (
+                      <div key={trend.id} className="rounded-xl border border-slate-100 p-3 hover:border-primary/30 hover:shadow-sm transition-all">
+                        <div className="flex items-start justify-between gap-1 mb-1.5">
+                          <p className="text-sm font-bold text-secondary leading-tight">{trend.title}</p>
+                          <span className="text-xs font-bold text-slate-400 shrink-0">{trend.trendScore}</span>
+                        </div>
+                        <span className={`inline-block text-[10px] font-semibold px-1.5 py-0.5 rounded-full mb-2 ${trendCategoryColor(trend.category)}`}>
+                          {trend.category}
+                        </span>
+                        <div className="h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
+                          <div
+                            className="h-full rounded-full transition-all duration-700"
+                            style={{ width: `${trend.trendScore}%`, backgroundColor: trendScoreColor(trend.trendScore) }}
+                          />
+                        </div>
+                        <p className="mt-1.5 text-[11px] text-slate-500 line-clamp-2">{trend.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {/* Recent Assessments */}
               <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
                 <div className="mb-4 flex items-center justify-between">
@@ -605,6 +744,97 @@ export default function StudentDashboard() {
                       <span className="material-symbols-outlined text-[14px]">smart_toy</span>
                       Ask AI Assistant
                     </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* Daily Tip */}
+              <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+                <div className="mb-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-yellow-50">
+                      <span className="material-symbols-outlined text-yellow-500 text-[18px]">lightbulb</span>
+                    </div>
+                    <h3 className="text-base font-bold text-secondary">Daily Tip</h3>
+                  </div>
+                  {dailyTip?.category && (
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${tipCategoryColor(dailyTip.category)}`}>
+                      {dailyTip.category}
+                    </span>
+                  )}
+                </div>
+                {tipLoading ? (
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-4/5" />
+                    <Skeleton className="h-3 w-24 mt-1" />
+                  </div>
+                ) : dailyTip ? (
+                  <>
+                    <p className="text-sm text-slate-700 leading-relaxed">{dailyTip.tip}</p>
+                    <p className="mt-3 text-[11px] text-slate-400">Today, {todayLabel}</p>
+                  </>
+                ) : (
+                  <p className="text-sm text-slate-400">No tip available today.</p>
+                )}
+              </div>
+
+              {/* Interview Question */}
+              <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+                <div className="mb-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+                      <span className="material-symbols-outlined text-primary text-[18px]">quiz</span>
+                    </div>
+                    <h3 className="text-base font-bold text-secondary">Interview Question</h3>
+                  </div>
+                  <Link to="/student/interview-prep" className="text-xs font-semibold text-primary hover:underline">View all</Link>
+                </div>
+                {interviewQLoading ? (
+                  <div className="space-y-3">
+                    <div className="flex gap-2">
+                      <Skeleton className="h-5 w-20 rounded-full" />
+                      <Skeleton className="h-5 w-16 rounded-full" />
+                    </div>
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-3/4" />
+                  </div>
+                ) : interviewQuestion ? (
+                  <div className="space-y-3">
+                    <div className="flex flex-wrap gap-1.5">
+                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 capitalize">
+                        {interviewQuestion.category}
+                      </span>
+                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full capitalize ${difficultyColor(interviewQuestion.difficulty)}`}>
+                        {interviewQuestion.difficulty}
+                      </span>
+                    </div>
+                    <p className="text-sm font-medium text-secondary leading-relaxed">{interviewQuestion.question}</p>
+                    {showAnswer && (
+                      <div className="rounded-lg bg-slate-50 border border-slate-100 p-3">
+                        <p className="text-xs text-slate-600 leading-relaxed">{interviewQuestion.answer}</p>
+                      </div>
+                    )}
+                    <div className="flex gap-2 pt-1">
+                      <button
+                        onClick={() => setShowAnswer((v) => !v)}
+                        className="flex-1 rounded-lg border border-slate-200 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+                      >
+                        {showAnswer ? 'Hide Answer' : 'Show Answer'}
+                      </button>
+                      <button
+                        onClick={fetchInterviewQuestion}
+                        className="flex-1 rounded-lg bg-primary py-1.5 text-xs font-bold text-secondary hover:bg-primary/90 transition-colors"
+                      >
+                        Next Question
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-6 text-slate-400">
+                    <span className="material-symbols-outlined text-3xl mb-2">quiz</span>
+                    <p className="text-xs text-center">Could not load question.</p>
+                    <button onClick={fetchInterviewQuestion} className="mt-2 text-xs font-semibold text-primary hover:underline">Retry</button>
                   </div>
                 )}
               </div>
