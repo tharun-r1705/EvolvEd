@@ -333,6 +333,16 @@ async function parseLinkedinPdf(req, res, next) {
   }
 }
 
+// GET /api/student/learning-pace
+async function getLearningPace(req, res, next) {
+  try {
+    const data = await studentService.getLearningPace(req.user.userId);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getDashboard,
   getReadinessScore,
@@ -344,6 +354,7 @@ module.exports = {
   updateResume,
   deleteResume,
   parseLinkedinPdf,
+  getLearningPace,
   getSkills,
   addSkill,
   removeSkill,

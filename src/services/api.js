@@ -99,6 +99,9 @@ export const studentService = {
   // Integrations — GitHub
   getGitHub: () => api.get('/student/integrations/github'),
   refreshGitHub: () => api.post('/student/integrations/github/refresh'),
+
+  // Learning Pace
+  getLearningPace: () => api.get('/student/learning-pace'),
 };
 
 // ---------------------------------------------------------------------------

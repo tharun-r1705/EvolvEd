@@ -8,6 +8,7 @@ const { parsePagination, paginatedResponse } = require('../utils/pagination');
 const { uploadFromBuffer, deleteFromCloudinary } = require('../config/cloudinary');
 const { groqChat } = require('../utils/groq');
 const pdfParse = require('pdf-parse');
+const { getLearningPace: _getLearningPace, logActivity } = require('./learningPace.service');
 
 // ─── HELPERS ─────────────────────────────────────────────────────
 
@@ -54,6 +55,7 @@ async function getDashboard(userId) {
     leetcodeProfile,
     githubProfile,
     rankInfo,
+    learningPaceData,
   ] = await Promise.all([
     prisma.assessment.count({ where: { studentId: student.id } }),
     prisma.application.count({ where: { studentId: student.id } }),
@@ -67,6 +69,7 @@ async function getDashboard(userId) {
     prisma.leetCodeProfile.findUnique({ where: { studentId: student.id } }).catch(() => null),
     prisma.gitHubProfile.findUnique({ where: { studentId: student.id } }).catch(() => null),
     getStudentGlobalRank(student.id),
+    _getLearningPace(student.id).catch(() => null),
   ]);
 
   // Group assessments by month for trend data
@@ -165,6 +168,16 @@ async function getDashboard(userId) {
         }
       : null,
     readinessTrend,
+    learningPace: learningPaceData
+      ? {
+          paceScore: learningPaceData.paceScore,
+          label: learningPaceData.label,
+          color: learningPaceData.color,
+          percentile: learningPaceData.percentile,
+          streak: learningPaceData.streak,
+          activeDaysLast30: learningPaceData.activeDaysLast30,
+        }
+      : null,
   };
 }
 
@@ -350,6 +363,7 @@ async function addSkill(userId, { skillName, proficiency, level }) {
 
   await recalculateScore(student.id);
   await recalculateGlobalRankings().catch(() => {});
+  logActivity(student.id, 'skill_added', { entityId: newSkill.id }).catch(() => {});
 
   return {
     message: 'Skill added successfully.',
@@ -393,6 +407,7 @@ async function addProject(userId, data) {
 
   await recalculateScore(student.id);
   await recalculateGlobalRankings().catch(() => {});
+  logActivity(student.id, 'project_completed', { entityId: project.id }).catch(() => {});
 
   return { message: 'Project added successfully.', project };
 }
@@ -477,6 +492,7 @@ async function addInternship(userId, data) {
 
   await recalculateScore(student.id);
   await recalculateGlobalRankings().catch(() => {});
+  logActivity(student.id, 'internship_added', { entityId: internship.id }).catch(() => {});
 
   return { message: 'Internship added successfully.', internship };
 }
@@ -515,6 +531,7 @@ async function addCertification(userId, data) {
 
   await recalculateScore(student.id);
   await recalculateGlobalRankings().catch(() => {});
+  logActivity(student.id, 'cert_earned', { entityId: cert.id }).catch(() => {});
 
   return { message: 'Certification added successfully.', certification: cert };
 }
@@ -569,6 +586,7 @@ async function addEvent(userId, data) {
 
   await recalculateScore(student.id);
   await recalculateGlobalRankings().catch(() => {});
+  logActivity(student.id, 'event_attended', { entityId: event.id }).catch(() => {});
 
   return { message: 'Event added successfully.', event };
 }
@@ -935,6 +953,13 @@ async function parseLinkedinPdf(userId, fileBuffer) {
   };
 }
 
+// ─── LEARNING PACE ───────────────────────────────────────────────
+
+async function getLearningPace(userId) {
+  const student = await getStudentByUserId(userId);
+  return _getLearningPace(student.id);
+}
+
 // ─── APPLICATIONS ────────────────────────────────────────────────
 
 async function getApplications(userId, query) {
@@ -989,6 +1014,7 @@ module.exports = {
   updateResume,
   deleteResume,
   parseLinkedinPdf,
+  getLearningPace,
   getSkills,
   addSkill,
   removeSkill,

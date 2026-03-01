@@ -201,7 +201,7 @@ export default function StudentDashboard() {
   }
 
   const { student, readiness, metrics, scoreBreakdown, skills, recentAssessments,
-    recentApplications, leetcodeSummary, githubSummary, readinessTrend } = data;
+    recentApplications, leetcodeSummary, githubSummary, readinessTrend, learningPace } = data;
 
   // Build radar data
   const radarData = scoreBreakdown
@@ -545,6 +545,72 @@ export default function StudentDashboard() {
                   </div>
                 )}
               </div>
+
+              {/* Learning Pace Widget */}
+              {learningPace ? (
+                <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+                  <div className="mb-4 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+                        <span className="material-symbols-outlined text-primary text-[18px]">speed</span>
+                      </div>
+                      <h3 className="text-base font-bold text-secondary">Learning Pace</h3>
+                    </div>
+                    <Link to="/student/learning-pace" className="text-xs font-semibold text-primary hover:underline">View</Link>
+                  </div>
+                  <div className="flex items-center gap-4 mb-3">
+                    <div className="relative flex h-16 w-16 shrink-0 items-center justify-center">
+                      <svg className="absolute h-full w-full -rotate-90" viewBox="0 0 60 60">
+                        <circle cx="30" cy="30" fill="transparent" r="24" stroke="#e2e8f0" strokeWidth="6" />
+                        <circle
+                          cx="30" cy="30" fill="transparent" r="24"
+                          stroke={learningPace.color}
+                          strokeDasharray={2 * Math.PI * 24}
+                          strokeDashoffset={2 * Math.PI * 24 - (learningPace.paceScore / 100) * 2 * Math.PI * 24}
+                          strokeLinecap="round"
+                          strokeWidth="6"
+                          style={{ transition: 'stroke-dashoffset 1s ease' }}
+                        />
+                      </svg>
+                      <span className="text-sm font-black text-secondary">{learningPace.paceScore}</span>
+                    </div>
+                    <div>
+                      <span
+                        className="inline-block text-xs font-bold px-2.5 py-0.5 rounded-full mb-1"
+                        style={{ background: `${learningPace.color}20`, color: learningPace.color }}
+                      >
+                        {learningPace.label}
+                      </span>
+                      {learningPace.percentile > 0 && (
+                        <p className="text-xs text-slate-500">Faster than {learningPace.percentile}% of peers</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {learningPace.streak > 0 && (
+                      <span className="flex items-center gap-1 text-[11px] font-bold text-orange-700 bg-orange-50 px-2 py-1 rounded-full">
+                        <span className="material-symbols-outlined text-[12px]">local_fire_department</span>
+                        {learningPace.streak}-day streak
+                      </span>
+                    )}
+                    <span className="flex items-center gap-1 text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-1 rounded-full">
+                      <span className="material-symbols-outlined text-[12px]">calendar_today</span>
+                      {learningPace.activeDaysLast30}d active
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="material-symbols-outlined text-primary text-[20px]">speed</span>
+                    <h3 className="text-base font-bold text-secondary">Learning Pace</h3>
+                  </div>
+                  <p className="text-xs text-slate-400 mb-3">Start adding skills, projects, or certs to track your learning pace.</p>
+                  <Link to="/student/learning-pace" className="text-xs font-semibold text-primary hover:underline">
+                    View details →
+                  </Link>
+                </div>
+              )}
 
               {/* LeetCode Summary */}
               {leetcodeSummary ? (

@@ -3,16 +3,16 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const NAV_ITEMS = [
-  { to: '/student',                  icon: 'dashboard',       label: 'Dashboard',          exact: true },
-  { to: '/student/profile',          icon: 'manage_accounts', label: 'My Profile' },
-  { to: '/student/projects',         icon: 'code',            label: 'Projects' },
-  { to: '/student/certifications',   icon: 'workspace_premium', label: 'Certifications' },
-  { to: '/student/events',           icon: 'event',           label: 'Events' },
-  { to: '/student/coding',           icon: 'terminal',        label: 'Coding Profile' },
-  { to: '/student/assessments/1',    icon: 'description',     label: 'Assessments' },
-  { to: null, icon: 'verified',      label: 'Skills Profile',    soon: true },
+  { to: '/student',                  icon: 'dashboard',          label: 'Dashboard',          exact: true },
+  { to: '/student/profile',          icon: 'manage_accounts',    label: 'My Profile' },
+  { to: '/student/projects',         icon: 'code',               label: 'Projects' },
+  { to: '/student/certifications',   icon: 'workspace_premium',  label: 'Certifications' },
+  { to: '/student/events',           icon: 'event',              label: 'Events' },
+  { to: '/student/coding',           icon: 'terminal',           label: 'Coding Profile' },
+  { to: '/student/assessments/1',    icon: 'description',        label: 'Assessments' },
+  { to: '/student/resumes',          icon: 'description',        label: 'Resumes' },
+  { to: '/student/learning-pace',    icon: 'speed',              label: 'Learning Pace' },
   { to: null, icon: 'work',          label: 'Jobs & Placements', soon: true },
-  { to: null, icon: 'analytics',     label: 'Analytics',         soon: true },
 ];
 
 export default function StudentSidebar() {

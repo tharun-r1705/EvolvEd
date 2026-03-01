@@ -67,4 +67,6 @@ router.get('/applications', ctrl.getApplications);
 
 router.get('/report/export', ctrl.exportReport);
 
+router.get('/learning-pace', ctrl.getLearningPace);
+
 module.exports = router;

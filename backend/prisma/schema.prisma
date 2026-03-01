@@ -77,6 +77,17 @@ enum EventAchievement {
   finalist
 }
 
+enum LearningActivityType {
+  skill_added
+  project_completed
+  cert_earned
+  assessment_taken
+  event_attended
+  internship_added
+  leetcode_solved
+  github_push
+}
+
 // ─────────────────────────────────────────────────────────────────
 // USERS (base auth table for all roles)
 // ─────────────────────────────────────────────────────────────────
@@ -166,6 +177,7 @@ model Student {
   resumes         Resume[]
   leetcodeProfile LeetCodeProfile?
   githubProfile   GitHubProfile?
+  learningActivities LearningActivity[]
 
   @@index([department])
   @@index([readinessScore])
@@ -724,4 +736,25 @@ model AuditLog {
   @@index([action])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// LEARNING ACTIVITY (Phase 5 — Learning Pace)
+// ─────────────────────────────────────────────────────────────────
+
+model LearningActivity {
+  id          String               @id @default(uuid()) @db.Uuid
+  studentId   String               @map("student_id") @db.Uuid
+  type        LearningActivityType
+  entityId    String?              @map("entity_id") @db.Uuid
+  score       Float?
+  metadata    Json?
+  completedAt DateTime             @default(now()) @map("completed_at")
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([studentId, completedAt])
+  @@index([type])
+  @@map("learning_activities")
 }
