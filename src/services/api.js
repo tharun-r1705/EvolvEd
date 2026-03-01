@@ -140,6 +140,21 @@ export const roadmapService = {
 };
 
 // ---------------------------------------------------------------------------
+// Interview endpoints
+// ---------------------------------------------------------------------------
+export const interviewService = {
+  start: (data) => api.post('/student/interviews', data),
+  list: (status) => api.get('/student/interviews', { params: status ? { status } : {} }),
+  get: (id) => api.get(`/student/interviews/${id}`),
+  getQuestion: (id, index) => api.get(`/student/interviews/${id}/questions/${index}`),
+  // Audio URL — returned as a plain URL string for <audio src=...>
+  getQuestionAudioUrl: (id, index) => `/api/student/interviews/${id}/questions/${index}/audio`,
+  submitAnswer: (id, index, answer) => api.post(`/student/interviews/${id}/questions/${index}/answer`, { answer }),
+  complete: (id) => api.post(`/student/interviews/${id}/complete`),
+  abandon: (id) => api.patch(`/student/interviews/${id}/abandon`),
+};
+
+// ---------------------------------------------------------------------------
 // Recruiter endpoints
 // ---------------------------------------------------------------------------
 export const recruiterService = {

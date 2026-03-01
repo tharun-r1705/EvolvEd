@@ -25,6 +25,8 @@ import StudentLearningPace from './pages/StudentLearningPace.jsx';
 import StudentChat from './pages/StudentChat.jsx';
 import StudentRoadmaps from './pages/StudentRoadmaps.jsx';
 import RoadmapView from './pages/RoadmapView.jsx';
+import MockInterview from './pages/MockInterview.jsx';
+import InterviewSession from './pages/InterviewSession.jsx';
 
 // Recruiter Pages
 import RecruiterDashboard from './pages/RecruiterDashboard.jsx';
@@ -65,6 +67,8 @@ export default function App() {
             <Route path="learning-pace" element={<StudentLearningPace />} />
             <Route path="roadmaps" element={<StudentRoadmaps />} />
             <Route path="roadmaps/:id" element={<RoadmapView />} />
+            <Route path="interviews" element={<MockInterview />} />
+            <Route path="interviews/:id" element={<InterviewSession />} />
             <Route path="chat" element={<StudentChat />} />
           </Route>
 

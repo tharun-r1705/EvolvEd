@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { to: '/student/resumes',          icon: 'description',        label: 'Resumes' },
   { to: '/student/learning-pace',    icon: 'speed',              label: 'Learning Pace' },
   { to: '/student/roadmaps',         icon: 'map',                label: 'Roadmaps' },
+  { to: '/student/interviews',       icon: 'mic',                label: 'Mock Interviews' },
   { to: '/student/chat',             icon: 'smart_toy',          label: 'AI Assistant',       highlight: true },
   { to: null, icon: 'work',          label: 'Jobs & Placements', soon: true },
 ];

@@ -181,6 +181,7 @@ model Student {
   chatConversations  ChatConversation[]
   goals              StudentGoal[]
   roadmaps           Roadmap[]
+  mockInterviews     MockInterview[]
 
   @@index([department])
   @@index([readinessScore])
@@ -873,4 +874,31 @@ model CuratedResource {
 
   @@index([topic])
   @@map("curated_resources")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// MOCK INTERVIEWS (Phase 8)
+// ─────────────────────────────────────────────────────────────────
+
+model MockInterview {
+  id           String    @id @default(uuid()) @db.Uuid
+  studentId    String    @map("student_id") @db.Uuid
+  type         String    // "technical" | "hr" | "behavioral" | "mixed"
+  resumeId     String?   @map("resume_id") @db.Uuid
+  difficulty   String    @default("medium") // "easy" | "medium" | "hard"
+  status       String    @default("in_progress") // "in_progress" | "completed" | "abandoned"
+  questions    Json      // Array of { question, type, answer?, score?, feedback?, modelAnswer? }
+  currentIndex Int       @default(0) @map("current_index")
+  overallScore Float?    @map("overall_score")
+  feedback     Json?     // { strengths[], weaknesses[], tips[], summary }
+  duration     Int?      // seconds
+  createdAt    DateTime  @default(now()) @map("created_at")
+  completedAt  DateTime? @map("completed_at")
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([studentId, status])
+  @@index([studentId, createdAt])
+  @@map("mock_interviews")
 }

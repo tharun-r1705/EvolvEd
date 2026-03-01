@@ -8,6 +8,7 @@ router.use('/student/integrations', require('./integrations.routes'));
 router.use('/student/chat', require('./chat.routes'));
 router.use('/student/goals', require('./goals.routes'));
 router.use('/student/roadmaps', require('./roadmap.routes'));
+router.use('/student/interviews', require('./interview.routes'));
 router.use('/recruiter', require('./recruiter.routes'));
 router.use('/admin', require('./admin.routes'));
 
