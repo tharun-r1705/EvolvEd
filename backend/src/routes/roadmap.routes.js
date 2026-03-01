@@ -12,7 +12,10 @@ const router = Router();
 
 router.use(authenticate, authorize('student'));
 
-// POST   /api/student/roadmaps              — generate a new roadmap
+// POST   /api/student/roadmaps/chat         — AI conversation → generate roadmap
+router.post('/chat', ctrl.chatRoadmap);
+
+// POST   /api/student/roadmaps              — direct generate (kept for backward compat)
 router.post('/', ctrl.generateRoadmap);
 
 // GET    /api/student/roadmaps              — list roadmaps (optional ?status=)

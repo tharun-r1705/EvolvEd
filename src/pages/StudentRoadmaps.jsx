@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { roadmapService } from '../services/api.js';
 
@@ -20,106 +20,194 @@ function StatusBadge({ status }) {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// Generate Roadmap Modal
+// Chat bubble
 // ─────────────────────────────────────────────────────────────────
-function GenerateModal({ onClose, onGenerated }) {
-  const [targetRole, setTargetRole] = useState('');
-  const [timeline, setTimeline] = useState('3 months');
-  const [focusAreas, setFocusAreas] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+function ChatBubble({ role, content }) {
+  const isUser = role === 'user';
+  return (
+    <div className={`flex gap-2.5 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+      <div className={`flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center shadow-sm ${
+        isUser ? 'bg-primary text-secondary' : 'bg-secondary text-white'
+      }`}>
+        {isUser
+          ? <span className="material-symbols-outlined text-[16px]">person</span>
+          : <span className="material-symbols-outlined text-[16px]">smart_toy</span>
+        }
+      </div>
+      <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm whitespace-pre-wrap ${
+        isUser
+          ? 'bg-primary text-secondary font-medium rounded-tr-sm'
+          : 'bg-white text-slate-700 border border-slate-100 rounded-tl-sm'
+      }`}>
+        {content}
+      </div>
+    </div>
+  );
+}
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    if (!targetRole.trim()) { setError('Please enter a target role.'); return; }
-    setError('');
+// ─────────────────────────────────────────────────────────────────
+// Typing indicator
+// ─────────────────────────────────────────────────────────────────
+function TypingIndicator() {
+  return (
+    <div className="flex gap-2.5">
+      <div className="flex-shrink-0 h-8 w-8 rounded-full bg-secondary flex items-center justify-center shadow-sm">
+        <span className="material-symbols-outlined text-white text-[16px]">smart_toy</span>
+      </div>
+      <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm flex items-center gap-1.5">
+        <span className="h-2 w-2 rounded-full bg-slate-300 animate-bounce [animation-delay:0ms]" />
+        <span className="h-2 w-2 rounded-full bg-slate-300 animate-bounce [animation-delay:150ms]" />
+        <span className="h-2 w-2 rounded-full bg-slate-300 animate-bounce [animation-delay:300ms]" />
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Generating overlay
+// ─────────────────────────────────────────────────────────────────
+function GeneratingOverlay({ summary }) {
+  return (
+    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm rounded-2xl gap-5">
+      <div className="relative">
+        <div className="h-16 w-16 rounded-full border-4 border-primary/30 border-t-primary animate-spin" />
+        <span className="absolute inset-0 flex items-center justify-center material-symbols-outlined text-primary text-2xl">auto_awesome</span>
+      </div>
+      <div className="text-center px-6">
+        <p className="font-bold text-secondary text-base">{summary}</p>
+        <p className="text-sm text-slate-500 mt-1">Building your personalised learning plan…<br /><span className="text-xs text-slate-400">This takes about 15–20 seconds</span></p>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Roadmap Chat Panel
+// ─────────────────────────────────────────────────────────────────
+function RoadmapChatPanel({ onGenerated, onCancel }) {
+  const WELCOME = {
+    role: 'assistant',
+    content: "Hi! I'm your AI career mentor. Tell me what role you're aiming for — like Full Stack Developer, Data Scientist, or DevOps Engineer — and I'll build you a personalised roadmap based on your profile.",
+  };
+
+  const [messages, setMessages]               = useState([WELCOME]);
+  const [input, setInput]                     = useState('');
+  const [loading, setLoading]                 = useState(false);
+  const [generatingSummary, setGeneratingSummary] = useState(null);
+  const messagesEndRef                        = useRef(null);
+  const inputRef                              = useRef(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, loading]);
+
+  useEffect(() => { inputRef.current?.focus(); }, []);
+
+  async function handleSend(e) {
+    e?.preventDefault();
+    const text = input.trim();
+    if (!text || loading || generatingSummary) return;
+
+    const userMsg    = { role: 'user', content: text };
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
+    setInput('');
     setLoading(true);
+
     try {
-      const res = await roadmapService.generate({ targetRole: targetRole.trim(), timeline, focusAreas: focusAreas.trim() || undefined });
-      onGenerated(res.data.data);
+      const history = newMessages.filter(m => m.role === 'user' || m.role === 'assistant');
+      const res     = await roadmapService.chat(history);
+      const result  = res.data?.data;
+
+      if (result?.type === 'generated') {
+        setLoading(false);
+        setGeneratingSummary(result.summary || 'Creating your roadmap…');
+        setTimeout(() => onGenerated(result.roadmap), 1400);
+      } else {
+        setMessages(prev => [...prev, { role: 'assistant', content: result?.content || 'Sorry, something went wrong.' }]);
+        setLoading(false);
+        inputRef.current?.focus();
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'Generation failed. Please try again.');
-    } finally {
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: err.response?.data?.message || 'Something went wrong. Please try again.',
+      }]);
       setLoading(false);
     }
   }
 
+  function handleKeyDown(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  }
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-md bg-[#0f2135] border border-white/10 rounded-2xl shadow-2xl p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-lg font-bold text-white">Generate Roadmap</h2>
-            <p className="text-xs text-slate-400 mt-0.5">AI will create a personalised learning plan</p>
+    <div className="relative flex flex-col bg-slate-50 rounded-2xl border border-slate-200 shadow-lg overflow-hidden" style={{ minHeight: '520px', maxHeight: '640px' }}>
+      {/* Header */}
+      <div className="flex items-center justify-between px-5 py-4 bg-white border-b border-slate-100 flex-shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="h-9 w-9 rounded-xl bg-secondary flex items-center justify-center shadow-sm">
+            <span className="material-symbols-outlined text-primary text-[20px]">smart_toy</span>
           </div>
-          <button onClick={onClose} disabled={loading} className="text-slate-400 hover:text-white transition-colors">
-            <span className="material-symbols-outlined">close</span>
+          <div>
+            <p className="text-sm font-bold text-secondary">AI Roadmap Mentor</p>
+            <p className="text-xs text-slate-400">Personalised to your profile</p>
+          </div>
+        </div>
+        <button
+          onClick={onCancel}
+          className="h-8 w-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-secondary hover:bg-slate-100 transition-colors"
+          title="Close"
+        >
+          <span className="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-4">
+        {messages.map((m, i) => (
+          <ChatBubble key={i} role={m.role} content={m.content} />
+        ))}
+        {loading && <TypingIndicator />}
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Input */}
+      <form onSubmit={handleSend} className="px-4 py-4 bg-white border-t border-slate-100 flex-shrink-0">
+        <div className="flex gap-3 items-end">
+          <textarea
+            ref={inputRef}
+            rows={1}
+            value={input}
+            onChange={(e) => {
+              setInput(e.target.value);
+              e.target.style.height = 'auto';
+              e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+            }}
+            onKeyDown={handleKeyDown}
+            placeholder="Type your goal… (Enter to send)"
+            disabled={loading || !!generatingSummary}
+            className="flex-1 resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-secondary placeholder:text-slate-400 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all disabled:opacity-60 overflow-hidden"
+            style={{ minHeight: '48px' }}
+          />
+          <button
+            type="submit"
+            disabled={!input.trim() || loading || !!generatingSummary}
+            className="flex-shrink-0 h-12 w-12 rounded-xl bg-primary text-secondary flex items-center justify-center hover:bg-primary/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
+          >
+            <span className="material-symbols-outlined text-[20px]">send</span>
           </button>
         </div>
+        <p className="mt-2 text-[11px] text-slate-400 text-center">
+          Shift+Enter for new line · I analyse your skills, projects &amp; scores to build the best plan
+        </p>
+      </form>
 
-        {loading ? (
-          <div className="flex flex-col items-center gap-4 py-8">
-            <div className="relative">
-              <div className="h-14 w-14 rounded-full border-4 border-primary/30 border-t-primary animate-spin" />
-              <span className="absolute inset-0 flex items-center justify-center material-symbols-outlined text-primary text-xl">auto_awesome</span>
-            </div>
-            <p className="text-sm text-slate-300 text-center">Generating your personalised roadmap…<br /><span className="text-xs text-slate-500">This may take 15–20 seconds</span></p>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            {error && (
-              <div className="flex items-center gap-2 text-red-400 bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2 text-sm">
-                <span className="material-symbols-outlined text-base">error</span>{error}
-              </div>
-            )}
-
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Target Role *</label>
-              <input
-                type="text"
-                value={targetRole}
-                onChange={(e) => setTargetRole(e.target.value)}
-                placeholder="e.g. Full Stack Developer, Data Scientist"
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/40 transition-all"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Timeline</label>
-              <select
-                value={timeline}
-                onChange={(e) => setTimeline(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/40 transition-all"
-              >
-                <option value="1 month">1 Month (Intensive — 4 modules)</option>
-                <option value="3 months">3 Months (Balanced — 8 modules)</option>
-                <option value="6 months">6 Months (Comprehensive — 12 modules)</option>
-              </select>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Focus Areas <span className="text-slate-500 normal-case font-normal">(optional)</span></label>
-              <input
-                type="text"
-                value={focusAreas}
-                onChange={(e) => setFocusAreas(e.target.value)}
-                placeholder="e.g. React, Node.js, System Design"
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/40 transition-all"
-              />
-            </div>
-
-            <div className="flex gap-3 mt-2">
-              <button type="button" onClick={onClose} className="flex-1 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 bg-white/5 hover:bg-white/10 border border-white/10 transition-colors">
-                Cancel
-              </button>
-              <button type="submit" className="flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold bg-primary text-secondary hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
-                <span className="material-symbols-outlined text-base">auto_awesome</span>
-                Generate
-              </button>
-            </div>
-          </form>
-        )}
-      </div>
+      {/* Generating overlay */}
+      {generatingSummary && <GeneratingOverlay summary={generatingSummary} />}
     </div>
   );
 }
@@ -181,7 +269,7 @@ export default function StudentRoadmaps() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('active');
-  const [showModal, setShowModal] = useState(false);
+  const [showChat, setShowChat] = useState(false);
 
   const fetchRoadmaps = useCallback(async () => {
     setLoading(true);
@@ -199,7 +287,6 @@ export default function StudentRoadmaps() {
   useEffect(() => { fetchRoadmaps(); }, [fetchRoadmaps]);
 
   function handleGenerated(roadmap) {
-    setShowModal(false);
     navigate(`/student/roadmaps/${roadmap.id}`);
   }
 
@@ -212,17 +299,27 @@ export default function StudentRoadmaps() {
         {/* Header */}
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div>
-            <h1 className="text-3xl font-black tracking-tight text-secondary md:text-4xl font-playfair">My Roadmaps</h1>
+            <h1 className="text-3xl font-black tracking-tight text-secondary md:text-4xl">My Roadmaps</h1>
             <p className="text-slate-500 mt-1">AI-generated learning paths tailored to your target role</p>
           </div>
-          <button
-            onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-primary text-secondary text-sm font-semibold rounded-xl hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
-          >
-            <span className="material-symbols-outlined text-base">auto_awesome</span>
-            Generate New Roadmap
-          </button>
+          {!showChat && (
+            <button
+              onClick={() => setShowChat(true)}
+              className="flex items-center gap-2 px-5 py-2.5 bg-primary text-secondary text-sm font-semibold rounded-xl hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
+            >
+              <span className="material-symbols-outlined text-base">auto_awesome</span>
+              Create New Roadmap
+            </button>
+          )}
         </div>
+
+        {/* Chat panel */}
+        {showChat && (
+          <RoadmapChatPanel
+            onGenerated={handleGenerated}
+            onCancel={() => setShowChat(false)}
+          />
+        )}
 
         {/* Tabs */}
         <div className="flex gap-1 bg-slate-100 p-1 rounded-xl w-fit">
@@ -265,13 +362,13 @@ export default function StudentRoadmaps() {
                 {activeTab === 'active' ? 'Generate your first roadmap to get started on your learning journey.' : `You have no ${activeTab} roadmaps yet.`}
               </p>
             </div>
-            {activeTab === 'active' && (
+            {activeTab === 'active' && !showChat && (
               <button
-                onClick={() => setShowModal(true)}
+                onClick={() => setShowChat(true)}
                 className="flex items-center gap-2 px-5 py-2.5 bg-primary text-secondary text-sm font-semibold rounded-xl hover:bg-primary/90 transition-colors"
               >
                 <span className="material-symbols-outlined text-base">auto_awesome</span>
-                Generate Your First Roadmap
+                Create Your First Roadmap
               </button>
             )}
           </div>
@@ -284,7 +381,7 @@ export default function StudentRoadmaps() {
         )}
       </div>
 
-      {showModal && <GenerateModal onClose={() => setShowModal(false)} onGenerated={handleGenerated} />}
+
     </main>
   );
 }

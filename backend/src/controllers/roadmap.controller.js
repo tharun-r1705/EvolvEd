@@ -7,6 +7,15 @@ const roadmapService = require('../services/roadmap.service');
 
 const catchAsync = (fn) => (req, res, next) => fn(req, res, next).catch(next);
 
+const chatRoadmap = catchAsync(async (req, res) => {
+  const { messages } = req.body;
+  if (!Array.isArray(messages)) {
+    return res.status(400).json({ success: false, message: '`messages` array is required.' });
+  }
+  const result = await roadmapService.chatForRoadmap(req.user.userId, messages);
+  res.json({ success: true, data: result });
+});
+
 const generateRoadmap = catchAsync(async (req, res) => {
   const { targetRole, timeline, focusAreas } = req.body;
   const roadmap = await roadmapService.generateRoadmap(req.user.userId, { targetRole, timeline, focusAreas });
@@ -50,6 +59,7 @@ const archiveRoadmap = catchAsync(async (req, res) => {
 });
 
 module.exports = {
+  chatRoadmap,
   generateRoadmap,
   listRoadmaps,
   getRoadmap,

@@ -428,6 +428,116 @@ async function archiveRoadmap(userId, roadmapId) {
 }
 
 /**
+ * Conversational roadmap creator.
+ * Takes a conversation history, responds naturally using the student's real profile,
+ * and when it has gathered enough info (role + timeline) returns a GENERATE signal
+ * which triggers the existing generateRoadmap() pipeline.
+ *
+ * @param {string} userId
+ * @param {Array<{role:'user'|'assistant', content:string}>} messages  – full history so far
+ * @returns {{ type:'message', content:string } | { type:'generated', roadmap, summary:string }}
+ */
+async function chatForRoadmap(userId, messages) {
+  // ── Load student context ─────────────────────────────────────
+  const student = await prisma.student.findFirst({
+    where: { userId, deletedAt: null },
+    include: {
+      skills:        { include: { skill: true }, take: 20, orderBy: { proficiency: 'desc' } },
+      projects:      { take: 10, orderBy: { createdAt: 'desc' } },
+      internships:   { take: 5,  orderBy: { startDate: 'desc' } },
+      certifications:{ take: 10 },
+      events:        { take: 10 },
+      scoreBreakdown: true,
+      leetCodeProfile: true,
+      gitHubProfile:   true,
+    },
+  });
+
+  if (!student) throw new AppError('Student profile not found', 404);
+
+  const skills      = student.skills.map(s => `${s.skill.name} (${s.level}, ${s.proficiency}%)`).join(', ') || 'None added';
+  const projects    = student.projects.map(p => `"${p.title}" — ${(p.techStack || []).join(', ') || 'unspecified stack'}`).join('; ') || 'None';
+  const internships = student.internships.map(i => `${i.role} at ${i.company}`).join('; ') || 'None';
+  const certs       = student.certifications.map(c => c.title).join(', ') || 'None';
+  const lc          = student.leetCodeProfile
+    ? `${student.leetCodeProfile.totalSolved} problems solved (Easy: ${student.leetCodeProfile.easySolved}, Medium: ${student.leetCodeProfile.mediumSolved}, Hard: ${student.leetCodeProfile.hardSolved})`
+    : 'Not connected';
+  const gh          = student.gitHubProfile
+    ? `${student.gitHubProfile.publicRepos} repos, ${student.gitHubProfile.contributionCount} contributions`
+    : 'Not connected';
+  const readiness   = student.scoreBreakdown
+    ? Number(student.scoreBreakdown.totalScore).toFixed(1)
+    : 'Unknown';
+
+  // ── System prompt ────────────────────────────────────────────
+  const systemPrompt = `You are an expert AI career mentor inside EvolvEd, a placement-readiness platform. Your job is to have a SHORT, focused conversation with the student to understand their learning goal, then generate a personalised roadmap.
+
+STUDENT PROFILE:
+- Name: ${student.fullName}
+- Department: ${student.department}, Year: ${student.yearOfStudy}
+- Readiness Score: ${readiness}/100
+- Skills: ${skills}
+- Projects: ${projects}
+- Internships: ${internships}
+- Certifications: ${certs}
+- LeetCode: ${lc}
+- GitHub: ${gh}
+
+YOUR GOAL:
+Gather ONLY these three things through natural, friendly conversation (1–2 turns max):
+1. Target role/goal (e.g. "Full Stack Developer", "ML Engineer", "DevOps")
+2. Preferred timeline: exactly one of "1 month", "3 months", or "6 months"
+3. Any specific focus areas (optional)
+
+Use the student's actual data to make personalised observations. Reference their existing skills, gaps, or projects. Keep each reply to 2–4 sentences max — be concise and warm.
+
+WHEN YOU HAVE ENOUGH INFO:
+Once you have the target role and timeline (after at most 2 exchanges), respond with ONLY this exact JSON and nothing else — no text before or after:
+{"GENERATE":true,"targetRole":"<role>","timeline":"<1 month|3 months|6 months>","focusAreas":"<comma-separated, or empty string>","summary":"<one friendly sentence telling the student what roadmap you are creating for them>"}
+
+RULES:
+- Never ask for info already obvious from the profile.
+- After at most 2 back-and-forth exchanges you MUST generate.
+- If the user's first message already names a role, you only need to confirm the timeline; if both are mentioned, generate immediately.
+- Always be encouraging.`;
+
+  // ── Call Groq ────────────────────────────────────────────────
+  const response = await groqChat({
+    model: 'llama-3.3-70b-versatile',
+    messages: [{ role: 'system', content: systemPrompt }, ...messages],
+    temperature: 0.7,
+    max_tokens: 600,
+  });
+
+  const aiContent = response.choices[0]?.message?.content?.trim() || '';
+
+  // ── Check for GENERATE signal ────────────────────────────────
+  try {
+    const stripped = aiContent
+      .replace(/^```json\s*/i, '')
+      .replace(/^```\s*/i, '')
+      .replace(/```\s*$/i, '')
+      .trim();
+
+    if (stripped.startsWith('{') && stripped.includes('"GENERATE"')) {
+      const parsed = JSON.parse(stripped);
+      if (parsed.GENERATE && parsed.targetRole) {
+        const roadmap = await generateRoadmap(userId, {
+          targetRole:  parsed.targetRole,
+          timeline:    parsed.timeline || '3 months',
+          focusAreas:  parsed.focusAreas || '',
+        });
+        return { type: 'generated', roadmap, summary: parsed.summary || `Your ${parsed.targetRole} roadmap is ready!` };
+      }
+    }
+  } catch {
+    // Not a JSON GENERATE signal — treat as plain message
+  }
+
+  return { type: 'message', content: aiContent };
+}
+
+/**
  * Get active roadmaps summary for chatbot context.
  */
 async function getRoadmapContextForChat(userId) {
@@ -458,6 +568,7 @@ async function getRoadmapContextForChat(userId) {
 
 module.exports = {
   generateRoadmap,
+  chatForRoadmap,
   listRoadmaps,
   getRoadmap,
   getModuleTest,
