@@ -28,6 +28,7 @@ import RoadmapView from './pages/RoadmapView.jsx';
 import MockInterview from './pages/MockInterview.jsx';
 import InterviewSession from './pages/InterviewSession.jsx';
 import InterviewPrep from './pages/InterviewPrep.jsx';
+import Leaderboard from './pages/Leaderboard.jsx';
 
 // Recruiter Pages
 import RecruiterDashboard from './pages/RecruiterDashboard.jsx';
@@ -71,6 +72,7 @@ export default function App() {
             <Route path="interviews" element={<MockInterview />} />
             <Route path="interviews/:id" element={<InterviewSession />} />
             <Route path="interview-prep" element={<InterviewPrep />} />
+            <Route path="leaderboard" element={<Leaderboard />} />
             <Route path="chat" element={<StudentChat />} />
           </Route>
 

@@ -184,6 +184,16 @@ export const recruiterService = {
 };
 
 // ---------------------------------------------------------------------------
+// Leaderboard endpoints (Phase 10)
+// ---------------------------------------------------------------------------
+export const leaderboardService = {
+  // scope: 'global' | 'department' | 'weekly' | 'skill'
+  getLeaderboard: (params) => api.get('/student/leaderboard', { params }),
+  getMyRank: () => api.get('/student/leaderboard/me'),
+  getMeta: () => api.get('/student/leaderboard/meta'),
+};
+
+// ---------------------------------------------------------------------------
 // Admin endpoints
 // ---------------------------------------------------------------------------
 export const adminService = {

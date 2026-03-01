@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { to: '/student/learning-pace',    icon: 'speed',              label: 'Learning Pace' },
   { to: '/student/interview-prep',   icon: 'quiz',               label: 'Interview Prep' },
   { to: '/student/roadmaps',         icon: 'map',                label: 'Roadmaps' },
+  { to: '/student/leaderboard',      icon: 'leaderboard',        label: 'Leaderboard' },
   { to: '/student/interviews',       icon: 'mic',                label: 'Mock Interviews' },
   { to: '/student/chat',             icon: 'smart_toy',          label: 'AI Assistant',       highlight: true },
   { to: null, icon: 'work',          label: 'Jobs & Placements', soon: true },

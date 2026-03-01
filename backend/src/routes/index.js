@@ -10,6 +10,7 @@ router.use('/student/goals', require('./goals.routes'));
 router.use('/student/roadmaps', require('./roadmap.routes'));
 router.use('/student/interviews', require('./interview.routes'));
 router.use('/student/feed', require('./feed.routes'));
+router.use('/student/leaderboard', require('./leaderboard.routes'));
 router.use('/recruiter', require('./recruiter.routes'));
 router.use('/admin', require('./admin.routes'));
 
