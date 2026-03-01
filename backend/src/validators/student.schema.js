@@ -2,18 +2,116 @@
 
 const { z } = require('zod');
 
+// ─── PROFILE UPDATE ───────────────────────────────────────────────
+
+const DEPARTMENTS = [
+  'Computer Science & Engineering',
+  'Information Technology',
+  'Electronics & Communication Engineering',
+  'Electrical & Electronics Engineering',
+  'Mechanical Engineering',
+  'Civil Engineering',
+  'Artificial Intelligence & Machine Learning',
+  'Data Science',
+  'Biotechnology',
+  'Chemical Engineering',
+  'Other',
+];
+
+const YEARS_OF_STUDY = ['1st Year', '2nd Year', '3rd Year', '4th Year', 'PG - 1st Year', 'PG - 2nd Year'];
+
 const updateProfileSchema = z.object({
-  fullName: z.string().trim().min(2).max(100).optional(),
-  phone: z.string().trim().max(20).optional().nullable(),
-  linkedin: z.string().trim().url('Must be a valid URL.').optional().nullable(),
-  website: z.string().trim().url('Must be a valid URL.').optional().nullable(),
-  location: z.string().trim().max(100).optional().nullable(),
-  expectedGrad: z.string().trim().max(20).optional().nullable(),
-  bio: z.string().trim().max(1000).optional().nullable(),
-  gpa: z.number().min(0).max(10).optional().nullable(),
-  department: z.string().trim().min(2).max(100).optional(),
-  yearOfStudy: z.string().trim().max(20).optional(),
+  fullName: z
+    .string({ required_error: 'Full name is required.' })
+    .trim()
+    .min(2, 'Full name must be at least 2 characters.')
+    .max(100, 'Full name cannot exceed 100 characters.')
+    .optional(),
+  phone: z
+    .string()
+    .trim()
+    .regex(
+      /^(\+91[\s-]?)?[6-9]\d{9}$|^\+?[1-9]\d{6,14}$/,
+      'Enter a valid Indian mobile number or international number.'
+    )
+    .optional()
+    .nullable(),
+  linkedin: z
+    .string()
+    .trim()
+    .url('Must be a valid URL.')
+    .regex(/linkedin\.com/i, 'Must be a LinkedIn URL (linkedin.com).')
+    .optional()
+    .nullable(),
+  website: z
+    .string()
+    .trim()
+    .url('Must be a valid URL (include https://).')
+    .optional()
+    .nullable(),
+  location: z
+    .string()
+    .trim()
+    .max(100, 'Location cannot exceed 100 characters.')
+    .optional()
+    .nullable(),
+  expectedGrad: z
+    .string()
+    .trim()
+    .regex(
+      /^(January|February|March|April|May|June|July|August|September|October|November|December)\s\d{4}$/,
+      'Use format: Month Year (e.g., May 2026).'
+    )
+    .optional()
+    .nullable(),
+  bio: z
+    .string()
+    .trim()
+    .min(20, 'Bio should be at least 20 characters.')
+    .max(1000, 'Bio cannot exceed 1000 characters.')
+    .optional()
+    .nullable(),
+  gpa: z
+    .number()
+    .min(0, 'GPA cannot be negative.')
+    .max(10, 'GPA cannot exceed 10.')
+    .optional()
+    .nullable(),
+  department: z
+    .string()
+    .trim()
+    .min(2)
+    .max(100)
+    .optional(),
+  yearOfStudy: z
+    .string()
+    .trim()
+    .max(20)
+    .optional(),
+  githubUsername: z
+    .string()
+    .trim()
+    .regex(
+      /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,37}[a-zA-Z0-9])?$/,
+      'GitHub username can only contain letters, numbers, and hyphens.'
+    )
+    .max(39, 'GitHub username cannot exceed 39 characters.')
+    .optional()
+    .nullable(),
+  leetcodeUsername: z
+    .string()
+    .trim()
+    .regex(
+      /^[a-zA-Z0-9_-]+$/,
+      'LeetCode username can only contain letters, numbers, underscores, and hyphens.'
+    )
+    .max(50, 'LeetCode username cannot exceed 50 characters.')
+    .optional()
+    .nullable(),
+  showOnLeaderboard: z.boolean().optional(),
 });
+
+// ─── SKILLS ───────────────────────────────────────────────────────
 
 const addSkillSchema = z.object({
   skillName: z
@@ -37,53 +135,106 @@ const updateSkillSchema = z.object({
   level: z.enum(['Beginner', 'Intermediate', 'Advanced', 'Expert']).optional(),
 });
 
+// ─── PROJECTS ─────────────────────────────────────────────────────
+
 const addProjectSchema = z.object({
   title: z
     .string({ required_error: 'Project title is required.' })
     .trim()
-    .min(2)
-    .max(200),
-  description: z.string().trim().max(2000).optional().nullable(),
+    .min(2, 'Project title must be at least 2 characters.')
+    .max(200, 'Project title cannot exceed 200 characters.'),
+  description: z
+    .string()
+    .trim()
+    .max(2000, 'Description cannot exceed 2000 characters.')
+    .optional()
+    .nullable(),
   tags: z.array(z.string().trim().max(50)).max(10).optional().default([]),
   url: z.string().trim().url('Must be a valid URL.').optional().nullable(),
   imageUrl: z.string().trim().url('Must be a valid URL.').optional().nullable(),
 });
 
+// ─── INTERNSHIPS ──────────────────────────────────────────────────
+
 const addInternshipSchema = z.object({
   company: z
     .string({ required_error: 'Company name is required.' })
     .trim()
-    .min(1)
-    .max(200),
+    .min(1, 'Company name cannot be empty.')
+    .max(200, 'Company name too long.'),
   role: z
     .string({ required_error: 'Role is required.' })
     .trim()
-    .min(1)
-    .max(200),
+    .min(1, 'Role cannot be empty.')
+    .max(200, 'Role too long.'),
   startDate: z
     .string({ required_error: 'Start date is required.' })
     .datetime({ message: 'Start date must be a valid ISO date string.' }),
   endDate: z.string().datetime().optional().nullable(),
-  description: z.string().trim().max(1000).optional().nullable(),
+  description: z
+    .string()
+    .trim()
+    .max(1000, 'Description cannot exceed 1000 characters.')
+    .optional()
+    .nullable(),
 });
+
+// ─── CERTIFICATIONS ───────────────────────────────────────────────
 
 const addCertificationSchema = z.object({
   name: z
     .string({ required_error: 'Certification name is required.' })
     .trim()
-    .min(1)
-    .max(200),
+    .min(1, 'Certification name cannot be empty.')
+    .max(200, 'Certification name too long.'),
   issuer: z
     .string({ required_error: 'Issuer is required.' })
     .trim()
-    .min(1)
-    .max(200),
+    .min(1, 'Issuer cannot be empty.')
+    .max(200, 'Issuer too long.'),
   issueDate: z
     .string({ required_error: 'Issue date is required.' })
     .datetime({ message: 'Issue date must be a valid ISO date string.' }),
   expiryDate: z.string().datetime().optional().nullable(),
   credentialUrl: z.string().trim().url('Must be a valid URL.').optional().nullable(),
 });
+
+// ─── RESUME ───────────────────────────────────────────────────────
+
+const RESUME_CATEGORIES = [
+  'general',
+  'ai_ml',
+  'full_stack',
+  'frontend',
+  'backend',
+  'data_science',
+  'devops',
+  'mobile',
+  'embedded',
+  'custom',
+];
+
+const addResumeSchema = z.object({
+  name: z
+    .string({ required_error: 'Resume name is required.' })
+    .trim()
+    .min(2, 'Resume name must be at least 2 characters.')
+    .max(100, 'Resume name cannot exceed 100 characters.'),
+  category: z
+    .enum(RESUME_CATEGORIES, {
+      errorMap: () => ({ message: `Category must be one of: ${RESUME_CATEGORIES.join(', ')}` }),
+    })
+    .default('general'),
+  isDefault: z.boolean().optional().default(false),
+});
+
+const updateResumeSchema = z.object({
+  name: z.string().trim().min(2).max(100).optional(),
+  category: z.enum(RESUME_CATEGORIES).optional(),
+  isDefault: z.boolean().optional(),
+});
+
+// ─── QUERY SCHEMAS ────────────────────────────────────────────────
 
 const assessmentQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional().default(1),
@@ -99,4 +250,9 @@ module.exports = {
   addInternshipSchema,
   addCertificationSchema,
   assessmentQuerySchema,
+  addResumeSchema,
+  updateResumeSchema,
+  DEPARTMENTS,
+  YEARS_OF_STUDY,
+  RESUME_CATEGORIES,
 };

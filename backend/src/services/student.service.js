@@ -5,6 +5,9 @@ const AppError = require('../utils/AppError');
 const { recalculateScore, getScoreLabel, getReadinessClassification } = require('./scoring.service');
 const { recalculateGlobalRankings, getStudentGlobalRank } = require('./ranking.service');
 const { parsePagination, paginatedResponse } = require('../utils/pagination');
+const { uploadFromBuffer, deleteFromCloudinary } = require('../config/cloudinary');
+const { groqChat } = require('../utils/groq');
+const pdfParse = require('pdf-parse');
 
 // ─── HELPERS ─────────────────────────────────────────────────────
 
@@ -163,6 +166,7 @@ async function getProfile(userId) {
       projects: { orderBy: { createdAt: 'desc' } },
       internships: { orderBy: { startDate: 'desc' } },
       certifications: { orderBy: { issueDate: 'desc' } },
+      resumes: { orderBy: { uploadedAt: 'desc' } },
       scoreBreakdown: true,
     },
   });
@@ -184,6 +188,10 @@ async function getProfile(userId) {
     expectedGrad: student.expectedGrad,
     bio: student.bio,
     avatarUrl: student.avatarUrl,
+    githubUsername: student.githubUsername,
+    leetcodeUsername: student.leetcodeUsername,
+    linkedinPdfUrl: student.linkedinPdfUrl,
+    showOnLeaderboard: student.showOnLeaderboard,
     profileCompletion: student.profileCompletion,
     readinessScore: Number(student.readinessScore),
     status: student.status,
@@ -199,6 +207,7 @@ async function getProfile(userId) {
     projects: student.projects,
     internships: student.internships,
     certifications: student.certifications,
+    resumes: student.resumes,
     scoreBreakdown: student.scoreBreakdown
       ? {
           technicalSkills: Number(student.scoreBreakdown.technicalSkills),
@@ -228,6 +237,9 @@ async function updateProfile(userId, data) {
       gpa: data.gpa,
       department: data.department,
       yearOfStudy: data.yearOfStudy,
+      githubUsername: data.githubUsername,
+      leetcodeUsername: data.leetcodeUsername,
+      showOnLeaderboard: data.showOnLeaderboard,
     },
   });
 
@@ -513,6 +525,241 @@ async function getAssessmentById(userId, assessmentId) {
   };
 }
 
+// ─── AVATAR UPLOAD ───────────────────────────────────────────────
+
+async function uploadAvatar(userId, fileBuffer, mimetype) {
+  const student = await getStudentByUserId(userId);
+
+  // Delete old avatar from Cloudinary if it exists
+  if (student.avatarUrl && student.avatarUrl.includes('cloudinary')) {
+    // Extract public ID from URL: .../evolved/avatars/<public_id>.<ext>
+    const parts = student.avatarUrl.split('/');
+    const folder = parts.slice(-2, -1)[0];
+    const filename = parts[parts.length - 1].split('.')[0];
+    await deleteFromCloudinary(`${folder}/${filename}`);
+  }
+
+  const result = await uploadFromBuffer(fileBuffer, {
+    folder: 'evolved/avatars',
+    public_id: `student_${student.id}`,
+    overwrite: true,
+    resource_type: 'image',
+    transformation: [
+      { width: 400, height: 400, crop: 'fill', gravity: 'face' },
+      { quality: 'auto', fetch_format: 'auto' },
+    ],
+  });
+
+  await prisma.student.update({
+    where: { id: student.id },
+    data: { avatarUrl: result.secure_url },
+  });
+
+  const newScore = await recalculateScore(student.id);
+
+  return {
+    message: 'Avatar uploaded successfully.',
+    avatarUrl: result.secure_url,
+    profileCompletion: newScore.profileCompletion,
+  };
+}
+
+// ─── RESUME MANAGEMENT ───────────────────────────────────────────
+
+async function getResumes(userId) {
+  const student = await getStudentByUserId(userId);
+  return prisma.resume.findMany({
+    where: { studentId: student.id },
+    orderBy: [{ isDefault: 'desc' }, { uploadedAt: 'desc' }],
+  });
+}
+
+async function uploadResume(userId, fileBuffer, data) {
+  const student = await getStudentByUserId(userId);
+
+  // Enforce max 10 resumes per student
+  const count = await prisma.resume.count({ where: { studentId: student.id } });
+  if (count >= 10) {
+    throw AppError.badRequest('Maximum 10 resumes allowed. Please delete one before uploading a new one.');
+  }
+
+  const sanitizedName = data.name.replace(/[^a-zA-Z0-9_\- ]/g, '').trim();
+  const timestamp = Date.now();
+  const publicId = `evolved/resumes/student_${student.id}_${timestamp}`;
+
+  const result = await uploadFromBuffer(fileBuffer, {
+    folder: 'evolved/resumes',
+    public_id: `student_${student.id}_${timestamp}`,
+    resource_type: 'raw',
+    format: 'pdf',
+  });
+
+  // If this is the first resume or isDefault requested, set as default
+  const shouldBeDefault = data.isDefault || count === 0;
+
+  // If setting as default, unset others
+  if (shouldBeDefault) {
+    await prisma.resume.updateMany({
+      where: { studentId: student.id },
+      data: { isDefault: false },
+    });
+  }
+
+  const resume = await prisma.resume.create({
+    data: {
+      studentId: student.id,
+      name: sanitizedName || data.name,
+      category: data.category || 'general',
+      url: result.secure_url,
+      publicId: result.public_id,
+      isDefault: shouldBeDefault,
+    },
+  });
+
+  return { message: 'Resume uploaded successfully.', resume };
+}
+
+async function updateResume(userId, resumeId, data) {
+  const student = await getStudentByUserId(userId);
+
+  const resume = await prisma.resume.findFirst({
+    where: { id: resumeId, studentId: student.id },
+  });
+  if (!resume) throw AppError.notFound('Resume not found.');
+
+  // If setting as default, unset others first
+  if (data.isDefault) {
+    await prisma.resume.updateMany({
+      where: { studentId: student.id, id: { not: resumeId } },
+      data: { isDefault: false },
+    });
+  }
+
+  const updated = await prisma.resume.update({
+    where: { id: resumeId },
+    data: {
+      name: data.name,
+      category: data.category,
+      isDefault: data.isDefault,
+    },
+  });
+
+  return { message: 'Resume updated successfully.', resume: updated };
+}
+
+async function deleteResume(userId, resumeId) {
+  const student = await getStudentByUserId(userId);
+
+  const resume = await prisma.resume.findFirst({
+    where: { id: resumeId, studentId: student.id },
+  });
+  if (!resume) throw AppError.notFound('Resume not found.');
+
+  // Delete from Cloudinary
+  await deleteFromCloudinary(resume.publicId, 'raw');
+
+  await prisma.resume.delete({ where: { id: resumeId } });
+
+  // If deleted resume was default and other resumes exist, make the most recent one default
+  if (resume.isDefault) {
+    const nextResume = await prisma.resume.findFirst({
+      where: { studentId: student.id },
+      orderBy: { uploadedAt: 'desc' },
+    });
+    if (nextResume) {
+      await prisma.resume.update({ where: { id: nextResume.id }, data: { isDefault: true } });
+    }
+  }
+
+  return { message: 'Resume deleted successfully.' };
+}
+
+// ─── LINKEDIN PDF PARSING ─────────────────────────────────────────
+
+async function parseLinkedinPdf(userId, fileBuffer) {
+  const student = await getStudentByUserId(userId);
+
+  // Extract text from PDF
+  let pdfText = '';
+  try {
+    const parsed = await pdfParse(fileBuffer);
+    pdfText = parsed.text;
+  } catch (err) {
+    throw AppError.badRequest('Could not read the PDF file. Please ensure it is a valid LinkedIn export.');
+  }
+
+  if (!pdfText || pdfText.trim().length < 100) {
+    throw AppError.badRequest('The PDF appears to be empty or unreadable. Please export your LinkedIn profile again.');
+  }
+
+  // Use Groq AI to extract structured data from the PDF text
+  let extracted;
+  try {
+    const response = await groqChat({
+      model: 'llama3-8b-8192',
+      messages: [
+        {
+          role: 'system',
+          content: `You are a precise data extractor for LinkedIn PDF profiles. Extract information from the provided LinkedIn profile text and return ONLY a valid JSON object with no additional text or markdown. Extract exactly these fields (use null if not found):
+{
+  "fullName": string or null,
+  "headline": string or null,
+  "location": string or null,
+  "summary": string or null (this will be the bio, max 1000 chars),
+  "skills": array of strings (technical skills only, max 20),
+  "experience": array of { "company": string, "role": string, "startDate": string, "endDate": string or null, "description": string or null },
+  "education": array of { "school": string, "degree": string, "field": string, "startYear": string, "endYear": string },
+  "certifications": array of { "name": string, "issuer": string, "issueDate": string or null, "credentialUrl": string or null },
+  "linkedinUrl": string or null,
+  "website": string or null
+}`,
+        },
+        {
+          role: 'user',
+          content: `Extract information from this LinkedIn profile:\n\n${pdfText.slice(0, 8000)}`,
+        },
+      ],
+      temperature: 0.1,
+      max_tokens: 2000,
+    });
+
+    const content = response.choices[0]?.message?.content?.trim();
+    // Strip markdown code blocks if present
+    const jsonStr = content.replace(/^```json?\n?/, '').replace(/\n?```$/, '');
+    extracted = JSON.parse(jsonStr);
+  } catch (err) {
+    console.error('[LinkedIn PDF] AI extraction failed:', err.message);
+    throw AppError.internal('Failed to extract data from LinkedIn PDF. Please try again.');
+  }
+
+  // Upload the PDF to Cloudinary for storage
+  let pdfUrl = null;
+  try {
+    const result = await uploadFromBuffer(fileBuffer, {
+      folder: 'evolved/linkedin',
+      public_id: `linkedin_${student.id}_${Date.now()}`,
+      resource_type: 'raw',
+      format: 'pdf',
+    });
+    pdfUrl = result.secure_url;
+
+    // Save PDF URL to student record
+    await prisma.student.update({
+      where: { id: student.id },
+      data: { linkedinPdfUrl: pdfUrl },
+    });
+  } catch (err) {
+    console.error('[LinkedIn PDF] Cloudinary upload failed:', err.message);
+    // Non-critical: continue even if upload fails
+  }
+
+  return {
+    message: 'LinkedIn PDF parsed successfully.',
+    extracted,
+    pdfUrl,
+  };
+}
+
 // ─── APPLICATIONS ────────────────────────────────────────────────
 
 async function getApplications(userId, query) {
@@ -561,6 +808,12 @@ module.exports = {
   getReadinessScore,
   getProfile,
   updateProfile,
+  uploadAvatar,
+  getResumes,
+  uploadResume,
+  updateResume,
+  deleteResume,
+  parseLinkedinPdf,
   getSkills,
   addSkill,
   removeSkill,

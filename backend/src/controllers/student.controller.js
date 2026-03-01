@@ -174,11 +174,80 @@ async function exportReport(req, res, next) {
   }
 }
 
+// POST /api/student/profile/avatar
+async function uploadAvatar(req, res, next) {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded.' });
+    const data = await studentService.uploadAvatar(req.user.userId, req.file.buffer, req.file.mimetype);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// GET /api/student/resumes
+async function getResumes(req, res, next) {
+  try {
+    const data = await studentService.getResumes(req.user.userId);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// POST /api/student/resumes
+async function uploadResume(req, res, next) {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded.' });
+    const data = await studentService.uploadResume(req.user.userId, req.file.buffer, req.body);
+    res.status(201).json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// PUT /api/student/resumes/:resumeId
+async function updateResume(req, res, next) {
+  try {
+    const data = await studentService.updateResume(req.user.userId, req.params.resumeId, req.body);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// DELETE /api/student/resumes/:resumeId
+async function deleteResume(req, res, next) {
+  try {
+    const data = await studentService.deleteResume(req.user.userId, req.params.resumeId);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// POST /api/student/profile/linkedin-pdf
+async function parseLinkedinPdf(req, res, next) {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded.' });
+    const data = await studentService.parseLinkedinPdf(req.user.userId, req.file.buffer);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getDashboard,
   getReadinessScore,
   getProfile,
   updateProfile,
+  uploadAvatar,
+  getResumes,
+  uploadResume,
+  updateResume,
+  deleteResume,
+  parseLinkedinPdf,
   getSkills,
   addSkill,
   removeSkill,

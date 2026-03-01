@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>EvolvEd Logo Exporter</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      background: #0f1e33;
+      font-family: Arial, sans-serif;
+    }
+
+    .preview-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .label {
+      color: rgba(255,255,255,0.5);
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .bg-dark  { background: #0f1e33; padding: 24px 32px; border-radius: 12px; }
+    .bg-light { background: #ffffff; padding: 24px 32px; border-radius: 12px; }
+    .bg-trans { background: repeating-conic-gradient(#ccc 0% 25%, #fff 0% 50%)
+                              0 0 / 16px 16px; padding: 24px 32px; border-radius: 12px; }
+
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      padding: 10px 24px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: opacity .2s;
+    }
+    button:hover { opacity: .85; }
+
+    .btn-gold  { background: #c6a43f; color: #0f1e33; }
+    .btn-white { background: #ffffff; color: #0f1e33; }
+    .btn-dark  { background: #1a2e4a; color: #ffffff; border: 1px solid rgba(255,255,255,.2); }
+  </style>
+</head>
+<body>
+
+  <div style="display:flex; gap:32px; flex-wrap:wrap; justify-content:center;">
+    <div class="preview-box">
+      <div class="label">Dark background</div>
+      <div class="bg-dark"><img id="preview-dark" src="logo.svg" width="320" height="80" /></div>
+    </div>
+    <div class="preview-box">
+      <div class="label">Light background</div>
+      <div class="bg-light"><img id="preview-light" src="logo.svg" width="320" height="80" /></div>
+    </div>
+    <div class="preview-box">
+      <div class="label">Transparent background</div>
+      <div class="bg-trans"><img id="preview-trans" src="logo.svg" width="320" height="80" /></div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-gold"  onclick="exportPNG(2, 'logo-320x80@2x.png')">Export PNG — 640×160 (2x)</button>
+    <button class="btn-white" onclick="exportPNG(3, 'logo-320x80@3x.png')">Export PNG — 960×240 (3x)</button>
+    <button class="btn-dark"  onclick="exportPNG(4, 'logo-320x80@4x.png')">Export PNG — 1280×320 (4x)</button>
+  </div>
+
+  <canvas id="cvs" style="display:none;"></canvas>
+
+  <script>
+    function exportPNG(scale, filename) {
+      const img = new Image();
+      img.onload = () => {
+        const w = 320 * scale, h = 80 * scale;
+        const cvs = document.getElementById('cvs');
+        cvs.width = w; cvs.height = h;
+        const ctx = cvs.getContext('2d');
+        ctx.clearRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        const a = document.createElement('a');
+        a.href = cvs.toDataURL('image/png');
+        a.download = filename;
+        a.click();
+      };
+      // Force re-load via object URL to avoid taint issues
+      img.src = 'logo.svg?' + Date.now();
+    }
+  </script>
+</body>
+</html>

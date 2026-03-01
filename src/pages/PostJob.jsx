@@ -20,11 +20,11 @@ export default function PostJob() {
   }
 
   return (
-    <div className="font-sans bg-background-light min-h-screen flex flex-row">
+    <div className="font-sans bg-background-light h-screen flex flex-row overflow-hidden">
       <RecruiterSidebar />
 
       {/* Main Content */}
-      <main className="flex-1 flex justify-center py-10 px-6 sm:px-10 lg:px-16 overflow-y-auto">
+      <main className="flex-1 h-full flex justify-center py-10 px-6 sm:px-10 lg:px-16 overflow-y-auto">
           <div className="flex flex-col max-w-[960px] w-full gap-8">
             {/* Page Title */}
             <div className="flex flex-col gap-2">

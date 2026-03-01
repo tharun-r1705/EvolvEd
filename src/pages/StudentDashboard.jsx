@@ -7,12 +7,12 @@ export default function StudentDashboard() {
   const { user } = useAuth();
 
   return (
-    <div className="flex min-h-screen w-full flex-row overflow-hidden bg-background-light font-display">
+    <div className="flex h-screen w-full flex-row overflow-hidden bg-background-light font-display">
       {/* ── Sidebar ── */}
       <StudentSidebar />
 
       {/* ── Main Content ── */}
-      <main className="flex h-screen flex-1 flex-col overflow-y-auto bg-background-light p-4 md:p-8">
+      <main className="flex h-full flex-1 flex-col overflow-y-auto bg-background-light p-4 md:p-8">
         <div className="mx-auto w-full max-w-6xl">
           {/* Top Header */}
           <header className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">

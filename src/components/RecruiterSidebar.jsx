@@ -26,7 +26,7 @@ export default function RecruiterSidebar() {
   }
 
   return (
-    <aside className="hidden lg:flex w-64 flex-shrink-0 flex-col justify-between bg-midnight px-4 py-6 border-r border-slate-800 text-slate-100 h-screen sticky top-0">
+    <aside className="hidden lg:flex w-64 flex-shrink-0 flex-col justify-between bg-midnight px-4 py-6 border-r border-slate-800 text-slate-100 h-full">
       <div className="flex flex-col gap-8">
         {/* Logo */}
         <Link to="/recruiter" className="flex items-center gap-3 px-2 w-fit">

@@ -7,12 +7,12 @@ export default function AdminDashboard() {
   const { user } = useAuth();
 
   return (
-    <div className="bg-background-light text-text-main font-sans antialiased min-h-screen flex flex-row">
+    <div className="bg-background-light text-text-main font-sans antialiased h-screen flex flex-row overflow-hidden">
       {/* ── Sidebar ── */}
       <AdminSidebar />
 
       {/* ── Main Content ── */}
-      <main className="flex-1 p-8 overflow-y-auto">
+      <main className="flex-1 h-full p-8 overflow-y-auto">
           <header className="mb-8">
             <h2 className="text-3xl font-bold text-secondary mb-2">System Overview</h2>
             <p className="text-text-muted">Welcome back, here's what's happening across the campus today.</p>

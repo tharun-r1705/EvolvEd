@@ -29,7 +29,7 @@ export default function AdminSidebar() {
   }
 
   return (
-    <aside className="hidden lg:flex w-64 flex-shrink-0 flex-col bg-surface-light border-r border-gray-200 h-screen sticky top-0">
+    <aside className="hidden lg:flex w-64 flex-shrink-0 flex-col bg-surface-light border-r border-gray-200 h-full">
       {/* Logo */}
       <div className="px-6 py-5 border-b border-gray-100">
         <Link to="/admin" className="flex items-center gap-3 w-fit">

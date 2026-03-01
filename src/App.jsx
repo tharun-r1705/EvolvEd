@@ -9,9 +9,11 @@ import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
 import Signup from './pages/Signup.jsx';
 import NotFound from './pages/NotFound.jsx';
+import OAuthCallback from './pages/OAuthCallback.jsx';
 
 // Student Pages
 import StudentDashboard from './pages/StudentDashboard.jsx';
+import StudentProfile from './pages/StudentProfile.jsx';
 import AssessmentBreakdown from './pages/AssessmentBreakdown.jsx';
 
 // Recruiter Pages
@@ -35,6 +37,7 @@ export default function App() {
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/auth/callback" element={<OAuthCallback />} />
 
           {/* ── Student Routes (protected) ── */}
           <Route
@@ -42,6 +45,7 @@ export default function App() {
             element={<ProtectedRoute allowedRoles={['student']} />}
           >
             <Route index element={<StudentDashboard />} />
+            <Route path="profile" element={<StudentProfile />} />
             <Route path="assessments/:id" element={<AssessmentBreakdown />} />
           </Route>
 

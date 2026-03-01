@@ -4,10 +4,10 @@ import StudentSidebar from '../components/StudentSidebar.jsx';
 
 export default function AssessmentBreakdown() {
   return (
-    <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex flex-row overflow-x-hidden">
+    <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display h-screen flex flex-row overflow-hidden">
       <StudentSidebar />
 
-      <main className="flex-1 overflow-y-auto py-8">
+      <main className="flex-1 h-full overflow-y-auto py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Page Header */}
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -106,36 +106,59 @@ export default function AssessmentBreakdown() {
                   </button>
                 </div>
               </div>
-              <div className="relative h-64 w-full">
-                <div className="flex h-full items-end justify-between gap-4 px-2 pb-6">
-                  {[
-                    { label: 'Technical', pct: 85 },
-                    { label: 'Soft Skills', pct: 65 },
-                    { label: 'Logic', pct: 92 },
-                    { label: 'Aptitude', pct: 78 },
-                    { label: 'Verbal', pct: 88 },
-                  ].map(({ label, pct }) => (
-                    <div key={label} className="group relative flex h-full w-full flex-col justify-end gap-2">
-                      <div className="relative flex w-full flex-col justify-end rounded-t-lg bg-slate-100 dark:bg-white/5 overflow-hidden h-full">
-                        <div
-                          className="absolute bottom-0 w-full bg-[#006064] transition-all duration-500 group-hover:bg-[#004d40] dark:bg-[#4dd0e1]"
-                          style={{ height: `${pct}%` }}
-                        />
-                      </div>
-                      <div className="text-center">
-                        <p className="text-xs font-medium text-slate-600 dark:text-slate-300">{label}</p>
-                        <p className="text-xs font-bold text-slate-900 dark:text-white">{pct}%</p>
-                      </div>
+              {/* Bar chart — BAR_MAX_PX = h-52 (208px) leaving 48px for labels */}
+              {(() => {
+                const BAR_MAX = 208;
+                const bars = [
+                  { label: 'Technical',  pct: 85 },
+                  { label: 'Soft Skills', pct: 65 },
+                  { label: 'Logic',      pct: 92 },
+                  { label: 'Aptitude',   pct: 78 },
+                  { label: 'Verbal',     pct: 88 },
+                ];
+                return (
+                  <div className="relative w-full" style={{ height: '256px' }}>
+                    {/* Grid lines */}
+                    <div className="pointer-events-none absolute inset-x-0 top-0 flex flex-col justify-between" style={{ height: `${BAR_MAX}px` }}>
+                      {[100, 75, 50, 25, 0].map((tick) => (
+                        <div key={tick} className="flex items-center gap-1">
+                          <span className="w-6 shrink-0 text-right text-[10px] text-slate-300 dark:text-slate-600">{tick}</span>
+                          <div className="flex-1 border-t border-dashed border-slate-200 dark:border-white/10" />
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-                {/* Y-Axis Grid Lines */}
-                <div className="pointer-events-none absolute inset-0 flex flex-col justify-between pb-12 pt-0 text-xs text-slate-300 dark:text-slate-600">
-                  {[0, 1, 2, 3, 4].map((i) => (
-                    <div key={i} className="w-full border-b border-dashed border-slate-200 dark:border-white/10" />
-                  ))}
-                </div>
-              </div>
+
+                    {/* Bars */}
+                    <div className="absolute inset-x-8 flex items-end justify-between gap-3" style={{ top: 0, height: `${BAR_MAX}px` }}>
+                      {bars.map(({ label, pct }) => {
+                        const barPx = Math.round((pct / 100) * BAR_MAX);
+                        return (
+                          <div key={label} className="group flex flex-1 flex-col items-center justify-end h-full">
+                            {/* Empty track */}
+                            <div className="relative w-full rounded-t-lg bg-slate-100 dark:bg-white/5 overflow-hidden" style={{ height: `${BAR_MAX}px` }}>
+                              {/* Filled portion */}
+                              <div
+                                className="absolute bottom-0 w-full rounded-t-lg bg-[#006064] group-hover:bg-[#004d40] dark:bg-[#4dd0e1] transition-all duration-700"
+                                style={{ height: `${barPx}px` }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Labels */}
+                    <div className="absolute inset-x-8 flex items-start justify-between gap-3" style={{ top: `${BAR_MAX + 6}px` }}>
+                      {bars.map(({ label, pct }) => (
+                        <div key={label} className="flex-1 text-center">
+                          <p className="text-xs font-medium text-slate-600 dark:text-slate-300 leading-tight">{label}</p>
+                          <p className="text-xs font-bold text-slate-900 dark:text-white">{pct}%</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Recommendation Card */}

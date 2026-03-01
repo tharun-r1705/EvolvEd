@@ -42,6 +42,8 @@ export const authService = {
   register: (data) => api.post('/auth/register', data),
   logout: () => api.post('/auth/logout'),
   me: () => api.get('/auth/me'),
+  oauthCallback: (supabaseToken, role = 'student') =>
+    api.post('/auth/oauth/callback', { supabaseToken, role }),
 };
 
 // ---------------------------------------------------------------------------
@@ -54,6 +56,21 @@ export const studentService = {
   getAssessmentById: (id) => api.get(`/student/assessments/${id}`),
   getSkills: () => api.get('/student/skills'),
   getApplications: () => api.get('/student/applications'),
+
+  // Profile
+  getProfile: () => api.get('/student/profile'),
+  updateProfile: (data) => api.put('/student/profile', data),
+  uploadAvatar: (formData) =>
+    api.post('/student/profile/avatar', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  parseLinkedinPdf: (formData) =>
+    api.post('/student/profile/linkedin-pdf', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+
+  // Resumes
+  getResumes: () => api.get('/student/resumes'),
+  uploadResume: (formData) =>
+    api.post('/student/resumes', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  updateResume: (id, data) => api.put(`/student/resumes/${id}`, data),
+  deleteResume: (id) => api.delete(`/student/resumes/${id}`),
 };
 
 // ---------------------------------------------------------------------------

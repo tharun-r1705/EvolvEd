@@ -7,12 +7,12 @@ export default function RecruiterDashboard() {
   const { user } = useAuth();
 
   return (
-    <div className="flex min-h-screen w-full bg-background-light">
+    <div className="flex h-screen w-full bg-background-light overflow-hidden">
       {/* ── Sidebar ── */}
       <RecruiterSidebar />
 
       {/* ── Main Content ── */}
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1 flex flex-col h-full overflow-y-auto">
         <div className="p-8 max-w-[1400px] mx-auto w-full flex flex-col gap-8">
           {/* Welcome */}
           <div>

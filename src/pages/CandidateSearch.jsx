@@ -16,7 +16,7 @@ export default function CandidateSearch() {
   ];
 
   return (
-    <div className="bg-background-light text-text-main font-sans min-h-screen flex flex-row overflow-hidden">
+    <div className="bg-background-light text-text-main font-sans h-screen flex flex-row overflow-hidden">
       <RecruiterSidebar />
 
       {/* Main Layout */}

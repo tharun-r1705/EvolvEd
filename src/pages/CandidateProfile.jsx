@@ -4,11 +4,11 @@ import RecruiterSidebar from '../components/RecruiterSidebar.jsx';
 
 export default function CandidateProfile() {
   return (
-    <div className="bg-background-light font-sans text-midnight-navy min-h-screen flex flex-row overflow-x-hidden">
+    <div className="bg-background-light font-sans text-midnight-navy h-screen flex flex-row overflow-hidden">
       <RecruiterSidebar />
 
       {/* Main Content */}
-      <main className="flex-grow w-full overflow-y-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 h-full w-full overflow-y-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Column */}
           <div className="lg:col-span-4 flex flex-col gap-6">

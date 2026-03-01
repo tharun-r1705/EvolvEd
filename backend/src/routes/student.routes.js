@@ -12,7 +12,10 @@ const {
   addInternshipSchema,
   addCertificationSchema,
   assessmentQuerySchema,
+  addResumeSchema,
+  updateResumeSchema,
 } = require('../validators/student.schema');
+const { uploadAvatar, uploadResume, uploadLinkedinPdf } = require('../middleware/upload');
 
 // All student routes require authentication + student role
 router.use(authenticate, authorize('student'));
@@ -22,6 +25,13 @@ router.get('/readiness-score', ctrl.getReadinessScore);
 
 router.get('/profile', ctrl.getProfile);
 router.put('/profile', validate(updateProfileSchema), ctrl.updateProfile);
+router.post('/profile/avatar', uploadAvatar, ctrl.uploadAvatar);
+router.post('/profile/linkedin-pdf', uploadLinkedinPdf, ctrl.parseLinkedinPdf);
+
+router.get('/resumes', ctrl.getResumes);
+router.post('/resumes', uploadResume, validate(addResumeSchema), ctrl.uploadResume);
+router.put('/resumes/:resumeId', validate(updateResumeSchema), ctrl.updateResume);
+router.delete('/resumes/:resumeId', ctrl.deleteResume);
 
 router.get('/skills', ctrl.getSkills);
 router.post('/skills', validate(addSkillSchema), ctrl.addSkill);

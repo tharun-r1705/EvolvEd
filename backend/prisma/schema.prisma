@@ -118,6 +118,10 @@ model Student {
   expectedGrad      String?       @map("expected_grad")
   bio               String?
   avatarUrl         String?       @map("avatar_url")
+  githubUsername    String?       @map("github_username")
+  leetcodeUsername  String?       @map("leetcode_username")
+  linkedinPdfUrl    String?       @map("linkedin_pdf_url")
+  showOnLeaderboard Boolean       @default(true) @map("show_on_leaderboard")
   profileCompletion Int           @default(0) @map("profile_completion")
   readinessScore    Decimal       @default(0) @db.Decimal(5, 2) @map("readiness_score")
   status            StudentStatus @default(active)
@@ -135,6 +139,7 @@ model Student {
   internships    Internship[]
   certifications Certification[]
   placements     Placement[]
+  resumes        Resume[]
 
   @@index([department])
   @@index([readinessScore])
@@ -142,6 +147,27 @@ model Student {
   @@index([yearOfStudy])
   @@index([deletedAt])
   @@map("students")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// RESUMES (multiple resumes per student, categorized)
+// ─────────────────────────────────────────────────────────────────
+
+model Resume {
+  id          String   @id @default(uuid()) @db.Uuid
+  studentId   String   @map("student_id") @db.Uuid
+  name        String
+  category    String   @default("general")
+  url         String
+  publicId    String   @map("public_id")
+  isDefault   Boolean  @default(false) @map("is_default")
+  uploadedAt  DateTime @default(now()) @map("uploaded_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@map("resumes")
 }
 
 // ─────────────────────────────────────────────────────────────────

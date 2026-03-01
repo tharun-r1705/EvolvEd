@@ -124,23 +124,25 @@ async function calcAssessmentsScore(studentId) {
  * @returns {number} 0-100
  */
 function calcProfileCompletion(student) {
+  // Each field contributes equally; weight total to 100
   const fields = [
-    student.fullName,
-    student.phone,
-    student.linkedin,
-    student.website,
-    student.location,
-    student.expectedGrad,
-    student.bio,
-    student.gpa,
-    student.avatarUrl,
+    { key: 'fullName', value: student.fullName },           // core
+    { key: 'phone', value: student.phone },                 // contact
+    { key: 'linkedin', value: student.linkedin },           // social
+    { key: 'website', value: student.website },             // portfolio
+    { key: 'location', value: student.location },           // location
+    { key: 'expectedGrad', value: student.expectedGrad },   // academic
+    { key: 'bio', value: student.bio },                     // about
+    { key: 'gpa', value: student.gpa },                     // academic
+    { key: 'avatarUrl', value: student.avatarUrl },         // avatar
+    { key: 'githubUsername', value: student.githubUsername }, // coding
+    { key: 'leetcodeUsername', value: student.leetcodeUsername }, // coding
   ];
 
   const filled = fields.filter(
-    (v) => v !== null && v !== undefined && v !== ''
+    ({ value }) => value !== null && value !== undefined && value !== ''
   ).length;
 
-  // Core fields count for 50%, extras for remaining 50%
   return Math.round((filled / fields.length) * 100);
 }
 
@@ -185,6 +187,8 @@ async function recalculateScore(studentId) {
       bio: true,
       gpa: true,
       avatarUrl: true,
+      githubUsername: true,
+      leetcodeUsername: true,
     },
   });
 

@@ -3,11 +3,12 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const NAV_ITEMS = [
-  { to: '/student', icon: 'dashboard', label: 'Dashboard', exact: true },
-  { to: '/student/assessments/latest', icon: 'description', label: 'Assessments' },
-  { to: '#', icon: 'verified', label: 'Skills Profile' },
-  { to: '#', icon: 'work', label: 'Jobs & Placements' },
-  { to: '#', icon: 'analytics', label: 'Analytics' },
+  { to: '/student',         icon: 'dashboard',       label: 'Dashboard',       exact: true },
+  { to: '/student/profile', icon: 'manage_accounts', label: 'My Profile' },
+  { to: '/student/assessments/1', icon: 'description', label: 'Assessments' },
+  { to: null, icon: 'verified',  label: 'Skills Profile',    soon: true },
+  { to: null, icon: 'work',      label: 'Jobs & Placements', soon: true },
+  { to: null, icon: 'analytics', label: 'Analytics',         soon: true },
 ];
 
 export default function StudentSidebar() {
@@ -21,15 +22,16 @@ export default function StudentSidebar() {
   }
 
   function isActive(item) {
+    if (!item.to) return false;
     if (item.exact) return pathname === item.to;
-    return pathname.startsWith(item.to) && item.to !== '#';
+    return pathname.startsWith(item.to);
   }
 
   return (
-    <aside className="hidden w-72 flex-shrink-0 flex-col justify-between bg-secondary p-6 text-white shadow-xl lg:flex h-screen sticky top-0">
-      <div className="flex flex-col gap-8">
+    <aside className="hidden w-72 flex-shrink-0 flex-col justify-between bg-secondary p-6 text-white shadow-xl lg:flex h-full">
+      <div className="flex flex-col gap-8 overflow-y-auto flex-1 min-h-0 pb-2">
         {/* Logo */}
-        <Link to="/student" className="flex items-center gap-3 px-2 w-fit">
+        <Link to="/student" className="flex items-center gap-3 px-2 w-fit flex-shrink-0">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-secondary">
             <span className="material-symbols-outlined text-3xl">school</span>
           </div>
@@ -38,25 +40,36 @@ export default function StudentSidebar() {
 
         {/* Navigation */}
         <nav className="flex flex-col gap-1.5">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.label}
-              to={item.to}
-              className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
-                isActive(item)
-                  ? 'bg-white/10 text-white'
-                  : 'text-slate-300 hover:bg-white/10 hover:text-white'
-              }`}
-            >
-              <span className="material-symbols-outlined">{item.icon}</span>
-              {item.label}
-            </Link>
-          ))}
+          {NAV_ITEMS.map((item) =>
+            item.soon ? (
+              <div
+                key={item.label}
+                className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-500 cursor-not-allowed select-none"
+              >
+                <span className="material-symbols-outlined">{item.icon}</span>
+                <span className="flex-1">{item.label}</span>
+                <span className="text-[10px] font-semibold uppercase tracking-wider bg-white/10 text-slate-400 px-1.5 py-0.5 rounded">Soon</span>
+              </div>
+            ) : (
+              <Link
+                key={item.label}
+                to={item.to}
+                className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+                  isActive(item)
+                    ? 'bg-white/10 text-white'
+                    : 'text-slate-300 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                <span className="material-symbols-outlined">{item.icon}</span>
+                {item.label}
+              </Link>
+            )
+          )}
         </nav>
       </div>
 
       {/* Bottom */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 flex-shrink-0 pt-2">
         {/* Pro Tip */}
         <div className="rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 p-4 border border-primary/10">
           <div className="flex items-center gap-3 mb-2">
@@ -72,28 +85,26 @@ export default function StudentSidebar() {
 
         <div className="h-px bg-white/10" />
 
-        {/* Logout */}
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors rounded-lg hover:bg-white/10"
-        >
-          <span className="material-symbols-outlined">logout</span>
-          Sign Out
-        </button>
-
-        {/* Profile */}
-        <div className="flex items-center gap-3 pt-2 px-2">
+        {/* Profile + Logout */}
+        <div className="flex items-center gap-3 px-2 py-2 rounded-xl bg-white/5 border border-white/10">
           <div
-            className="h-10 w-10 rounded-full bg-cover bg-center flex-shrink-0"
-            style={{
-              backgroundImage:
-                "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDCrZJKLhl8RTIQpkrAF7a4lJ1fB6xVt9WoZYc1XhyIhkvbXqkI0SKWUxLSN8QlHy-2DKy-MB3ASBCXbFfVajufE6pA3aA223SiZpLA1fanVPooiDg7Nd4J26QV0cUtS8LTBmjHUizHxLt6OYMBzrjKyjxem6NYNnmBacQEyCdPPHUwQ-y-7CTN8fIJV_u013JUIIoGDDpprR49BKMudxpxnP3oTfLtrOjUF09BjnFkljIS0cQRiUUuVnJHspZystILPFvz3EtRuWN0')",
-            }}
-          />
-          <div className="flex flex-col min-w-0">
-            <p className="text-sm font-medium text-white truncate">{user?.name || 'Student'}</p>
-            <p className="text-xs text-slate-400">Comp Sci, Year 4</p>
+            className="h-10 w-10 rounded-full flex-shrink-0 bg-slate-700 flex items-center justify-center overflow-hidden"
+            style={user?.avatarUrl ? { backgroundImage: `url(${user.avatarUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
+          >
+            {!user?.avatarUrl && (
+              <span className="material-symbols-outlined text-2xl text-slate-400">person</span>
+            )}
           </div>
+          <div className="flex flex-col min-w-0 flex-1">
+            <p className="text-sm font-medium text-white truncate">{user?.name || 'Student'}</p>
+            <p className="text-xs text-slate-400 truncate">{user?.department || 'Student'}</p>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="flex-shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 transition-colors"
+          >
+            Sign Out
+          </button>
         </div>
       </div>
     </aside>
