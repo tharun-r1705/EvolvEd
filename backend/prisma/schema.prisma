@@ -474,10 +474,13 @@ model ScoreBreakdown {
   certifications   Decimal  @default(0) @db.Decimal(5, 2)
   assessments      Decimal  @default(0) @db.Decimal(5, 2)
   events           Decimal  @default(0) @db.Decimal(5, 2)
-  codingPractice   Decimal  @default(0) @db.Decimal(5, 2) @map("coding_practice")
-  githubActivity   Decimal  @default(0) @db.Decimal(5, 2) @map("github_activity")
-  totalScore       Decimal  @default(0) @db.Decimal(5, 2) @map("total_score")
-  lastCalculatedAt DateTime @default(now()) @map("last_calculated_at")
+  codingPractice      Decimal  @default(0) @db.Decimal(5, 2) @map("coding_practice")
+  githubActivity      Decimal  @default(0) @db.Decimal(5, 2) @map("github_activity")
+  learningPace        Decimal  @default(0) @db.Decimal(5, 2) @map("learning_pace")
+  roadmapProgress     Decimal  @default(0) @db.Decimal(5, 2) @map("roadmap_progress")
+  interviewReadiness  Decimal  @default(0) @db.Decimal(5, 2) @map("interview_readiness")
+  totalScore          Decimal  @default(0) @db.Decimal(5, 2) @map("total_score")
+  lastCalculatedAt    DateTime @default(now()) @map("last_calculated_at")
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 

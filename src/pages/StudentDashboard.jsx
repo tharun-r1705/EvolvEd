@@ -113,14 +113,17 @@ function CircularScore({ score }) {
 // ─── Score Breakdown Radar ────────────────────────────────────────────────────
 
 const BREAKDOWN_LABELS = {
-  technicalSkills: 'Technical',
-  projects: 'Projects',
-  internships: 'Internships',
-  certifications: 'Certs',
-  assessments: 'Assessments',
-  events: 'Events',
-  codingPractice: 'Coding',
-  githubActivity: 'GitHub',
+  technicalSkills:    'Technical',
+  projects:           'Projects',
+  internships:        'Internships',
+  certifications:     'Certs',
+  assessments:        'Assessments',
+  events:             'Events',
+  codingPractice:     'Coding',
+  githubActivity:     'GitHub',
+  learningPace:       'Learning Pace',
+  roadmapProgress:    'Roadmaps',
+  interviewReadiness: 'Interviews',
 };
 
 // ─── Custom Tooltip ───────────────────────────────────────────────────────────

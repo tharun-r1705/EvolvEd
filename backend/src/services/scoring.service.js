@@ -1,22 +1,25 @@
 'use strict';
 
 const prisma = require('../lib/prisma');
+const { getLearningPace } = require('./learningPace.service');
 
-// Default score weights (will be overridden by DB values if present)
-// Phase 3 redistribution: added coding_practice (12%) and github_activity (5%)
+// ─── V2 Default weights (11 components, total = 100%) ────────────────────────
 const DEFAULT_WEIGHTS = {
-  technical_skills: 25,
-  projects: 15,
-  internships: 15,
-  certifications: 8,
-  assessments: 15,
-  coding_practice: 12,
-  github_activity: 5,
-  events: 5,
+  technical_skills:    20,
+  projects:            12,
+  internships:         12,
+  certifications:       8,
+  assessments:         12,
+  coding_practice:     12,
+  github_activity:      6,
+  events:               3,
+  learning_pace:        8,
+  roadmap_progress:     4,
+  interview_readiness:  3,
 };
 
 /**
- * Load score weights from the database, falling back to defaults.
+ * Load score weights from the database, falling back to V2 defaults.
  * @returns {Promise<object>} weights object
  */
 async function loadWeights() {
@@ -30,11 +33,10 @@ async function loadWeights() {
   }, { ...DEFAULT_WEIGHTS });
 }
 
+// ─── Component calculators ────────────────────────────────────────────────────
+
 /**
- * Calculate the proficiency score (0-100) from a student's skills.
- * Returns the average proficiency across all skills.
- * @param {string} studentId
- * @returns {Promise<number>}
+ * Technical skills score (0–100): average proficiency across all skills.
  */
 async function calcTechnicalSkillsScore(studentId) {
   const result = await prisma.studentSkill.aggregate({
@@ -42,16 +44,12 @@ async function calcTechnicalSkillsScore(studentId) {
     _avg: { proficiency: true },
     _count: { id: true },
   });
-
   if (result._count.id === 0) return 0;
   return Math.round(result._avg.proficiency || 0);
 }
 
 /**
- * Calculate project score (0-100).
- * Formula: min(count * 20, 100) — 5 projects = 100
- * @param {string} studentId
- * @returns {Promise<number>}
+ * Projects score (0–100): min(count * 20, 100) — 5 projects = 100.
  */
 async function calcProjectsScore(studentId) {
   const count = await prisma.project.count({ where: { studentId } });
@@ -59,11 +57,7 @@ async function calcProjectsScore(studentId) {
 }
 
 /**
- * Calculate internship score (0-100).
- * Formula: min(count * 40, 100) — 3 internships = 100 (capped)
- * Additional scoring for duration.
- * @param {string} studentId
- * @returns {Promise<number>}
+ * Internships score (0–100): 30 per internship + duration bonuses, capped at 100.
  */
 async function calcInternshipsScore(studentId) {
   const internships = await prisma.internship.findMany({
@@ -73,7 +67,6 @@ async function calcInternshipsScore(studentId) {
 
   if (internships.length === 0) return 0;
 
-  // Base: 30 per internship, bonus: up to 10 per internship for duration > 3 months
   let score = 0;
   for (const intern of internships) {
     score += 30;
@@ -82,7 +75,7 @@ async function calcInternshipsScore(studentId) {
         (new Date(intern.endDate) - new Date(intern.startDate)) /
         (1000 * 60 * 60 * 24 * 30);
       if (months >= 3) score += 10;
-      if (months >= 6) score += 10; // additional bonus for 6+ months
+      if (months >= 6) score += 10;
     }
   }
 
@@ -90,10 +83,7 @@ async function calcInternshipsScore(studentId) {
 }
 
 /**
- * Calculate certification score (0-100).
- * Formula: min(count * 25, 100) — 4 certifications = 100
- * @param {string} studentId
- * @returns {Promise<number>}
+ * Certifications score (0–100): min(count * 25, 100) — 4 certs = 100.
  */
 async function calcCertificationsScore(studentId) {
   const count = await prisma.certification.count({ where: { studentId } });
@@ -101,11 +91,7 @@ async function calcCertificationsScore(studentId) {
 }
 
 /**
- * Calculate events score (0-100).
- * Formula: min(count * 20, 100) — 5 events = 100.
- * Bonus: +5 per winning/runner_up achievement (capped by overall 100).
- * @param {string} studentId
- * @returns {Promise<number>}
+ * Events score (0–100): base 20 per event + achievement bonuses, capped at 100.
  */
 async function calcEventsScore(studentId) {
   const events = await prisma.event.findMany({
@@ -126,10 +112,7 @@ async function calcEventsScore(studentId) {
 }
 
 /**
- * Calculate assessment score (0-100).
- * Returns the average of (totalScore / maxScore * 100) across all assessments.
- * @param {string} studentId
- * @returns {Promise<number>}
+ * Assessments score (0–100): average of (totalScore / maxScore * 100) across assessments.
  */
 async function calcAssessmentsScore(studentId) {
   const assessments = await prisma.assessment.findMany({
@@ -140,19 +123,15 @@ async function calcAssessmentsScore(studentId) {
   if (assessments.length === 0) return 0;
 
   const avg =
-    assessments.reduce((sum, a) => {
-      return sum + (a.totalScore / a.maxScore) * 100;
-    }, 0) / assessments.length;
+    assessments.reduce((sum, a) => sum + (a.totalScore / a.maxScore) * 100, 0) /
+    assessments.length;
 
   return Math.round(avg);
 }
 
 /**
- * Calculate coding practice score (0-100) from cached LeetCode profile.
- * Formula: min((easy*1 + medium*3 + hard*5) / 2, 100)
- * Bonus: +5 if contest rating >= 1500, +10 if >= 1800
- * @param {string} studentId
- * @returns {Promise<number>}
+ * Coding practice score (0–100) from cached LeetCode profile.
+ * Formula: min((easy*1 + medium*3 + hard*5) / 2, 100) + contest rating bonus.
  */
 async function calcCodingPracticeScore(studentId) {
   const profile = await prisma.leetCodeProfile.findUnique({
@@ -178,13 +157,8 @@ async function calcCodingPracticeScore(studentId) {
 }
 
 /**
- * Calculate GitHub activity score (0-100) from cached GitHub profile.
- * Formula:
- *   repos score:        min(publicRepos * 5, 40)
- *   stars score:        min(totalStars * 2, 30)
- *   contributions:      min(contributionCount / 3, 30)
- * @param {string} studentId
- * @returns {Promise<number>}
+ * GitHub activity score (0–100) from cached GitHub profile.
+ * repos: min(publicRepos*5, 40), stars: min(totalStars*2, 30), contribs: min(count/3, 30)
  */
 async function calcGitHubActivityScore(studentId) {
   const profile = await prisma.gitHubProfile.findUnique({
@@ -194,76 +168,161 @@ async function calcGitHubActivityScore(studentId) {
 
   if (!profile) return 0;
 
-  const reposScore = Math.min(profile.publicRepos * 5, 40);
-  const starsScore = Math.min(profile.totalStars * 2, 30);
+  const reposScore   = Math.min(profile.publicRepos * 5, 40);
+  const starsScore   = Math.min(profile.totalStars * 2, 30);
   const contribScore = Math.min(profile.contributionCount / 3, 30);
 
   return Math.min(Math.round(reposScore + starsScore + contribScore), 100);
 }
 
 /**
- * Calculate profile completion percentage.
- * @param {object} student - Student record with all fields
- * @returns {number} 0-100
+ * Learning pace score (0–100): delegates to getLearningPace service.
  */
-function calcProfileCompletion(student) {
-  // Each field contributes equally; weight total to 100
-  const fields = [
-    { key: 'fullName', value: student.fullName },           // core
-    { key: 'phone', value: student.phone },                 // contact
-    { key: 'linkedin', value: student.linkedin },           // social
-    { key: 'website', value: student.website },             // portfolio
-    { key: 'location', value: student.location },           // location
-    { key: 'expectedGrad', value: student.expectedGrad },   // academic
-    { key: 'bio', value: student.bio },                     // about
-    { key: 'gpa', value: student.gpa },                     // academic
-    { key: 'avatarUrl', value: student.avatarUrl },         // avatar
-    { key: 'githubUsername', value: student.githubUsername }, // coding
-    { key: 'leetcodeUsername', value: student.leetcodeUsername }, // coding
-  ];
-
-  const filled = fields.filter(
-    ({ value }) => value !== null && value !== undefined && value !== ''
-  ).length;
-
-  return Math.round((filled / fields.length) * 100);
+async function calcLearningPaceScore(studentId) {
+  try {
+    const pace = await getLearningPace(studentId);
+    return typeof pace.paceScore === 'number' ? pace.paceScore : 0;
+  } catch {
+    return 0;
+  }
 }
 
 /**
- * MAIN: Recalculate the readiness score for a student.
+ * Roadmap progress score (0–100).
+ * Formula: min(completedModules * 10, 60) + (avgTestScore * 0.4), capped at 100.
+ * avgTestScore only counts completed modules with a testScore.
+ */
+async function calcRoadmapProgressScore(studentId) {
+  // Only consider roadmaps belonging to this student
+  const roadmaps = await prisma.roadmap.findMany({
+    where: { studentId },
+    select: { id: true },
+  });
+
+  if (roadmaps.length === 0) return 0;
+
+  const roadmapIds = roadmaps.map((r) => r.id);
+
+  const completedModules = await prisma.roadmapProgress.findMany({
+    where: { roadmapId: { in: roadmapIds }, status: 'completed' },
+    select: { testScore: true },
+  });
+
+  const completedCount = completedModules.length;
+  if (completedCount === 0) return 0;
+
+  const withScores = completedModules.filter((m) => m.testScore !== null);
+  const avgTestScore =
+    withScores.length > 0
+      ? withScores.reduce((s, m) => s + m.testScore, 0) / withScores.length
+      : 0;
+
+  const score = Math.min(completedCount * 10, 60) + avgTestScore * 0.4;
+  return Math.min(Math.round(score), 100);
+}
+
+/**
+ * Interview readiness score (0–100): average overallScore across completed mock interviews.
+ */
+async function calcInterviewReadinessScore(studentId) {
+  const interviews = await prisma.mockInterview.findMany({
+    where: { studentId, status: 'completed', overallScore: { not: null } },
+    select: { overallScore: true },
+  });
+
+  if (interviews.length === 0) return 0;
+
+  const avg =
+    interviews.reduce((s, i) => s + i.overallScore, 0) / interviews.length;
+
+  return Math.min(Math.round(avg), 100);
+}
+
+// ─── Profile Completion ───────────────────────────────────────────────────────
+
+/**
+ * Calculate profile completion percentage (V2).
+ * Includes linkedinPdfUrl and resume check.
+ */
+function calcProfileCompletion(student) {
+  const fields = [
+    student.fullName,
+    student.phone,
+    student.linkedin,
+    student.website,
+    student.location,
+    student.expectedGrad,
+    student.bio,
+    student.gpa,
+    student.avatarUrl,
+    student.githubUsername,
+    student.leetcodeUsername,
+    student.linkedinPdfUrl,
+  ];
+
+  // resumeCount passed in via student._count?.resumes (optional)
+  const hasResume = (student._count?.resumes ?? 0) > 0;
+  const filled = fields.filter((v) => v !== null && v !== undefined && v !== '').length +
+    (hasResume ? 1 : 0);
+
+  return Math.round((filled / (fields.length + 1)) * 100);
+}
+
+// ─── Main recalculate ─────────────────────────────────────────────────────────
+
+/**
+ * Recalculate the readiness score for a student (V2 — 11 components).
  * Updates score_breakdowns, students.readiness_score, and students.profile_completion.
  *
  * @param {string} studentId
  * @returns {Promise<object>} Updated score breakdown
  */
 async function recalculateScore(studentId) {
-  const [weights, skillsScore, projectsScore, internshipsScore, certsScore, assessScore, eventsScore, codingScore, githubScore] =
-    await Promise.all([
-      loadWeights(),
-      calcTechnicalSkillsScore(studentId),
-      calcProjectsScore(studentId),
-      calcInternshipsScore(studentId),
-      calcCertificationsScore(studentId),
-      calcAssessmentsScore(studentId),
-      calcEventsScore(studentId),
-      calcCodingPracticeScore(studentId),
-      calcGitHubActivityScore(studentId),
-    ]);
+  const [
+    weights,
+    skillsScore,
+    projectsScore,
+    internshipsScore,
+    certsScore,
+    assessScore,
+    eventsScore,
+    codingScore,
+    githubScore,
+    learningPaceScore,
+    roadmapScore,
+    interviewScore,
+  ] = await Promise.all([
+    loadWeights(),
+    calcTechnicalSkillsScore(studentId),
+    calcProjectsScore(studentId),
+    calcInternshipsScore(studentId),
+    calcCertificationsScore(studentId),
+    calcAssessmentsScore(studentId),
+    calcEventsScore(studentId),
+    calcCodingPracticeScore(studentId),
+    calcGitHubActivityScore(studentId),
+    calcLearningPaceScore(studentId),
+    calcRoadmapProgressScore(studentId),
+    calcInterviewReadinessScore(studentId),
+  ]);
 
-  // Weighted total (each component is 0-100, weight is a percentage)
+  // Weighted total — each component score is 0–100, weight is a percentage
   const totalScore =
-    (skillsScore * weights.technical_skills) / 100 +
-    (projectsScore * weights.projects) / 100 +
-    (internshipsScore * weights.internships) / 100 +
-    (certsScore * weights.certifications) / 100 +
-    (assessScore * weights.assessments) / 100 +
-    (eventsScore * (weights.events || 0)) / 100 +
-    (codingScore * (weights.coding_practice || 0)) / 100 +
-    (githubScore * (weights.github_activity || 0)) / 100;
+    (skillsScore     * (weights.technical_skills    || 0)) / 100 +
+    (projectsScore   * (weights.projects             || 0)) / 100 +
+    (internshipsScore * (weights.internships         || 0)) / 100 +
+    (certsScore      * (weights.certifications       || 0)) / 100 +
+    (assessScore     * (weights.assessments          || 0)) / 100 +
+    (eventsScore     * (weights.events               || 0)) / 100 +
+    (codingScore     * (weights.coding_practice      || 0)) / 100 +
+    (githubScore     * (weights.github_activity      || 0)) / 100 +
+    (learningPaceScore * (weights.learning_pace      || 0)) / 100 +
+    (roadmapScore    * (weights.roadmap_progress     || 0)) / 100 +
+    (interviewScore  * (weights.interview_readiness  || 0)) / 100;
 
   const roundedTotal = Math.round(totalScore * 100) / 100;
 
-  // Fetch student for profile completion calc
+  // Fetch student for profile completion calc (V2 includes linkedinPdfUrl + resume count)
   const student = await prisma.student.findUnique({
     where: { id: studentId },
     select: {
@@ -278,6 +337,8 @@ async function recalculateScore(studentId) {
       avatarUrl: true,
       githubUsername: true,
       leetcodeUsername: true,
+      linkedinPdfUrl: true,
+      _count: { select: { resumes: true } },
     },
   });
 
@@ -288,51 +349,57 @@ async function recalculateScore(studentId) {
     where: { studentId },
     create: {
       studentId,
-      technicalSkills: skillsScore,
-      projects: projectsScore,
-      internships: internshipsScore,
-      certifications: certsScore,
-      assessments: assessScore,
-      events: eventsScore,
-      codingPractice: codingScore,
-      githubActivity: githubScore,
-      totalScore: roundedTotal,
-      lastCalculatedAt: new Date(),
+      technicalSkills:    skillsScore,
+      projects:           projectsScore,
+      internships:        internshipsScore,
+      certifications:     certsScore,
+      assessments:        assessScore,
+      events:             eventsScore,
+      codingPractice:     codingScore,
+      githubActivity:     githubScore,
+      learningPace:       learningPaceScore,
+      roadmapProgress:    roadmapScore,
+      interviewReadiness: interviewScore,
+      totalScore:         roundedTotal,
+      lastCalculatedAt:   new Date(),
     },
     update: {
-      technicalSkills: skillsScore,
-      projects: projectsScore,
-      internships: internshipsScore,
-      certifications: certsScore,
-      assessments: assessScore,
-      events: eventsScore,
-      codingPractice: codingScore,
-      githubActivity: githubScore,
-      totalScore: roundedTotal,
-      lastCalculatedAt: new Date(),
+      technicalSkills:    skillsScore,
+      projects:           projectsScore,
+      internships:        internshipsScore,
+      certifications:     certsScore,
+      assessments:        assessScore,
+      events:             eventsScore,
+      codingPractice:     codingScore,
+      githubActivity:     githubScore,
+      learningPace:       learningPaceScore,
+      roadmapProgress:    roadmapScore,
+      interviewReadiness: interviewScore,
+      totalScore:         roundedTotal,
+      lastCalculatedAt:   new Date(),
     },
   });
 
   // Update student record
   await prisma.student.update({
     where: { id: studentId },
-    data: {
-      readinessScore: roundedTotal,
-      profileCompletion,
-    },
+    data: { readinessScore: roundedTotal, profileCompletion },
   });
 
   return {
     studentId,
     components: {
-      technicalSkills: skillsScore,
-      projects: projectsScore,
-      internships: internshipsScore,
-      certifications: certsScore,
-      assessments: assessScore,
-      events: eventsScore,
-      codingPractice: codingScore,
-      githubActivity: githubScore,
+      technicalSkills:    skillsScore,
+      projects:           projectsScore,
+      internships:        internshipsScore,
+      certifications:     certsScore,
+      assessments:        assessScore,
+      events:             eventsScore,
+      codingPractice:     codingScore,
+      githubActivity:     githubScore,
+      learningPace:       learningPaceScore,
+      roadmapProgress:    roadmapScore,
+      interviewReadiness: interviewScore,
     },
     weights,
     totalScore: roundedTotal,
@@ -341,11 +408,8 @@ async function recalculateScore(studentId) {
   };
 }
 
-/**
- * Get score label based on score value.
- * @param {number} score
- * @returns {string}
- */
+// ─── Score labels ─────────────────────────────────────────────────────────────
+
 function getScoreLabel(score) {
   if (score >= 90) return 'Excellent';
   if (score >= 75) return 'Very Good';
@@ -354,11 +418,6 @@ function getScoreLabel(score) {
   return 'Needs Preparation';
 }
 
-/**
- * Get readiness classification for dashboard display.
- * @param {number} score
- * @returns {string}
- */
 function getReadinessClassification(score) {
   if (score >= 85) return 'Placement Ready';
   if (score >= 70) return 'High Potential';

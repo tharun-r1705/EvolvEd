@@ -113,15 +113,18 @@ async function getDashboard(userId) {
     },
     scoreBreakdown: sb
       ? {
-          technicalSkills: Number(sb.technicalSkills),
-          projects: Number(sb.projects),
-          internships: Number(sb.internships),
-          certifications: Number(sb.certifications),
-          assessments: Number(sb.assessments),
-          events: Number(sb.events || 0),
-          codingPractice: Number(sb.codingPractice || 0),
-          githubActivity: Number(sb.githubActivity || 0),
-          lastCalculatedAt: sb.lastCalculatedAt,
+          technicalSkills:    Number(sb.technicalSkills),
+          projects:           Number(sb.projects),
+          internships:        Number(sb.internships),
+          certifications:     Number(sb.certifications),
+          assessments:        Number(sb.assessments),
+          events:             Number(sb.events || 0),
+          codingPractice:     Number(sb.codingPractice || 0),
+          githubActivity:     Number(sb.githubActivity || 0),
+          learningPace:       Number(sb.learningPace || 0),
+          roadmapProgress:    Number(sb.roadmapProgress || 0),
+          interviewReadiness: Number(sb.interviewReadiness || 0),
+          lastCalculatedAt:   sb.lastCalculatedAt,
         }
       : null,
     skills: student.skills.map((ss) => ({
