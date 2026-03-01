@@ -258,7 +258,16 @@ async function getLeetCodeProfile(studentId, forceRefresh = false) {
   }
 
   // Fetch fresh data
-  const fresh = await fetchLeetCodeData(student.leetcodeUsername);
+  let fresh;
+  try {
+    fresh = await fetchLeetCodeData(student.leetcodeUsername);
+  } catch (err) {
+    // If fetch fails, fall back to stale cache if available; otherwise signal a fetch error
+    if (cached) {
+      return { connected: true, cached: true, stale: true, data: formatLeetCodeProfile(cached), fetchError: err.message };
+    }
+    return { connected: true, fetchError: err.message, username: student.leetcodeUsername };
+  }
 
   const upserted = await prisma.leetCodeProfile.upsert({
     where: { studentId },
@@ -409,7 +418,16 @@ async function getGitHubProfile(studentId, forceRefresh = false) {
   }
 
   // Fetch fresh data
-  const fresh = await fetchGitHubData(student.githubUsername);
+  let fresh;
+  try {
+    fresh = await fetchGitHubData(student.githubUsername);
+  } catch (err) {
+    // If fetch fails, fall back to stale cache if available; otherwise signal a fetch error
+    if (cached) {
+      return { connected: true, cached: true, stale: true, data: formatGitHubProfile(cached), fetchError: err.message };
+    }
+    return { connected: true, fetchError: err.message, username: student.githubUsername };
+  }
 
   const upserted = await prisma.gitHubProfile.upsert({
     where: { studentId },

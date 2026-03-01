@@ -295,7 +295,7 @@ function LeetCodeCard({ data, loading, onRefresh, refreshing }) {
         </div>
         <div>
           <h3 className="text-base font-bold text-secondary mb-1">LeetCode Not Connected</h3>
-          <p className="text-sm text-slate-500 max-w-xs">{data?.message || 'Set your LeetCode username in your profile to connect.'}</p>
+          <p className="text-sm text-slate-500 max-w-xs">No LeetCode username set. Update your profile to connect.</p>
         </div>
         <Link
           to="/student/profile"
@@ -303,6 +303,29 @@ function LeetCodeCard({ data, loading, onRefresh, refreshing }) {
         >
           Go to Profile
         </Link>
+      </div>
+    );
+  }
+
+  if (data?.fetchError && !data?.data) {
+    return (
+      <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-8 flex flex-col items-center justify-center text-center gap-4">
+        <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center">
+          <span className="material-symbols-outlined text-3xl text-red-400">sync_problem</span>
+        </div>
+        <div>
+          <h3 className="text-base font-bold text-secondary mb-1">Could Not Load LeetCode Data</h3>
+          <p className="text-sm text-slate-500 max-w-xs">Your username <span className="font-semibold text-secondary">@{data.username}</span> is saved, but we couldn't reach LeetCode right now.</p>
+          <p className="text-xs text-slate-400 mt-1">{data.fetchError}</p>
+        </div>
+        <button
+          onClick={onRefresh}
+          disabled={refreshing}
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-secondary rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
+        >
+          <span className={`material-symbols-outlined text-base ${refreshing ? 'animate-spin' : ''}`}>refresh</span>
+          {refreshing ? 'Retrying...' : 'Retry'}
+        </button>
       </div>
     );
   }
@@ -423,7 +446,7 @@ function GitHubCard({ data, loading, onRefresh, refreshing }) {
         </div>
         <div>
           <h3 className="text-base font-bold text-secondary mb-1">GitHub Not Connected</h3>
-          <p className="text-sm text-slate-500 max-w-xs">{data?.message || 'Set your GitHub username in your profile to connect.'}</p>
+          <p className="text-sm text-slate-500 max-w-xs">No GitHub username set. Update your profile to connect.</p>
         </div>
         <Link
           to="/student/profile"
@@ -431,6 +454,29 @@ function GitHubCard({ data, loading, onRefresh, refreshing }) {
         >
           Go to Profile
         </Link>
+      </div>
+    );
+  }
+
+  if (data?.fetchError && !data?.data) {
+    return (
+      <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-8 flex flex-col items-center justify-center text-center gap-4">
+        <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center">
+          <span className="material-symbols-outlined text-3xl text-red-400">sync_problem</span>
+        </div>
+        <div>
+          <h3 className="text-base font-bold text-secondary mb-1">Could Not Load GitHub Data</h3>
+          <p className="text-sm text-slate-500 max-w-xs">Your username <span className="font-semibold text-secondary">@{data.username}</span> is saved, but we couldn't reach GitHub right now.</p>
+          <p className="text-xs text-slate-400 mt-1">{data.fetchError}</p>
+        </div>
+        <button
+          onClick={onRefresh}
+          disabled={refreshing}
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-secondary rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
+        >
+          <span className={`material-symbols-outlined text-base ${refreshing ? 'animate-spin' : ''}`}>refresh</span>
+          {refreshing ? 'Retrying...' : 'Retry'}
+        </button>
       </div>
     );
   }

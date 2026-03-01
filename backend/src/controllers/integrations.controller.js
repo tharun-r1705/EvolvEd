@@ -24,7 +24,7 @@ async function getStudentId(userId) {
  */
 async function getLeetCode(req, res, next) {
   try {
-    const studentId = await getStudentId(req.user.id);
+    const studentId = await getStudentId(req.user.userId);
     const result = await getLeetCodeProfile(studentId, false);
     res.json({ success: true, ...result });
   } catch (err) {
@@ -38,7 +38,7 @@ async function getLeetCode(req, res, next) {
  */
 async function refreshLeetCode(req, res, next) {
   try {
-    const studentId = await getStudentId(req.user.id);
+    const studentId = await getStudentId(req.user.userId);
     const result = await getLeetCodeProfile(studentId, true);
     if (result.connected) {
       // Recalculate score in background (non-blocking)
@@ -58,7 +58,7 @@ async function refreshLeetCode(req, res, next) {
  */
 async function getGitHub(req, res, next) {
   try {
-    const studentId = await getStudentId(req.user.id);
+    const studentId = await getStudentId(req.user.userId);
     const result = await getGitHubProfile(studentId, false);
     res.json({ success: true, ...result });
   } catch (err) {
@@ -72,7 +72,7 @@ async function getGitHub(req, res, next) {
  */
 async function refreshGitHub(req, res, next) {
   try {
-    const studentId = await getStudentId(req.user.id);
+    const studentId = await getStudentId(req.user.userId);
     const result = await getGitHubProfile(studentId, true);
     if (result.connected) {
       recalculateScore(studentId).catch(() => {});
