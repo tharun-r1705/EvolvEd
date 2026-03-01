@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import StudentSidebar from '../components/StudentSidebar.jsx';
 import { studentService } from '../services/api.js';
 
 // ─── Utility ──────────────────────────────────────────────────────────────────
@@ -410,10 +409,8 @@ export default function StudentCertifications() {
   const validCount = certs.filter((c) => !isExpired(c.expiryDate)).length;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background-light font-inter">
-      <StudentSidebar />
-
-      <main className="flex-1 overflow-y-auto">
+    <>
+      <main className="flex-1 overflow-y-auto bg-background-light">
         {/* Header */}
         <div className="sticky top-0 z-10 bg-background-light/95 backdrop-blur-sm border-b border-slate-200 px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
@@ -499,6 +496,6 @@ export default function StudentCertifications() {
           onClose={() => setToast(null)}
         />
       )}
-    </div>
+    </>
   );
 }

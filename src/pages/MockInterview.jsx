@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import StudentSidebar from '../components/StudentSidebar.jsx';
 import { interviewService, studentService } from '../services/api.js';
 
 // ─────────────────────────────────────────────────────────────────
@@ -14,32 +13,32 @@ const INTERVIEW_TYPES = [
 ];
 
 const DIFFICULTIES = [
-  { value: 'easy',   label: 'Easy',   color: 'text-emerald-400 border-emerald-500/40 bg-emerald-500/10', desc: 'Fresher / entry-level' },
-  { value: 'medium', label: 'Medium', color: 'text-amber-400 border-amber-500/40 bg-amber-500/10',       desc: 'Mid-level / 1-2 yrs exp' },
-  { value: 'hard',   label: 'Hard',   color: 'text-red-400 border-red-500/40 bg-red-500/10',             desc: 'Senior / competitive' },
+  { value: 'easy',   label: 'Easy',   color: 'text-emerald-600 border-emerald-300 bg-emerald-50', desc: 'Fresher / entry-level' },
+  { value: 'medium', label: 'Medium', color: 'text-amber-600 border-amber-300 bg-amber-50',       desc: 'Mid-level / 1-2 yrs exp' },
+  { value: 'hard',   label: 'Hard',   color: 'text-red-600 border-red-300 bg-red-50',             desc: 'Senior / competitive' },
 ];
 
 // ─────────────────────────────────────────────────────────────────
 // Score badge
 // ─────────────────────────────────────────────────────────────────
 function ScoreBadge({ score }) {
-  if (score == null) return <span className="text-xs text-slate-500">—</span>;
-  const color = score >= 8 ? 'text-emerald-400' : score >= 6 ? 'text-amber-400' : score >= 4 ? 'text-orange-400' : 'text-red-400';
-  return <span className={`font-bold text-sm ${color}`}>{score.toFixed(1)}<span className="text-slate-500 font-normal">/10</span></span>;
+  if (score == null) return <span className="text-xs text-slate-400">—</span>;
+  const color = score >= 8 ? 'text-emerald-600' : score >= 6 ? 'text-amber-600' : score >= 4 ? 'text-orange-500' : 'text-red-500';
+  return <span className={`font-bold text-sm ${color}`}>{score.toFixed(1)}<span className="text-slate-400 font-normal">/10</span></span>;
 }
 
 function TypeBadge({ type }) {
-  const colors = { technical: 'bg-blue-500/15 text-blue-400', hr: 'bg-purple-500/15 text-purple-400', behavioral: 'bg-teal-500/15 text-teal-400', mixed: 'bg-amber-500/15 text-amber-400' };
+  const colors = { technical: 'bg-blue-50 text-blue-600', hr: 'bg-purple-50 text-purple-600', behavioral: 'bg-teal-50 text-teal-600', mixed: 'bg-amber-50 text-amber-600' };
   return <span className={`text-xs font-semibold px-2 py-0.5 rounded-full capitalize ${colors[type] || colors.mixed}`}>{type}</span>;
 }
 
 function DiffBadge({ difficulty }) {
-  const colors = { easy: 'bg-emerald-500/15 text-emerald-400', medium: 'bg-amber-500/15 text-amber-400', hard: 'bg-red-500/15 text-red-400' };
+  const colors = { easy: 'bg-emerald-50 text-emerald-600', medium: 'bg-amber-50 text-amber-600', hard: 'bg-red-50 text-red-600' };
   return <span className={`text-xs font-semibold px-2 py-0.5 rounded-full capitalize ${colors[difficulty] || colors.medium}`}>{difficulty}</span>;
 }
 
 function StatusBadge({ status }) {
-  const map = { in_progress: { label: 'In Progress', cls: 'bg-blue-500/15 text-blue-400' }, completed: { label: 'Completed', cls: 'bg-emerald-500/15 text-emerald-400' }, abandoned: { label: 'Abandoned', cls: 'bg-slate-500/15 text-slate-400' } };
+  const map = { in_progress: { label: 'In Progress', cls: 'bg-blue-50 text-blue-600' }, completed: { label: 'Completed', cls: 'bg-emerald-50 text-emerald-600' }, abandoned: { label: 'Abandoned', cls: 'bg-slate-100 text-slate-500' } };
   const { label, cls } = map[status] || map.in_progress;
   return <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${cls}`}>{label}</span>;
 }
@@ -183,7 +182,7 @@ function InterviewCard({ interview, onClick }) {
   return (
     <button
       onClick={onClick}
-      className="group text-left w-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/30 rounded-2xl p-5 transition-all flex flex-col gap-3"
+      className="group text-left w-full bg-white hover:bg-slate-50 border border-slate-100 hover:border-primary/30 rounded-2xl p-5 transition-all flex flex-col gap-3 shadow-sm"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2 flex-wrap">
@@ -191,11 +190,11 @@ function InterviewCard({ interview, onClick }) {
           <DiffBadge difficulty={interview.difficulty} />
           <StatusBadge status={interview.status} />
         </div>
-        <span className="material-symbols-outlined text-slate-500 group-hover:text-primary transition-colors text-sm flex-shrink-0">arrow_forward</span>
+        <span className="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors text-sm flex-shrink-0">arrow_forward</span>
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4 text-xs text-slate-400">
+        <div className="flex items-center gap-4 text-xs text-slate-500">
           <span className="flex items-center gap-1">
             <span className="material-symbols-outlined text-sm">quiz</span>
             {interview.answeredCount}/{interview.totalQuestions} answered
@@ -213,7 +212,7 @@ function InterviewCard({ interview, onClick }) {
 
       {interview.status === 'in_progress' && (
         <div className="flex flex-col gap-1">
-          <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+          <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
             <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${pct}%` }} />
           </div>
           <p className="text-xs text-primary font-medium">{pct}% complete — Resume interview</p>
@@ -273,101 +272,97 @@ export default function MockInterview() {
   const bestScore = completed.length ? Math.max(...completed.map((i) => i.overallScore || 0)).toFixed(1) : null;
 
   return (
-    <div className="flex h-screen bg-secondary overflow-hidden font-inter">
-      <StudentSidebar />
+    <main className="flex-1 overflow-y-auto bg-background-light">
+      <div className="max-w-4xl mx-auto px-6 py-8 flex flex-col gap-8">
+        {/* Header */}
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <h1 className="text-3xl font-black tracking-tight text-secondary md:text-4xl font-playfair">Mock Interviews</h1>
+            <p className="text-slate-500 mt-1">AI-powered practice interviews with voice &amp; real-time feedback</p>
+          </div>
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 px-5 py-2.5 bg-primary text-secondary text-sm font-semibold rounded-xl hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
+          >
+            <span className="material-symbols-outlined text-base">add</span>
+            New Interview
+          </button>
+        </div>
 
-      <main className="flex-1 overflow-y-auto">
-        <div className="max-w-4xl mx-auto px-6 py-8 flex flex-col gap-8">
-          {/* Header */}
-          <div className="flex items-center justify-between gap-4 flex-wrap">
-            <div>
-              <h1 className="text-2xl font-bold text-white font-playfair">Mock Interviews</h1>
-              <p className="text-sm text-slate-400 mt-1">AI-powered practice interviews with voice & real-time feedback</p>
+        {/* Stats */}
+        {completed.length > 0 && (
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { label: 'Completed', value: completed.length, icon: 'check_circle', color: 'text-emerald-500' },
+              { label: 'Avg Score', value: avgScore ? `${avgScore}/10` : '—', icon: 'analytics', color: 'text-primary' },
+              { label: 'Best Score', value: bestScore ? `${bestScore}/10` : '—', icon: 'emoji_events', color: 'text-amber-500' },
+            ].map((s) => (
+              <div key={s.label} className="bg-white border border-slate-100 rounded-2xl p-4 flex items-center gap-3 shadow-sm">
+                <span className={`material-symbols-outlined text-2xl ${s.color}`}>{s.icon}</span>
+                <div>
+                  <p className="text-secondary font-bold text-base">{s.value}</p>
+                  <p className="text-xs text-slate-500">{s.label}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Tabs */}
+        <div className="flex gap-1 bg-slate-100 p-1 rounded-xl w-fit">
+          {tabs.map((tab) => {
+            const count = tab.value === 'all' ? interviews.length : interviews.filter((i) => i.status === tab.value).length;
+            return (
+              <button
+                key={tab.value}
+                onClick={() => setActiveTab(tab.value)}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === tab.value ? 'bg-secondary text-white shadow' : 'text-slate-500 hover:bg-slate-50 hover:text-secondary'}`}
+              >
+                {tab.label}
+                <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${activeTab === tab.value ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-500'}`}>{count}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Content */}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-24 gap-3">
+            <div className="h-10 w-10 rounded-full border-4 border-primary/30 border-t-primary animate-spin" />
+            <p className="text-sm text-slate-500">Loading…</p>
+          </div>
+        ) : error ? (
+          <div className="flex items-center gap-3 text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm">
+            <span className="material-symbols-outlined">error</span>{error}
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
+            <div className="h-16 w-16 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center">
+              <span className="material-symbols-outlined text-3xl text-slate-400">mic</span>
             </div>
-            <button
-              onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 px-5 py-2.5 bg-primary text-secondary text-sm font-semibold rounded-xl hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
-            >
+            <div>
+              <p className="text-secondary font-semibold">No interviews yet</p>
+              <p className="text-sm text-slate-500 mt-1 max-w-xs">Start your first mock interview to practice and get AI feedback on your answers.</p>
+            </div>
+            <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-5 py-2.5 bg-primary text-secondary text-sm font-semibold rounded-xl hover:bg-primary/90 transition-colors">
               <span className="material-symbols-outlined text-base">add</span>
-              New Interview
+              Start Your First Interview
             </button>
           </div>
-
-          {/* Stats */}
-          {completed.length > 0 && (
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { label: 'Completed', value: completed.length, icon: 'check_circle', color: 'text-emerald-400' },
-                { label: 'Avg Score', value: avgScore ? `${avgScore}/10` : '—', icon: 'analytics', color: 'text-primary' },
-                { label: 'Best Score', value: bestScore ? `${bestScore}/10` : '—', icon: 'emoji_events', color: 'text-amber-400' },
-              ].map((s) => (
-                <div key={s.label} className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-3">
-                  <span className={`material-symbols-outlined text-2xl ${s.color}`}>{s.icon}</span>
-                  <div>
-                    <p className="text-white font-bold text-base">{s.value}</p>
-                    <p className="text-xs text-slate-400">{s.label}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Tabs */}
-          <div className="flex gap-1 bg-white/5 p-1 rounded-xl w-fit border border-white/10">
-            {tabs.map((tab) => {
-              const count = tab.value === 'all' ? interviews.length : interviews.filter((i) => i.status === tab.value).length;
-              return (
-                <button
-                  key={tab.value}
-                  onClick={() => setActiveTab(tab.value)}
-                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === tab.value ? 'bg-primary text-secondary shadow' : 'text-slate-400 hover:text-white'}`}
-                >
-                  {tab.label}
-                  <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${activeTab === tab.value ? 'bg-secondary/30 text-secondary' : 'bg-white/10 text-slate-400'}`}>{count}</span>
-                </button>
-              );
-            })}
+        ) : (
+          <div className="flex flex-col gap-3">
+            {filtered.map((iv) => (
+              <InterviewCard
+                key={iv.id}
+                interview={iv}
+                onClick={() => navigate(`/student/interviews/${iv.id}`)}
+              />
+            ))}
           </div>
-
-          {/* Content */}
-          {loading ? (
-            <div className="flex flex-col items-center justify-center py-24 gap-3">
-              <div className="h-10 w-10 rounded-full border-4 border-primary/30 border-t-primary animate-spin" />
-              <p className="text-sm text-slate-400">Loading…</p>
-            </div>
-          ) : error ? (
-            <div className="flex items-center gap-3 text-red-400 bg-red-400/10 border border-red-400/20 rounded-xl px-4 py-3 text-sm">
-              <span className="material-symbols-outlined">error</span>{error}
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
-              <div className="h-16 w-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-                <span className="material-symbols-outlined text-3xl text-slate-500">mic</span>
-              </div>
-              <div>
-                <p className="text-white font-semibold">No interviews yet</p>
-                <p className="text-sm text-slate-400 mt-1 max-w-xs">Start your first mock interview to practice and get AI feedback on your answers.</p>
-              </div>
-              <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-5 py-2.5 bg-primary text-secondary text-sm font-semibold rounded-xl hover:bg-primary/90 transition-colors">
-                <span className="material-symbols-outlined text-base">add</span>
-                Start Your First Interview
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {filtered.map((iv) => (
-                <InterviewCard
-                  key={iv.id}
-                  interview={iv}
-                  onClick={() => navigate(`/student/interviews/${iv.id}`)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </main>
+        )}
+      </div>
 
       {showModal && <StartModal resumes={resumes} onClose={() => setShowModal(false)} onStarted={handleStarted} />}
-    </div>
+    </main>
   );
 }

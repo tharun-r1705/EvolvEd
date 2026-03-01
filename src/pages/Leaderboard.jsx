@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import StudentSidebar from '../components/StudentSidebar.jsx';
+
 import { leaderboardService } from '../services/api.js';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -381,11 +381,8 @@ export default function Leaderboard() {
   }
 
   return (
-    <div className="flex h-screen w-full flex-row overflow-hidden bg-background-light">
-      <StudentSidebar />
-
-      <main className="flex h-full flex-1 flex-col overflow-y-auto bg-background-light p-4 md:p-8">
-        <div className="mx-auto w-full max-w-5xl">
+    <main className="flex h-full flex-1 flex-col overflow-y-auto bg-background-light p-4 md:p-8">
+      <div className="mx-auto w-full max-w-5xl">
 
           {/* ── Header ── */}
           <header className="mb-6">
@@ -531,7 +528,6 @@ export default function Leaderboard() {
           )}
 
         </div>
-      </main>
-    </div>
+    </main>
   );
 }

@@ -4,7 +4,6 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
 } from 'recharts';
-import StudentSidebar from '../components/StudentSidebar.jsx';
 import { studentService, goalsService, feedService } from '../services/api.js';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -219,43 +218,36 @@ export default function StudentDashboard() {
   useEffect(() => { fetchTechTrends(); }, [fetchTechTrends]);
   useEffect(() => { fetchDailyTip(); }, [fetchDailyTip]);
 
-  // ── Loading ──
   if (loading) {
     return (
-      <div className="flex h-screen w-full flex-row overflow-hidden bg-background-light">
-        <StudentSidebar />
-        <main className="flex h-full flex-1 flex-col overflow-y-auto p-4 md:p-8">
-          <div className="mx-auto w-full max-w-6xl">
-            <div className="mb-8">
-              <Skeleton className="h-10 w-64 mb-2" />
-              <Skeleton className="h-4 w-80" />
-            </div>
-            <DashboardSkeleton />
+      <main className="flex h-full flex-1 flex-col overflow-y-auto p-4 md:p-8 bg-background-light">
+        <div className="mx-auto w-full max-w-6xl">
+          <div className="mb-8">
+            <Skeleton className="h-10 w-64 mb-2" />
+            <Skeleton className="h-4 w-80" />
           </div>
-        </main>
-      </div>
+          <DashboardSkeleton />
+        </div>
+      </main>
     );
   }
 
   // ── Error ──
   if (error) {
     return (
-      <div className="flex h-screen w-full flex-row overflow-hidden bg-background-light">
-        <StudentSidebar />
-        <main className="flex h-full flex-1 flex-col items-center justify-center p-8">
-          <div className="text-center max-w-md">
-            <span className="material-symbols-outlined text-5xl text-red-400 mb-4 block">error_outline</span>
-            <h2 className="text-xl font-bold text-secondary mb-2">Something went wrong</h2>
-            <p className="text-slate-500 mb-6">{error}</p>
-            <button
-              onClick={fetchDashboard}
-              className="rounded-lg bg-primary px-6 py-2.5 text-sm font-bold text-secondary hover:bg-primary/90 transition-colors"
-            >
-              Try Again
-            </button>
-          </div>
-        </main>
-      </div>
+      <main className="flex h-full flex-1 flex-col items-center justify-center p-8 bg-background-light">
+        <div className="text-center max-w-md">
+          <span className="material-symbols-outlined text-5xl text-red-400 mb-4 block">error_outline</span>
+          <h2 className="text-xl font-bold text-secondary mb-2">Something went wrong</h2>
+          <p className="text-slate-500 mb-6">{error}</p>
+          <button
+            onClick={fetchDashboard}
+            className="rounded-lg bg-primary px-6 py-2.5 text-sm font-bold text-secondary hover:bg-primary/90 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </main>
     );
   }
 
@@ -308,11 +300,8 @@ export default function StudentDashboard() {
     : [];
 
   return (
-    <div className="flex h-screen w-full flex-row overflow-hidden bg-background-light font-display">
-      <StudentSidebar />
-
-      <main className="flex h-full flex-1 flex-col overflow-y-auto bg-background-light p-4 md:p-8">
-        <div className="mx-auto w-full max-w-6xl">
+    <main className="flex h-full flex-1 flex-col overflow-y-auto bg-background-light p-4 md:p-8">
+      <div className="mx-auto w-full max-w-6xl">
 
           {/* ── Header ── */}
           <header className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
@@ -1000,7 +989,6 @@ export default function StudentDashboard() {
             </div>
           </div>
         </div>
-      </main>
-    </div>
+    </main>
   );
 }

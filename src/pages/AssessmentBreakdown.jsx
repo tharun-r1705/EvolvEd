@@ -3,7 +3,6 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from 'recharts';
-import StudentSidebar from '../components/StudentSidebar.jsx';
 import { studentService } from '../services/api.js';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -114,52 +113,45 @@ export default function AssessmentBreakdown() {
 
   useEffect(() => { fetchAssessment(); }, [fetchAssessment]);
 
-  // ── Loading ──
   if (loading) {
     return (
-      <div className="flex h-screen w-full flex-row overflow-hidden bg-background-light font-display">
-        <StudentSidebar />
-        <main className="flex-1 h-full overflow-y-auto py-8 px-4 md:px-8">
-          <div className="mx-auto max-w-7xl">
-            <Skeleton className="h-4 w-48 mb-3" />
-            <Skeleton className="h-10 w-96 mb-2" />
-            <Skeleton className="h-4 w-72 mb-8" />
-            <PageSkeleton />
-          </div>
-        </main>
-      </div>
+      <main className="flex-1 h-full overflow-y-auto py-8 px-4 md:px-8 bg-background-light">
+        <div className="mx-auto max-w-7xl">
+          <Skeleton className="h-4 w-48 mb-3" />
+          <Skeleton className="h-10 w-96 mb-2" />
+          <Skeleton className="h-4 w-72 mb-8" />
+          <PageSkeleton />
+        </div>
+      </main>
     );
   }
 
   // ── Error ──
   if (error) {
     return (
-      <div className="flex h-screen w-full flex-row overflow-hidden bg-background-light font-display">
-        <StudentSidebar />
-        <main className="flex-1 h-full overflow-y-auto flex items-center justify-center p-8">
-          <div className="text-center max-w-md">
-            <span className="material-symbols-outlined text-5xl text-red-400 mb-4 block">error_outline</span>
-            <h2 className="text-xl font-bold text-secondary mb-2">
-              {error === 'Assessment not found.' ? 'Assessment Not Found' : 'Something went wrong'}
-            </h2>
-            <p className="text-slate-500 mb-6">{error}</p>
-            <div className="flex gap-3 justify-center">
-              <button
-                onClick={fetchAssessment}
-                className="rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-secondary hover:bg-primary/90 transition-colors"
-              >
-                Try Again
-              </button>
-              <Link
-                to="/student/assessments"
-                className="rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
-              >
-                Back to Assessments
-              </Link>
-            </div>
+      <main className="flex-1 h-full overflow-y-auto flex items-center justify-center p-8 bg-background-light">
+        <div className="text-center max-w-md">
+          <span className="material-symbols-outlined text-5xl text-red-400 mb-4 block">error_outline</span>
+          <h2 className="text-xl font-bold text-secondary mb-2">
+            {error === 'Assessment not found.' ? 'Assessment Not Found' : 'Something went wrong'}
+          </h2>
+          <p className="text-slate-500 mb-6">{error}</p>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={fetchAssessment}
+              className="rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-secondary hover:bg-primary/90 transition-colors"
+            >
+              Try Again
+            </button>
+            <Link
+              to="/student/assessments"
+              className="rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+            >
+              Back to Assessments
+            </Link>
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
     );
   }
 
@@ -172,11 +164,8 @@ export default function AssessmentBreakdown() {
   const scorePct = Math.round((overallScore / maxScore) * 100);
 
   return (
-    <div className="flex h-screen w-full flex-row overflow-hidden bg-background-light font-display">
-      <StudentSidebar />
-
-      <main className="flex-1 h-full overflow-y-auto py-8">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <main className="flex-1 h-full overflow-y-auto bg-background-light py-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
           {/* ── Header ── */}
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -449,6 +438,5 @@ export default function AssessmentBreakdown() {
           </div>
         </div>
       </main>
-    </div>
   );
 }

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import StudentSidebar from '../components/StudentSidebar.jsx';
 import { chatService, goalsService } from '../services/api.js';
 
 // ─── Simple Markdown Renderer ─────────────────────────────────────────────────
@@ -308,13 +307,9 @@ export default function StudentChat() {
   const isEmpty = messages.length === 0 && !loadingMessages;
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
-      <StudentSidebar />
+    <main className="flex flex-1 overflow-hidden bg-background-light">
 
-      {/* ── Main Content ── */}
-      <div className="flex flex-1 overflow-hidden">
-
-        {/* ── Conversation Sidebar ── */}
+      {/* ── Conversation Sidebar ── */}
         <div className={`flex flex-col bg-white border-r border-slate-200 flex-shrink-0 transition-all duration-200
           ${sidebarOpen ? 'w-72' : 'w-0 overflow-hidden'}`}>
           <div className="flex items-center justify-between p-4 border-b border-slate-100">
@@ -481,7 +476,6 @@ export default function StudentChat() {
             </p>
           </div>
         </div>
-      </div>
-    </div>
+      </main>
   );
 }

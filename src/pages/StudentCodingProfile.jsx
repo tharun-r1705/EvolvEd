@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import StudentSidebar from '../components/StudentSidebar.jsx';
 import { studentService } from '../services/api.js';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -622,11 +621,9 @@ export default function StudentCodingProfile() {
   }
 
   return (
-    <div className="flex h-screen bg-background-light overflow-hidden">
-      <StudentSidebar />
-
-      <main className="flex-1 overflow-y-auto">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <>
+    <main className="flex-1 overflow-y-auto bg-background-light">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
           {/* Page header */}
           <div className="mb-8">
@@ -668,6 +665,6 @@ export default function StudentCodingProfile() {
       </main>
 
       <Toast toast={toast} onDismiss={dismissToast} />
-    </div>
+    </>
   );
 }

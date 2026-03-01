@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import StudentSidebar from '../components/StudentSidebar.jsx';
 import { roadmapService } from '../services/api.js';
 
 // ─────────────────────────────────────────────────────────────────
 // Helpers / small components
 // ─────────────────────────────────────────────────────────────────
 const STATUS_MAP = {
-  not_started: { label: 'Not Started', icon: 'radio_button_unchecked', cls: 'text-slate-500', ring: 'border-slate-600', bg: 'bg-slate-700' },
-  in_progress:  { label: 'In Progress',  icon: 'pending',               cls: 'text-blue-400',  ring: 'border-blue-500',  bg: 'bg-blue-500/20' },
-  completed:    { label: 'Completed',    icon: 'check_circle',           cls: 'text-emerald-400', ring: 'border-emerald-500', bg: 'bg-emerald-500/20' },
+  not_started: { label: 'Not Started', icon: 'radio_button_unchecked', cls: 'text-slate-400', ring: 'border-slate-300', bg: 'bg-slate-100' },
+  in_progress:  { label: 'In Progress',  icon: 'pending',               cls: 'text-blue-500',  ring: 'border-blue-300',  bg: 'bg-blue-50' },
+  completed:    { label: 'Completed',    icon: 'check_circle',           cls: 'text-emerald-500', ring: 'border-emerald-300', bg: 'bg-emerald-50' },
 };
 
 const PLATFORM_ICONS = { youtube: '▶', freecodecamp: 'fCC', mdn: 'MDN', docs: '📄', github: 'GH', other: '🔗' };
@@ -17,12 +16,12 @@ const PLATFORM_ICONS = { youtube: '▶', freecodecamp: 'fCC', mdn: 'MDN', docs: 
 function PlatformBadge({ platform }) {
   const icon = PLATFORM_ICONS[platform] || '🔗';
   const colors = {
-    youtube: 'bg-red-500/20 text-red-400',
-    freecodecamp: 'bg-green-500/20 text-green-400',
-    mdn: 'bg-blue-500/20 text-blue-400',
-    docs: 'bg-slate-500/20 text-slate-300',
-    github: 'bg-slate-700 text-slate-200',
-    other: 'bg-slate-500/20 text-slate-400',
+    youtube: 'bg-red-50 text-red-600',
+    freecodecamp: 'bg-green-50 text-green-600',
+    mdn: 'bg-blue-50 text-blue-600',
+    docs: 'bg-slate-100 text-slate-600',
+    github: 'bg-slate-100 text-slate-700',
+    other: 'bg-slate-100 text-slate-500',
   };
   return (
     <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${colors[platform] || colors.other}`}>{icon}</span>
@@ -284,45 +283,45 @@ function ModuleCard({ mod, index, total, onStatusChange, onTakeTest }) {
       {/* Stepper line */}
       <div className="flex flex-col items-center flex-shrink-0 w-8">
         <div className={`h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold flex-shrink-0 transition-colors ${
-          mod.status === 'completed' ? 'border-emerald-500 bg-emerald-500/20 text-emerald-400' :
-          mod.status === 'in_progress' ? 'border-blue-500 bg-blue-500/20 text-blue-400' :
-          'border-slate-600 bg-slate-700 text-slate-400'
+          mod.status === 'completed' ? 'border-emerald-400 bg-emerald-50 text-emerald-600' :
+          mod.status === 'in_progress' ? 'border-blue-400 bg-blue-50 text-blue-600' :
+          'border-slate-300 bg-slate-100 text-slate-400'
         }`}>
           {mod.status === 'completed'
             ? <span className="material-symbols-outlined text-sm">check</span>
             : index + 1}
         </div>
-        {!isLast && <div className={`w-0.5 flex-1 min-h-[2rem] mt-1 rounded ${mod.status === 'completed' ? 'bg-emerald-500/30' : 'bg-white/10'}`} />}
+        {!isLast && <div className={`w-0.5 flex-1 min-h-[2rem] mt-1 rounded ${mod.status === 'completed' ? 'bg-emerald-200' : 'bg-slate-200'}`} />}
       </div>
 
       {/* Card */}
       <div className="flex-1 pb-6">
-        <div className={`bg-white/5 border rounded-2xl overflow-hidden transition-all ${
-          mod.status === 'completed' ? 'border-emerald-500/20' :
-          mod.status === 'in_progress' ? 'border-blue-500/20' :
-          'border-white/10'
+        <div className={`bg-white border rounded-2xl overflow-hidden shadow-sm transition-all ${
+          mod.status === 'completed' ? 'border-emerald-200' :
+          mod.status === 'in_progress' ? 'border-blue-200' :
+          'border-slate-100'
         }`}>
           {/* Card header */}
           <button
             onClick={() => setExpanded((v) => !v)}
-            className="w-full flex items-start gap-3 px-5 py-4 text-left hover:bg-white/5 transition-colors"
+            className="w-full flex items-start gap-3 px-5 py-4 text-left hover:bg-slate-50 transition-colors"
           >
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="text-sm font-semibold text-white">{mod.title}</h3>
+                <h3 className="text-sm font-semibold text-secondary">{mod.title}</h3>
                 <ModuleStatusBadge status={mod.status} />
               </div>
-              <p className="text-xs text-slate-400 mt-1">{mod.estimatedHours}h estimated</p>
+              <p className="text-xs text-slate-500 mt-1">{mod.estimatedHours}h estimated</p>
             </div>
             <span className={`material-symbols-outlined text-slate-400 transition-transform flex-shrink-0 mt-0.5 ${expanded ? 'rotate-180' : ''}`}>expand_more</span>
           </button>
 
           {/* Expanded content */}
           {expanded && (
-            <div className="px-5 pb-5 flex flex-col gap-5 border-t border-white/5">
+            <div className="px-5 pb-5 flex flex-col gap-5 border-t border-slate-100">
               {/* Description */}
               {mod.description && (
-                <p className="text-sm text-slate-300 leading-relaxed pt-4">{mod.description}</p>
+                <p className="text-sm text-slate-600 leading-relaxed pt-4">{mod.description}</p>
               )}
 
               {/* Key concepts */}
@@ -348,11 +347,11 @@ function ModuleCard({ mod, index, total, onStatusChange, onTakeTest }) {
                         href={res.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-3 px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/30 rounded-xl transition-all group"
+                        className="flex items-center gap-3 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-100 hover:border-primary/30 rounded-xl transition-all group"
                       >
                         <PlatformBadge platform={res.platform} />
-                        <span className="flex-1 text-sm text-slate-300 group-hover:text-white truncate">{res.title}</span>
-                        <span className="material-symbols-outlined text-sm text-slate-500 group-hover:text-primary transition-colors">open_in_new</span>
+                        <span className="flex-1 text-sm text-slate-600 group-hover:text-secondary truncate">{res.title}</span>
+                        <span className="material-symbols-outlined text-sm text-slate-400 group-hover:text-primary transition-colors">open_in_new</span>
                       </a>
                     ))}
                   </div>
@@ -363,8 +362,8 @@ function ModuleCard({ mod, index, total, onStatusChange, onTakeTest }) {
               {mod.testScore != null && (
                 <div className={`flex items-center gap-2 text-sm px-3 py-2 rounded-lg border ${
                   mod.testScore >= 60
-                    ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
-                    : 'bg-red-500/10 border-red-500/20 text-red-400'
+                    ? 'bg-emerald-50 border-emerald-200 text-emerald-600'
+                    : 'bg-red-50 border-red-200 text-red-600'
                 }`}>
                   <span className="material-symbols-outlined text-base">quiz</span>
                   Last test score: <span className="font-bold">{mod.testScore}%</span>
@@ -377,7 +376,7 @@ function ModuleCard({ mod, index, total, onStatusChange, onTakeTest }) {
                   <button
                     onClick={() => handleStatusChange('in_progress')}
                     disabled={updating}
-                    className="flex items-center gap-1.5 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-400 text-sm font-medium rounded-xl transition-colors"
+                    className="flex items-center gap-1.5 px-4 py-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-600 text-sm font-medium rounded-xl transition-colors"
                   >
                     <span className="material-symbols-outlined text-sm">play_arrow</span>
                     Start Module
@@ -387,7 +386,7 @@ function ModuleCard({ mod, index, total, onStatusChange, onTakeTest }) {
                   <button
                     onClick={() => handleStatusChange('not_started')}
                     disabled={updating}
-                    className="flex items-center gap-1.5 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-400 text-sm font-medium rounded-xl transition-colors"
+                    className="flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-500 text-sm font-medium rounded-xl transition-colors"
                   >
                     Reset
                   </button>
@@ -396,14 +395,14 @@ function ModuleCard({ mod, index, total, onStatusChange, onTakeTest }) {
                   <button
                     onClick={() => handleStatusChange('in_progress')}
                     disabled={updating}
-                    className="flex items-center gap-1.5 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-400 text-sm font-medium rounded-xl transition-colors"
+                    className="flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-500 text-sm font-medium rounded-xl transition-colors"
                   >
                     Reopen
                   </button>
                 )}
                 <button
                   onClick={() => onTakeTest(index, mod.title)}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-primary/20 hover:bg-primary/30 border border-primary/30 text-primary text-sm font-medium rounded-xl transition-colors"
+                  className="flex items-center gap-1.5 px-4 py-2 bg-primary/10 hover:bg-primary/20 border border-primary/20 text-primary text-sm font-medium rounded-xl transition-colors"
                 >
                   <span className="material-symbols-outlined text-sm">quiz</span>
                   Take Test
@@ -476,31 +475,25 @@ export default function RoadmapView() {
 
   if (loading) {
     return (
-      <div className="flex h-screen bg-secondary overflow-hidden font-inter">
-        <StudentSidebar />
-        <main className="flex-1 flex items-center justify-center">
-          <div className="flex flex-col items-center gap-3">
-            <div className="h-10 w-10 rounded-full border-4 border-primary/30 border-t-primary animate-spin" />
-            <p className="text-sm text-slate-400">Loading roadmap…</p>
-          </div>
-        </main>
-      </div>
+      <main className="flex-1 flex items-center justify-center bg-background-light">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-10 w-10 rounded-full border-4 border-primary/30 border-t-primary animate-spin" />
+          <p className="text-sm text-slate-500">Loading roadmap…</p>
+        </div>
+      </main>
     );
   }
 
   if (error || !roadmap) {
     return (
-      <div className="flex h-screen bg-secondary overflow-hidden font-inter">
-        <StudentSidebar />
-        <main className="flex-1 flex items-center justify-center p-8">
-          <div className="text-center">
-            <p className="text-red-400 mb-4">{error || 'Roadmap not found.'}</p>
-            <button onClick={() => navigate('/student/roadmaps')} className="px-5 py-2 bg-primary text-secondary rounded-xl text-sm font-semibold">
-              Back to Roadmaps
-            </button>
-          </div>
-        </main>
-      </div>
+      <main className="flex-1 flex items-center justify-center p-8 bg-background-light">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">{error || 'Roadmap not found.'}</p>
+          <button onClick={() => navigate('/student/roadmaps')} className="px-5 py-2 bg-primary text-secondary rounded-xl text-sm font-semibold">
+            Back to Roadmaps
+          </button>
+        </div>
+      </main>
     );
   }
 
@@ -508,88 +501,84 @@ export default function RoadmapView() {
   const modules = roadmap.modules || [];
 
   return (
-    <div className="flex h-screen bg-secondary overflow-hidden font-inter">
-      <StudentSidebar />
+    <main className="flex-1 overflow-y-auto bg-background-light">
+      <div className="max-w-3xl mx-auto px-6 py-8 flex flex-col gap-8">
+        {/* Back */}
+        <button
+          onClick={() => navigate('/student/roadmaps')}
+          className="flex items-center gap-1 text-slate-500 hover:text-secondary text-sm transition-colors w-fit"
+        >
+          <span className="material-symbols-outlined text-base">arrow_back</span>
+          Back to Roadmaps
+        </button>
 
-      <main className="flex-1 overflow-y-auto">
-        <div className="max-w-3xl mx-auto px-6 py-8 flex flex-col gap-8">
-          {/* Back */}
-          <button
-            onClick={() => navigate('/student/roadmaps')}
-            className="flex items-center gap-1 text-slate-400 hover:text-white text-sm transition-colors w-fit"
-          >
-            <span className="material-symbols-outlined text-base">arrow_back</span>
-            Back to Roadmaps
-          </button>
-
-          {/* Header card */}
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col gap-4">
-            <div className="flex items-start justify-between gap-4 flex-wrap">
-              <div className="flex-1 min-w-0">
-                <h1 className="text-xl font-bold text-white font-playfair leading-tight">{roadmap.title}</h1>
-                <p className="text-sm text-slate-400 mt-1 flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-sm">work</span>
-                  {roadmap.targetRole}
-                </p>
-                {roadmap.description && (
-                  <p className="text-sm text-slate-300 mt-3 leading-relaxed">{roadmap.description}</p>
-                )}
-              </div>
-
-              <div className="flex items-center gap-2 flex-shrink-0">
-                {roadmap.status !== 'archived' && (
-                  <button
-                    onClick={handleArchive}
-                    disabled={archiving}
-                    className="flex items-center gap-1.5 px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-medium text-slate-400 hover:text-white transition-colors"
-                  >
-                    <span className="material-symbols-outlined text-sm">archive</span>
-                    {archiving ? 'Archiving…' : 'Archive'}
-                  </button>
-                )}
-              </div>
+        {/* Header card */}
+        <div className="bg-white border border-slate-100 rounded-2xl p-6 flex flex-col gap-4 shadow-sm">
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl font-bold text-secondary font-playfair leading-tight">{roadmap.title}</h1>
+              <p className="text-sm text-slate-500 mt-1 flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-sm">work</span>
+                {roadmap.targetRole}
+              </p>
+              {roadmap.description && (
+                <p className="text-sm text-slate-600 mt-3 leading-relaxed">{roadmap.description}</p>
+              )}
             </div>
 
-            {/* Overall progress */}
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-400">Overall Progress</span>
-                <span className="font-bold text-primary">{pct}%</span>
-              </div>
-              <div className="h-2.5 bg-white/10 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full transition-all duration-700"
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
-              <div className="flex items-center justify-between text-xs text-slate-500">
-                <span>{modules.filter((m) => m.status === 'completed').length} / {modules.length} modules completed</span>
-                <span className={`font-semibold capitalize ${
-                  roadmap.status === 'completed' ? 'text-emerald-400' :
-                  roadmap.status === 'archived' ? 'text-slate-400' : 'text-blue-400'
-                }`}>{roadmap.status}</span>
-              </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {roadmap.status !== 'archived' && (
+                <button
+                  onClick={handleArchive}
+                  disabled={archiving}
+                  className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl text-xs font-medium text-slate-500 hover:text-secondary transition-colors"
+                >
+                  <span className="material-symbols-outlined text-sm">archive</span>
+                  {archiving ? 'Archiving…' : 'Archive'}
+                </button>
+              )}
             </div>
           </div>
 
-          {/* Modules stepper */}
-          <div>
-            <h2 className="text-base font-semibold text-white mb-5">Learning Modules</h2>
-            <div className="flex flex-col">
-              {modules.map((mod, idx) => (
-                <ModuleCard
-                  key={idx}
-                  mod={mod}
-                  index={idx}
-                  total={modules.length}
-                  onStatusChange={handleStatusChange}
-                  onTakeTest={(moduleIndex, moduleTitle) => setQuiz({ moduleIndex, moduleTitle })}
-                />
-              ))}
+          {/* Overall progress */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-slate-500">Overall Progress</span>
+              <span className="font-bold text-primary">{pct}%</span>
+            </div>
+            <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full transition-all duration-700"
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+            <div className="flex items-center justify-between text-xs text-slate-400">
+              <span>{modules.filter((m) => m.status === 'completed').length} / {modules.length} modules completed</span>
+              <span className={`font-semibold capitalize ${
+                roadmap.status === 'completed' ? 'text-emerald-500' :
+                roadmap.status === 'archived' ? 'text-slate-400' : 'text-blue-500'
+              }`}>{roadmap.status}</span>
             </div>
           </div>
         </div>
-      </main>
+
+        {/* Modules stepper */}
+        <div>
+          <h2 className="text-base font-semibold text-secondary mb-5">Learning Modules</h2>
+          <div className="flex flex-col">
+            {modules.map((mod, idx) => (
+              <ModuleCard
+                key={idx}
+                mod={mod}
+                index={idx}
+                total={modules.length}
+                onStatusChange={handleStatusChange}
+                onTakeTest={(moduleIndex, moduleTitle) => setQuiz({ moduleIndex, moduleTitle })}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
 
       {quiz && (
         <QuizModal
@@ -600,6 +589,6 @@ export default function RoadmapView() {
           onPassed={handleTestPassed}
         />
       )}
-    </div>
+    </main>
   );
 }

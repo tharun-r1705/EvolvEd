@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
-import StudentSidebar from '../components/StudentSidebar.jsx';
 import { studentService } from '../services/api.js';
 
 // ─── Constants (mirrors backend validators) ────────────────────────────────
@@ -1185,35 +1184,26 @@ export default function StudentProfile() {
 
   if (loading) {
     return (
-      <div className="flex h-screen w-full flex-row overflow-hidden bg-background-light font-display">
-        <StudentSidebar />
-        <main className="flex flex-1 items-center justify-center">
-          <span className="material-symbols-outlined text-5xl text-primary animate-spin">progress_activity</span>
-        </main>
-      </div>
+      <main className="flex flex-1 items-center justify-center bg-background-light">
+        <span className="material-symbols-outlined text-5xl text-primary animate-spin">progress_activity</span>
+      </main>
     );
   }
 
   if (error) {
     return (
-      <div className="flex h-screen w-full flex-row overflow-hidden bg-background-light font-display">
-        <StudentSidebar />
-        <main className="flex flex-1 items-center justify-center">
-          <div className="text-center">
-            <span className="material-symbols-outlined text-5xl text-red-300">error</span>
-            <p className="mt-3 text-slate-500">{error}</p>
-          </div>
-        </main>
-      </div>
+      <main className="flex flex-1 items-center justify-center bg-background-light">
+        <div className="text-center">
+          <span className="material-symbols-outlined text-5xl text-red-300">error</span>
+          <p className="mt-3 text-slate-500">{error}</p>
+        </div>
+      </main>
     );
   }
 
   return (
-    <div className="flex h-screen w-full flex-row overflow-hidden bg-background-light font-display">
-      <StudentSidebar />
-
-      <main className="flex h-full flex-1 flex-col overflow-y-auto bg-background-light p-4 md:p-8">
-        <div className="mx-auto w-full max-w-4xl">
+    <main className="flex h-full flex-1 flex-col overflow-y-auto bg-background-light p-4 md:p-8">
+      <div className="mx-auto w-full max-w-4xl">
 
           {/* Header */}
           <header className="mb-8">
@@ -1275,6 +1265,5 @@ export default function StudentProfile() {
 
         </div>
       </main>
-    </div>
   );
 }
