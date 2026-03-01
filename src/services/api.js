@@ -35,6 +35,49 @@ api.interceptors.response.use(
 export default api;
 
 // ---------------------------------------------------------------------------
+// Lightweight stale-while-revalidate cache
+//
+// • TTL_SHORT  (30 s)  – dashboard, goals summary (changes on user actions)
+// • TTL_MEDIUM (2 min) – leaderboard, rankings
+// • TTL_LONG   (5 min) – feed content: trends, daily tip, interview questions
+//
+// Behaviour:
+//   cold miss  → wait for network
+//   fresh hit  → return cached immediately (0 ms)
+//   stale hit  → return cached immediately + refresh in background
+// ---------------------------------------------------------------------------
+const _cache = new Map();
+const TTL_SHORT  = 30_000;
+const TTL_MEDIUM = 2 * 60_000;
+const TTL_LONG   = 5 * 60_000;
+
+function _cacheGet(url, ttl, params) {
+  const key = params && Object.keys(params).length
+    ? `${url}?${new URLSearchParams(params)}`
+    : url;
+  const entry = _cache.get(key);
+  const now   = Date.now();
+
+  const doFetch = () =>
+    api.get(url, params ? { params } : undefined).then((res) => {
+      _cache.set(key, { res, ts: Date.now() });
+      return res;
+    });
+
+  if (!entry) return doFetch();                         // cold miss
+  if (now - entry.ts < ttl) return Promise.resolve(entry.res); // fresh hit
+  doFetch();                                            // stale: bg refresh
+  return Promise.resolve(entry.res);                   // serve stale immediately
+}
+
+/** Call after mutations that affect cached data (e.g. add project, cert, etc.) */
+export function invalidateCache(...prefixes) {
+  for (const key of _cache.keys()) {
+    if (prefixes.some((p) => key.startsWith(p))) _cache.delete(key);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Auth endpoints
 // ---------------------------------------------------------------------------
 export const authService = {
@@ -50,7 +93,7 @@ export const authService = {
 // Student endpoints
 // ---------------------------------------------------------------------------
 export const studentService = {
-  getDashboard: () => api.get('/student/dashboard'),
+  getDashboard: () => _cacheGet('/student/dashboard', TTL_SHORT),
   getReadinessScore: () => api.get('/student/readiness-score'),
   getAssessments: () => api.get('/student/assessments'),
   getAssessmentById: (id) => api.get(`/student/assessments/${id}`),
@@ -120,7 +163,7 @@ export const chatService = {
 // ---------------------------------------------------------------------------
 export const goalsService = {
   getGoals: (status) => api.get('/student/goals', { params: status ? { status } : {} }),
-  getSummary: () => api.get('/student/goals/summary'),
+  getSummary: () => _cacheGet('/student/goals/summary', TTL_SHORT),
   createGoal: (data) => api.post('/student/goals', data),
   updateGoal: (goalId, data) => api.put(`/student/goals/${goalId}`, data),
   deleteGoal: (goalId) => api.delete(`/student/goals/${goalId}`),
@@ -159,15 +202,17 @@ export const interviewService = {
 // ---------------------------------------------------------------------------
 export const feedService = {
   getInterviewQuestions: (params) =>
+    _cacheGet('/student/feed/interview-questions', TTL_LONG, params),
+  getInterviewQuestionsFresh: (params) =>
     api.get('/student/feed/interview-questions', { params }),
   listInterviewQuestions: (params) =>
     api.get('/student/feed/interview-questions/all', { params }),
   getInterviewQuestionById: (id) =>
     api.get(`/student/feed/interview-questions/${id}`),
   getMarketTrends: (params) =>
-    api.get('/student/feed/market-trends', { params }),
+    _cacheGet('/student/feed/market-trends', TTL_LONG, params),
   getDailyTip: () =>
-    api.get('/student/feed/daily-tip'),
+    _cacheGet('/student/feed/daily-tip', TTL_LONG),
 };
 
 // ---------------------------------------------------------------------------
@@ -188,9 +233,9 @@ export const recruiterService = {
 // ---------------------------------------------------------------------------
 export const leaderboardService = {
   // scope: 'global' | 'department' | 'weekly' | 'skill'
-  getLeaderboard: (params) => api.get('/student/leaderboard', { params }),
-  getMyRank: () => api.get('/student/leaderboard/me'),
-  getMeta: () => api.get('/student/leaderboard/meta'),
+  getLeaderboard: (params) => _cacheGet('/student/leaderboard', TTL_MEDIUM, params),
+  getMyRank: () => _cacheGet('/student/leaderboard/me', TTL_MEDIUM),
+  getMeta: () => _cacheGet('/student/leaderboard/meta', TTL_MEDIUM),
 };
 
 // ---------------------------------------------------------------------------

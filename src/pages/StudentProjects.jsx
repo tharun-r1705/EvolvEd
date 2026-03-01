@@ -138,6 +138,33 @@ function TechTagInput({ tags, onChange }) {
   );
 }
 
+// ─── GitHub Import ───────────────────────────────────────────────────────────
+
+function parseGitHubUrl(url) {
+  try {
+    const match = url.match(/github\.com\/([^/]+)\/([^/]+?)(\.git)?(\?.*)?$/);
+    if (!match) return null;
+    return { owner: match[1], repo: match[2] };
+  } catch {
+    return null;
+  }
+}
+
+async function fetchGitHubRepo(owner, repo) {
+  const [repoRes, langsRes] = await Promise.all([
+    fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+      headers: { Accept: 'application/vnd.github+json' },
+    }),
+    fetch(`https://api.github.com/repos/${owner}/${repo}/languages`, {
+      headers: { Accept: 'application/vnd.github+json' },
+    }),
+  ]);
+  if (!repoRes.ok) throw new Error(`GitHub: ${repoRes.status} ${repoRes.statusText}`);
+  const repoData = await repoRes.json();
+  const langsData = langsRes.ok ? await langsRes.json() : {};
+  return { repoData, languages: Object.keys(langsData) };
+}
+
 // ─── Project Modal ─────────────────────────────────────────────────────────────
 
 const EMPTY_FORM = {
@@ -165,6 +192,33 @@ function ProjectModal({ project, onClose, onSave }) {
   const [imagePreview, setImagePreview] = useState(project?.imageUrl || null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [ghImporting, setGhImporting] = useState(false);
+  const [ghImported, setGhImported] = useState(false);
+
+  async function handleGitHubImport() {
+    const parsed = parseGitHubUrl(form.githubUrl.trim());
+    if (!parsed) { setError('Enter a valid GitHub URL first (e.g. https://github.com/user/repo)'); return; }
+    setGhImporting(true);
+    setError('');
+    try {
+      const { repoData, languages } = await fetchGitHubRepo(parsed.owner, parsed.repo);
+      setForm((f) => ({
+        ...f,
+        title: f.title || repoData.name?.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) || f.title,
+        description: f.description || repoData.description || '',
+        techStack: f.techStack.length ? f.techStack : languages.slice(0, 10),
+        url: f.url || repoData.homepage || '',
+        startDate: f.startDate || (repoData.created_at ? repoData.created_at.slice(0, 10) : ''),
+        endDate: f.endDate || (repoData.archived && repoData.pushed_at ? repoData.pushed_at.slice(0, 10) : ''),
+        status: repoData.archived ? 'completed' : f.status,
+      }));
+      setGhImported(true);
+    } catch (err) {
+      setError('Could not import from GitHub: ' + err.message);
+    } finally {
+      setGhImporting(false);
+    }
+  }
 
   function handleField(key, value) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -288,13 +342,31 @@ function ProjectModal({ project, onClose, onSave }) {
             </div>
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">GitHub URL</label>
-              <input
-                type="url"
-                className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
-                placeholder="https://github.com/user/repo"
-                value={form.githubUrl}
-                onChange={(e) => handleField('githubUrl', e.target.value)}
-              />
+              <div className="flex gap-2">
+                <input
+                  type="url"
+                  className="flex-1 px-3 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+                  placeholder="https://github.com/user/repo"
+                  value={form.githubUrl}
+                  onChange={(e) => { handleField('githubUrl', e.target.value); setGhImported(false); }}
+                />
+                <button
+                  type="button"
+                  onClick={handleGitHubImport}
+                  disabled={!form.githubUrl.trim() || ghImporting}
+                  title="Auto-fill from GitHub"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:border-primary hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed transition-all whitespace-nowrap"
+                >
+                  {ghImporting ? (
+                    <span className="material-symbols-outlined text-base animate-spin">refresh</span>
+                  ) : ghImported ? (
+                    <span className="material-symbols-outlined text-base text-green-600">check_circle</span>
+                  ) : (
+                    <span className="material-symbols-outlined text-base">download</span>
+                  )}
+                  {ghImporting ? 'Importing…' : ghImported ? 'Imported' : 'Import'}
+                </button>
+              </div>
             </div>
           </div>
 

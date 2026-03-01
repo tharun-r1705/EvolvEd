@@ -155,19 +155,15 @@ Provide an overall performance summary. Return ONLY valid JSON — no markdown, 
 }
 
 // ─────────────────────────────────────────────────────────────────
-// TTS helper — returns mp3 Buffer via edge-tts (dynamic ESM import)
+// TTS helper — browser-side speechSynthesis is used instead.
+//              This endpoint is kept for API compatibility but
+//              the frontend now uses Web Speech API directly.
 // ─────────────────────────────────────────────────────────────────
 
 async function textToSpeech(text) {
-  try {
-    // edge-tts is ESM-only — use dynamic import in CommonJS
-    const { tts } = await import('edge-tts/out/index.js');
-    const audioBuffer = await tts(text, { voice: 'en-US-GuyNeural', rate: '+0%', pitch: '+0Hz' });
-    return audioBuffer;
-  } catch (err) {
-    console.error('[TTS] edge-tts failed:', err.message);
-    throw new AppError('Text-to-speech unavailable', 503);
-  }
+  // edge-tts is blocked by Microsoft (403). Returning 503 so the
+  // frontend falls back to browser speechSynthesis.
+  throw new AppError('Server-side TTS unavailable; use browser speech synthesis.', 503);
 }
 
 // ─────────────────────────────────────────────────────────────────

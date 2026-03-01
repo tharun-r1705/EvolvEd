@@ -9,8 +9,10 @@ import { studentService, goalsService, feedService } from '../services/api.js';
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function scoreColor(score) {
-  if (score >= 80) return 'text-green-600';
-  if (score >= 60) return 'text-yellow-600';
+  if (score >= 70) return 'text-green-600';
+  if (score >= 55) return 'text-emerald-500';
+  if (score >= 40) return 'text-yellow-600';
+  if (score >= 25) return 'text-orange-500';
   return 'text-red-500';
 }
 
@@ -112,17 +114,17 @@ function CircularScore({ score }) {
 // ─── Score Breakdown Radar ────────────────────────────────────────────────────
 
 const BREAKDOWN_LABELS = {
-  technicalSkills:    'Technical',
-  projects:           'Projects',
-  internships:        'Internships',
-  certifications:     'Certs',
-  assessments:        'Assessments',
-  events:             'Events',
-  codingPractice:     'Coding',
-  githubActivity:     'GitHub',
-  learningPace:       'Learning Pace',
-  roadmapProgress:    'Roadmaps',
-  interviewReadiness: 'Interviews',
+  codingPractice:     'Coding (18%)',
+  projects:           'Projects (15%)',
+  internships:        'Internships (15%)',
+  technicalSkills:    'Skills (12%)',
+  assessments:        'Assessments (10%)',
+  interviewReadiness: 'Interviews (8%)',
+  githubActivity:     'GitHub (6%)',
+  certifications:     'Certs (5%)',
+  events:             'Events (4%)',
+  learningPace:       'Pace (4%)',
+  roadmapProgress:    'Roadmaps (3%)',
 };
 
 // ─── Custom Tooltip ───────────────────────────────────────────────────────────
@@ -157,66 +159,77 @@ export default function StudentDashboard() {
   const [tipLoading, setTipLoading] = useState(true);
   const [showAnswer, setShowAnswer] = useState(false);
 
+  // Standalone refresh for the interview-question widget (used by Next / Retry buttons)
   const fetchInterviewQuestion = useCallback(async () => {
     setInterviewQLoading(true);
     setShowAnswer(false);
     try {
-      const res = await feedService.getInterviewQuestions({ limit: 1 });
+      const currentId = interviewQuestion?.id;
+      const res = await feedService.getInterviewQuestionsFresh({ limit: 1 });
       const questions = res.data?.data?.questions ?? res.data?.data ?? [];
-      setInterviewQuestion(questions[0] ?? null);
+      let nextQuestion = questions[0] ?? null;
+
+      if (nextQuestion && currentId && nextQuestion.id === currentId) {
+        const retryRes = await feedService.getInterviewQuestionsFresh({ limit: 1 });
+        const retryQuestions = retryRes.data?.data?.questions ?? retryRes.data?.data ?? [];
+        nextQuestion = retryQuestions[0] ?? nextQuestion;
+      }
+
+      setInterviewQuestion(nextQuestion);
     } catch (_) {
       setInterviewQuestion(null);
     } finally {
       setInterviewQLoading(false);
     }
-  }, []);
+  }, [interviewQuestion?.id]);
 
-  const fetchTechTrends = useCallback(async () => {
-    setTrendsLoading(true);
-    try {
-      const res = await feedService.getMarketTrends({ limit: 6 });
-      setTechTrends(res.data?.data?.trends ?? res.data?.data ?? []);
-    } catch (_) {
-      setTechTrends([]);
-    } finally {
-      setTrendsLoading(false);
-    }
-  }, []);
-
-  const fetchDailyTip = useCallback(async () => {
-    setTipLoading(true);
-    try {
-      const res = await feedService.getDailyTip();
-      setDailyTip(res.data?.data ?? null);
-    } catch (_) {
-      setDailyTip(null);
-    } finally {
-      setTipLoading(false);
-    }
-  }, []);
-
+  // Core-first fetch: unblock page quickly, then hydrate feed widgets in background
   const fetchDashboard = useCallback(async () => {
     setLoading(true);
     setError(null);
-    try {
-      const [dashRes, goalsRes] = await Promise.allSettled([
-        studentService.getDashboard(),
-        goalsService.getSummary(),
-      ]);
-      if (dashRes.status === 'fulfilled') setData(dashRes.value.data);
-      else throw new Error(dashRes.reason?.response?.data?.message || 'Failed to load dashboard.');
-      if (goalsRes.status === 'fulfilled') setGoalsSummary(goalsRes.value.data.data);
-    } catch (err) {
-      setError(err.message || 'Failed to load dashboard. Please try again.');
-    } finally {
-      setLoading(false);
+    setInterviewQLoading(true);
+    setTrendsLoading(true);
+    setTipLoading(true);
+
+    const [dashRes, goalsRes] = await Promise.allSettled([
+      studentService.getDashboard(),
+      goalsService.getSummary(),
+    ]);
+
+    // Main data (page shows error if dashboard fails)
+    if (dashRes.status === 'fulfilled') {
+      setData(dashRes.value.data);
+    } else {
+      setError(dashRes.reason?.response?.data?.message || 'Failed to load dashboard.');
     }
+    if (goalsRes.status === 'fulfilled') setGoalsSummary(goalsRes.value.data.data);
+
+    // Unblock main page as soon as core data is ready
+    setLoading(false);
+
+    // Feed widgets (non-critical): load in background, fail silently
+    Promise.allSettled([
+      feedService.getInterviewQuestions({ limit: 1 }),
+      feedService.getMarketTrends({ limit: 6 }),
+      feedService.getDailyTip(),
+    ]).then(([iqRes, trendsRes, tipRes]) => {
+      if (iqRes.status === 'fulfilled') {
+        const questions = iqRes.value.data?.data?.questions ?? iqRes.value.data?.data ?? [];
+        setInterviewQuestion(questions[0] ?? null);
+      }
+      setInterviewQLoading(false);
+
+      if (trendsRes.status === 'fulfilled') {
+        setTechTrends(trendsRes.value.data?.data?.trends ?? trendsRes.value.data?.data ?? []);
+      }
+      setTrendsLoading(false);
+
+      if (tipRes.status === 'fulfilled') setDailyTip(tipRes.value.data?.data ?? null);
+      setTipLoading(false);
+    });
   }, []);
 
   useEffect(() => { fetchDashboard(); }, [fetchDashboard]);
-  useEffect(() => { fetchInterviewQuestion(); }, [fetchInterviewQuestion]);
-  useEffect(() => { fetchTechTrends(); }, [fetchTechTrends]);
-  useEffect(() => { fetchDailyTip(); }, [fetchDailyTip]);
 
   if (loading) {
     return (
@@ -267,8 +280,10 @@ export default function StudentDashboard() {
   };
 
   const trendScoreColor = (score) => {
-    if (score >= 80) return '#22c55e';
-    if (score >= 60) return '#f59e0b';
+    if (score >= 70) return '#22c55e';
+    if (score >= 55) return '#10b981';
+    if (score >= 40) return '#f59e0b';
+    if (score >= 25) return '#f97316';
     return '#ef4444';
   };
 
@@ -313,15 +328,6 @@ export default function StudentDashboard() {
                 Welcome back, <span className="font-semibold text-secondary">{student.fullName}</span>
                 {' '}— track your placement preparedness.
               </p>
-            </div>
-            <div className="flex gap-3">
-              <Link
-                to="/student/profile"
-                className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-secondary shadow-md hover:bg-primary/90 transition-all"
-              >
-                <span className="material-symbols-outlined text-[20px]">edit</span>
-                Edit Profile
-              </Link>
             </div>
           </header>
 
@@ -462,7 +468,7 @@ export default function StudentDashboard() {
                 <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
                   <div className="mb-4">
                     <h3 className="text-lg font-bold text-secondary">Score Breakdown</h3>
-                    <p className="text-sm text-slate-500">All 8 readiness components</p>
+                    <p className="text-sm text-slate-500">All {Object.keys(BREAKDOWN_LABELS).length} readiness components</p>
                   </div>
                   <ResponsiveContainer width="100%" height={280}>
                     <RadarChart data={radarData} outerRadius="70%">
@@ -514,9 +520,6 @@ export default function StudentDashboard() {
                     </div>
                     <p className="text-sm text-slate-500 mt-0.5">What's hot in the industry</p>
                   </div>
-                  <Link to="/student/interview-prep" className="text-xs font-semibold text-primary hover:underline">
-                    View more
-                  </Link>
                 </div>
                 {trendsLoading ? (
                   <div className="grid grid-cols-2 gap-3">
@@ -780,7 +783,6 @@ export default function StudentDashboard() {
                     </div>
                     <h3 className="text-base font-bold text-secondary">Interview Question</h3>
                   </div>
-                  <Link to="/student/interview-prep" className="text-xs font-semibold text-primary hover:underline">View all</Link>
                 </div>
                 {interviewQLoading ? (
                   <div className="space-y-3">

@@ -29,7 +29,6 @@ const StudentRoadmaps     = lazy(() => import('./pages/StudentRoadmaps.jsx'));
 const RoadmapView         = lazy(() => import('./pages/RoadmapView.jsx'));
 const MockInterview       = lazy(() => import('./pages/MockInterview.jsx'));
 const InterviewSession    = lazy(() => import('./pages/InterviewSession.jsx'));
-const InterviewPrep       = lazy(() => import('./pages/InterviewPrep.jsx'));
 const Leaderboard         = lazy(() => import('./pages/Leaderboard.jsx'));
 
 // Recruiter Pages (lazy-loaded)
@@ -109,7 +108,6 @@ export default function App() {
               <Route path="roadmaps" element={<StudentRoadmaps />} />
               <Route path="roadmaps/:id" element={<RoadmapView />} />
               <Route path="interviews" element={<MockInterview />} />
-              <Route path="interview-prep" element={<InterviewPrep />} />
               <Route path="leaderboard" element={<Leaderboard />} />
               <Route path="chat" element={<StudentChat />} />
             </Route>

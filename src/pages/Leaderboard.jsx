@@ -176,7 +176,7 @@ function LeaderboardTable({ entries, loading, scope, myStudentId, totalPages, pa
           return (
             <div
               key={entry.studentId}
-              className={`flex items-center gap-3 rounded-xl p-4 shadow-md ring-1 transition-all ${`
+              className={`flex items-center gap-3 rounded-xl p-4 shadow-md ring-1 transition-all ${
                 isMe
                   ? 'bg-primary/5 ring-primary/30 shadow-md'
                   : 'bg-white ring-slate-200 hover:shadow-md hover:ring-primary/20'

@@ -6,7 +6,7 @@ const AppError = require('../utils/AppError');
 const { recalculateScore, getScoreLabel, getReadinessClassification } = require('./scoring.service');
 const { recalculateGlobalRankings, getStudentGlobalRank } = require('./ranking.service');
 const { parsePagination, paginatedResponse } = require('../utils/pagination');
-const { uploadFromBuffer, deleteFromCloudinary } = require('../config/cloudinary');
+const { cloudinary, uploadFromBuffer, deleteFromCloudinary } = require('../config/cloudinary');
 const { groqChat } = require('../utils/groq');
 const pdfParse = require('pdf-parse');
 const { getLearningPace: _getLearningPace, logActivity } = require('./learningPace.service');
@@ -47,6 +47,25 @@ async function getDashboard(userId) {
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
+  // Run rank + learningPace in parallel with the transaction (both only need student.id)
+  const [txResults, rankInfo, learningPaceData] = await Promise.all([
+    withRetry(() => prisma.$transaction([
+      prisma.assessment.count({ where: { studentId: student.id } }),
+      prisma.application.count({ where: { studentId: student.id } }),
+      prisma.application.count({ where: { studentId: student.id, status: { in: ['applied', 'shortlisted'] } } }),
+      prisma.shortlist.count({ where: { studentId: student.id } }),
+      prisma.assessment.findMany({
+        where: { studentId: student.id, completedAt: { gte: sixMonthsAgo } },
+        select: { totalScore: true, maxScore: true, completedAt: true },
+        orderBy: { completedAt: 'asc' },
+      }),
+      prisma.leetCodeProfile.findUnique({ where: { studentId: student.id } }),
+      prisma.gitHubProfile.findUnique({ where: { studentId: student.id } }),
+    ])),
+    getStudentGlobalRank(student.id),
+    _getLearningPace(student.id).catch(() => null),
+  ]);
+
   const [
     totalAssessments,
     totalApplications,
@@ -55,24 +74,7 @@ async function getDashboard(userId) {
     monthlyAssessments,
     leetcodeProfile,
     githubProfile,
-  ] = await withRetry(() => prisma.$transaction([
-    prisma.assessment.count({ where: { studentId: student.id } }),
-    prisma.application.count({ where: { studentId: student.id } }),
-    prisma.application.count({ where: { studentId: student.id, status: { in: ['applied', 'shortlisted'] } } }),
-    prisma.shortlist.count({ where: { studentId: student.id } }),
-    prisma.assessment.findMany({
-      where: { studentId: student.id, completedAt: { gte: sixMonthsAgo } },
-      select: { totalScore: true, maxScore: true, completedAt: true },
-      orderBy: { completedAt: 'asc' },
-    }),
-    prisma.leetCodeProfile.findUnique({ where: { studentId: student.id } }),
-    prisma.gitHubProfile.findUnique({ where: { studentId: student.id } }),
-  ]));
-
-  const [rankInfo, learningPaceData] = await Promise.all([
-    getStudentGlobalRank(student.id),
-    _getLearningPace(student.id).catch(() => null),
-  ]);
+  ] = txResults;
 
   // Group assessments by month for trend data
   const trendMap = {};
@@ -770,9 +772,29 @@ async function uploadAvatar(userId, fileBuffer, mimetype) {
 
 async function getResumes(userId) {
   const student = await getStudentByUserId(userId);
-  return prisma.resume.findMany({
+  const resumes = await prisma.resume.findMany({
     where: { studentId: student.id },
     orderBy: [{ isDefault: 'desc' }, { uploadedAt: 'desc' }],
+  });
+
+  // Generate a 1-hour signed URL for each resume so private Cloudinary uploads are viewable
+  const expiresAt = Math.floor(Date.now() / 1000) + 3600;
+  return resumes.map((r) => {
+    let signedUrl = r.url;
+    try {
+      if (r.publicId) {
+        signedUrl = cloudinary.url(r.publicId, {
+          resource_type: 'raw',
+          type: 'upload',
+          sign_url: true,
+          expires_at: expiresAt,
+          secure: true,
+        });
+      }
+    } catch {
+      // fall back to stored url
+    }
+    return { ...r, signedUrl };
   });
 }
 
@@ -794,6 +816,8 @@ async function uploadResume(userId, fileBuffer, data) {
     public_id: `student_${student.id}_${timestamp}`,
     resource_type: 'raw',
     format: 'pdf',
+    type: 'upload',
+    access_mode: 'public',
   });
 
   // If this is the first resume or isDefault requested, set as default

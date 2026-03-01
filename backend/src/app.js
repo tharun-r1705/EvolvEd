@@ -3,6 +3,7 @@
 require('./config'); // Load and validate env vars first
 
 const express = require('express');
+const compression = require('compression');
 const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
@@ -14,6 +15,9 @@ const errorHandler = require('./middleware/errorHandler');
 const AppError = require('./utils/AppError');
 
 const app = express();
+
+// ─── Gzip compression (must come before other middleware) ────────
+app.use(compression({ level: 6, threshold: 512 }));
 
 // ─── Security headers ────────────────────────────────────────────
 app.use(helmet());

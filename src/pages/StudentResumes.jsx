@@ -314,6 +314,10 @@ function DeleteConfirm({ resume, onConfirm, onCancel, deleting }) {
 // ─── PDF Viewer Modal ─────────────────────────────────────────────────────────
 
 function PdfViewerModal({ resume, onClose }) {
+  const [loaded, setLoaded] = React.useState(false);
+  const fileUrl = resume.signedUrl || resume.url;
+  const viewerSrc = `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+
   // Close on Escape key
   React.useEffect(() => {
     function onKey(e) { if (e.key === 'Escape') onClose(); }
@@ -339,7 +343,16 @@ function PdfViewerModal({ resume, onClose }) {
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <a
-            href={resume.url}
+            href={fileUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-1.5 rounded-lg bg-white/10 hover:bg-white/20 px-3 py-1.5 text-xs font-semibold text-white transition-colors"
+          >
+            <span className="material-symbols-outlined text-[15px]">open_in_new</span>
+            Open
+          </a>
+          <a
+            href={fileUrl}
             download
             className="flex items-center gap-1.5 rounded-lg bg-white/10 hover:bg-white/20 px-3 py-1.5 text-xs font-semibold text-white transition-colors"
           >
@@ -357,11 +370,18 @@ function PdfViewerModal({ resume, onClose }) {
       </div>
 
       {/* PDF frame */}
-      <div className="flex-1 overflow-hidden">
+      <div className="relative flex-1 overflow-hidden">
+        {!loaded && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-slate-900">
+            <span className="material-symbols-outlined text-4xl text-slate-400 animate-spin">progress_activity</span>
+            <p className="text-slate-400 text-sm">Loading PDF…</p>
+          </div>
+        )}
         <iframe
-          src={`${resume.url}#toolbar=1&navpanes=0`}
+          src={viewerSrc}
           title={resume.name}
           className="h-full w-full border-0"
+          onLoad={() => setLoaded(true)}
         />
       </div>
     </div>
@@ -416,7 +436,7 @@ function ResumeCard({ resume, onView, onEdit, onDelete, onSetDefault, settingDef
           <span className="material-symbols-outlined text-[14px]">visibility</span>View
         </button>
         <a
-          href={resume.url}
+          href={resume.signedUrl || resume.url}
           download
           className="flex items-center gap-1.5 rounded-lg bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
         >

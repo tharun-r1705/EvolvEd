@@ -114,6 +114,7 @@ async function getLearningPace(studentId) {
       where: { studentId },
       select: { type: true, completedAt: true, score: true },
       orderBy: { completedAt: 'desc' },
+      take: 500, // cap at 500 most-recent — older records don't affect any window calc
     }),
     prisma.assessment.findMany({
       where: { studentId },
@@ -121,11 +122,8 @@ async function getLearningPace(studentId) {
       orderBy: { completedAt: 'desc' },
       take: 5,
     }),
-    // Count of peers with at least one activity (for percentile comparison)
-    prisma.learningActivity.groupBy({
-      by: ['studentId'],
-      _count: { id: true },
-    }).then((rows) => rows.length).catch(() => 1),
+    // Fast student count instead of full-table groupBy scan
+    prisma.student.count({ where: { deletedAt: null, status: { not: 'inactive' } } }).catch(() => 1),
   ]);
 
   // ── Component scores ──────────────────────────────────────────
@@ -173,23 +171,24 @@ async function getLearningPace(studentId) {
   const weeklyTrend = buildWeeklyTrend(activities);
 
   // ── Peer percentile ────────────────────────────────────────────
-  // Simple estimate: students with fewer total activities than this student
+  // Use a single SQL aggregate instead of fetching all rows into JS
   const myTotal = activities.length;
-  const peersBelow = await prisma.learningActivity
-    .groupBy({ by: ['studentId'], _count: { id: true } })
-    .then((rows) => rows.filter((r) => r._count.id < myTotal).length)
-    .catch(() => 0);
+  const peersBelow = await prisma.$queryRaw`
+    SELECT COUNT(*)::int AS cnt
+    FROM (
+      SELECT student_id
+      FROM learning_activities
+      GROUP BY student_id
+      HAVING COUNT(*) < ${myTotal}
+    ) sub
+  `.then((r) => Number(r[0]?.cnt ?? 0)).catch(() => 0);
 
   const percentile = peerCount > 0
     ? Math.round((peersBelow / peerCount) * 100)
     : 0;
 
-  // ── Recent activities (last 10 for display) ───────────────────
-  const recentActivities = await prisma.learningActivity.findMany({
-    where: { studentId },
-    orderBy: { completedAt: 'desc' },
-    take: 10,
-  });
+  // ── Recent activities (reuse already-fetched sorted list) ─────
+  const recentActivities = activities.slice(0, 10);
 
   // ── Activity streak (consecutive days) ────────────────────────
   let streak = 0;

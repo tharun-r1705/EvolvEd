@@ -12,7 +12,6 @@ const NAV_ITEMS = [
   { to: '/student/assessments',      icon: 'description',        label: 'Assessments' },
   { to: '/student/resumes',          icon: 'receipt_long',       label: 'Resumes' },
   { to: '/student/learning-pace',    icon: 'speed',              label: 'Learning Pace' },
-  { to: '/student/interview-prep',   icon: 'quiz',               label: 'Interview Prep' },
   { to: '/student/roadmaps',         icon: 'map',                label: 'Roadmaps' },
   { to: '/student/leaderboard',      icon: 'leaderboard',        label: 'Leaderboard' },
   { to: '/student/interviews',       icon: 'mic',                label: 'Mock Interviews' },
