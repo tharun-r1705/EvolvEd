@@ -412,11 +412,11 @@ export default function Leaderboard() {
           </div>
 
           {/* ── Filters ── */}
-          <div className="flex flex-wrap gap-3 mb-5">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-5">
             {/* Global: search + dept + year */}
             {activeTab === 'global' && (
               <>
-                <div className="relative flex-1 min-w-[180px]">
+                <div className="relative flex-1 min-w-0 w-full sm:min-w-[180px]">
                   <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
                   <input
                     type="text"
@@ -428,7 +428,7 @@ export default function Leaderboard() {
                 <select
                   value={deptFilter}
                   onChange={handleFilterChange(setDeptFilter)}
-                  className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-w-[160px]"
+                  className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary w-full sm:min-w-[160px]"
                 >
                   <option value="">All Departments</option>
                   {departments.map((d) => (

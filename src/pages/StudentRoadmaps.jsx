@@ -147,7 +147,7 @@ function RoadmapChatPanel({ onGenerated, onCancel }) {
   }
 
   return (
-    <div className="relative flex flex-col bg-slate-50 rounded-2xl border border-slate-200 shadow-lg overflow-hidden" style={{ minHeight: '520px', maxHeight: '640px' }}>
+    <div className="relative flex flex-col bg-slate-50 rounded-2xl border border-slate-200 shadow-lg overflow-hidden" style={{ minHeight: 'min(520px, 70vh)', maxHeight: 'min(640px, 85vh)' }}>
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 bg-white border-b border-slate-100 flex-shrink-0">
         <div className="flex items-center gap-3">

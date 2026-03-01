@@ -183,7 +183,7 @@ export default function StudentChat() {
   const [sending, setSending] = useState(false);
   const [loadingConvos, setLoadingConvos] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 1024);
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -223,7 +223,8 @@ export default function StudentChat() {
       setLoadingMessages(false);
     }
     inputRef.current?.focus();
-  }
+    // Close sidebar on mobile after selecting a conversation
+    if (window.innerWidth < 1024) setSidebarOpen(false);
 
   async function startNewConversation() {
     try {
@@ -307,11 +308,24 @@ export default function StudentChat() {
   const isEmpty = messages.length === 0 && !loadingMessages;
 
   return (
-    <main className="flex flex-1 overflow-hidden bg-background-light">
+    <main className="relative flex flex-1 overflow-hidden bg-background-light">
+
+      {/* ── Mobile backdrop when sidebar is open ── */}
+      {sidebarOpen && (
+        <div
+          className="lg:hidden fixed inset-0 z-20 bg-black/40"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
 
       {/* ── Conversation Sidebar ── */}
         <div className={`flex flex-col bg-white border-r border-slate-200 flex-shrink-0 transition-all duration-200
-          ${sidebarOpen ? 'w-72' : 'w-0 overflow-hidden'}`}>
+          lg:relative lg:translate-x-0
+          ${sidebarOpen
+            ? 'absolute inset-y-0 left-0 z-30 w-72 translate-x-0 shadow-2xl lg:shadow-none'
+            : 'absolute inset-y-0 left-0 z-30 w-72 -translate-x-full lg:w-0 lg:overflow-hidden'
+          }`}>
           <div className="flex items-center justify-between p-4 border-b border-slate-200">
             <h2 className="text-sm font-bold text-secondary">Conversations</h2>
             <button

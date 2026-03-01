@@ -491,7 +491,7 @@ export default function StudentDashboard() {
                   </ResponsiveContainer>
 
                   {/* Component bars */}
-                  <div className="mt-2 grid grid-cols-2 gap-x-6 gap-y-3">
+                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
                     {radarData.map(({ subject, value }) => (
                       <div key={subject}>
                         <div className="flex justify-between text-xs mb-1">
@@ -522,7 +522,7 @@ export default function StudentDashboard() {
                   </div>
                 </div>
                 {trendsLoading ? (
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {[...Array(6)].map((_, i) => (
                       <div key={i} className="rounded-xl border border-slate-200 p-3 space-y-2">
                         <Skeleton className="h-4 w-24" />
@@ -537,7 +537,7 @@ export default function StudentDashboard() {
                     <p className="text-sm">No trend data available.</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {techTrends.map((trend) => (
                       <div key={trend.id} className="rounded-xl border border-slate-200 p-3 hover:border-primary/30 hover:shadow-sm transition-all">
                         <div className="flex items-start justify-between gap-1 mb-1.5">

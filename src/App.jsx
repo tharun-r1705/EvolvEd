@@ -68,9 +68,11 @@ function StudentShell() {
   return (
     <div className="flex h-screen w-full flex-row overflow-hidden bg-background-light">
       <StudentSidebar />
-      <Suspense fallback={<ContentLoader />}>
-        <Outlet />
-      </Suspense>
+      <div className="flex flex-1 flex-col overflow-hidden pb-16 lg:pb-0">
+        <Suspense fallback={<ContentLoader />}>
+          <Outlet />
+        </Suspense>
+      </div>
     </div>
   );
 }
