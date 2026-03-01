@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import RecruiterSidebar from '../components/RecruiterSidebar.jsx';
-
 export default function CandidateSearch() {
   const [scoreValue, setScoreValue] = useState(85);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -92,9 +90,7 @@ export default function CandidateSearch() {
   );
 
   return (
-    <div className="bg-background-light text-secondary font-sans h-screen flex flex-row overflow-hidden">
-      <RecruiterSidebar />
-
+    <>
       {/* Mobile Filter Drawer */}
       {filterOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
@@ -240,6 +236,6 @@ export default function CandidateSearch() {
           </div>
         </main>
       </div>
-    </div>
+    </>
   );
 }

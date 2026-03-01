@@ -5,6 +5,8 @@ import ProtectedRoute from './components/ProtectedRoute.jsx';
 import Layout from './components/Layout.jsx';
 import FloatingChatButton from './components/FloatingChatButton.jsx';
 import StudentSidebar from './components/StudentSidebar.jsx';
+import RecruiterSidebar from './components/RecruiterSidebar.jsx';
+import AdminSidebar from './components/AdminSidebar.jsx';
 
 // Public Pages (small, loaded eagerly)
 import Home from './pages/Home.jsx';
@@ -50,7 +52,7 @@ function ContentLoader() {
   );
 }
 
-// Full-page spinner for routes that have no persistent shell (recruiter/admin/public)
+// Full-page spinner for full-screen routes without a shell (e.g. InterviewSession)
 function PageLoader() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background-light">
@@ -68,6 +70,34 @@ function StudentShell() {
   return (
     <div className="flex h-screen w-full flex-row overflow-hidden bg-background-light">
       <StudentSidebar />
+      <div className="flex flex-1 flex-col overflow-hidden pb-16 lg:pb-0">
+        <Suspense fallback={<ContentLoader />}>
+          <Outlet />
+        </Suspense>
+      </div>
+    </div>
+  );
+}
+
+// ── Persistent recruiter shell ─────────────────────────────────────────────────
+function RecruiterShell() {
+  return (
+    <div className="flex h-screen w-full flex-row overflow-hidden bg-background-light">
+      <RecruiterSidebar />
+      <div className="flex flex-1 flex-col overflow-hidden pb-16 lg:pb-0">
+        <Suspense fallback={<ContentLoader />}>
+          <Outlet />
+        </Suspense>
+      </div>
+    </div>
+  );
+}
+
+// ── Persistent admin shell ─────────────────────────────────────────────────────
+function AdminShell() {
+  return (
+    <div className="flex h-screen w-full flex-row overflow-hidden bg-background-light">
+      <AdminSidebar />
       <div className="flex flex-1 flex-col overflow-hidden pb-16 lg:pb-0">
         <Suspense fallback={<ContentLoader />}>
           <Outlet />
@@ -129,13 +159,8 @@ export default function App() {
             path="/recruiter"
             element={<ProtectedRoute allowedRoles={['recruiter']} />}
           >
-            <Route
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <Outlet />
-                </Suspense>
-              }
-            >
+            {/* Persistent shell — sidebar never unmounts between pages */}
+            <Route element={<RecruiterShell />}>
               <Route index element={<RecruiterDashboard />} />
               <Route path="candidates" element={<CandidateSearch />} />
               <Route path="candidates/:id" element={<CandidateProfile />} />
@@ -148,13 +173,8 @@ export default function App() {
             path="/admin"
             element={<ProtectedRoute allowedRoles={['admin']} />}
           >
-            <Route
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <Outlet />
-                </Suspense>
-              }
-            >
+            {/* Persistent shell — sidebar never unmounts between pages */}
+            <Route element={<AdminShell />}>
               <Route index element={<AdminDashboard />} />
               <Route path="students" element={<ManageStudents />} />
             </Route>

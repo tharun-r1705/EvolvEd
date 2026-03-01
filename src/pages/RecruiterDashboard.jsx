@@ -1,18 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import RecruiterSidebar from '../components/RecruiterSidebar.jsx';
-
 export default function RecruiterDashboard() {
   const { user } = useAuth();
 
   return (
-    <div className="flex h-screen w-full bg-background-light overflow-hidden">
-      {/* Sidebar stays dark */}
-      <RecruiterSidebar />
-
-      {/* Main Content — light theme like student pages */}
-      <main className="flex-1 flex flex-col h-full overflow-y-auto scrollbar-hide pb-16 lg:pb-0">
+    <main className="flex-1 flex flex-col h-full overflow-y-auto scrollbar-hide">
         <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto w-full flex flex-col gap-6 lg:gap-8">
 
           {/* Welcome Header */}
@@ -243,6 +236,5 @@ export default function RecruiterDashboard() {
           </div>
         </div>
       </main>
-    </div>
   );
 }

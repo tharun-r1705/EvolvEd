@@ -1,13 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import RecruiterSidebar from '../components/RecruiterSidebar.jsx';
-
 export default function CandidateProfile() {
   return (
-    <div className="bg-background-light font-sans text-secondary h-screen flex flex-row overflow-hidden">
-      <RecruiterSidebar />
-
-      <main className="flex-1 h-full w-full overflow-y-auto scrollbar-hide pb-16 lg:pb-0">
+    <main className="flex-1 h-full w-full overflow-y-auto scrollbar-hide">
         {/* Back nav */}
         <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-6 pb-2">
           <Link to="/recruiter/candidates" className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-primary transition-colors font-medium">
@@ -247,6 +242,5 @@ export default function CandidateProfile() {
           </div>
         </div>
       </main>
-    </div>
   );
 }

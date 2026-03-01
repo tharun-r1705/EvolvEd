@@ -1,39 +1,11 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
-import AdminSidebar from '../components/AdminSidebar.jsx';
-
-const DEPT_BARS = [
-  ['CS',  85],
-  ['IT',  72],
-  ['ECE', 65],
-  ['ME',  58],
-  ['CE',  62],
-];
-
-const UPCOMING_DRIVES = [
-  { company: 'TechCorp Inc.',    role: 'Software Engineer',    icon: 'domain',    badge: 'Tomorrow', badgeCls: 'bg-blue-50 text-blue-700',      time: '10:00 AM' },
-  { company: 'BuildWell Const.', role: 'Civil Engineer Trainee',icon: 'apartment', badge: 'Oct 24',   badgeCls: 'bg-amber-50 text-amber-700',    time: '09:00 AM' },
-  { company: 'AutoMotive Ltd',   role: 'Mechanical Design',    icon: 'factory',   badge: 'Oct 28',   badgeCls: 'bg-slate-100 text-slate-600',    time: '11:00 AM' },
-];
-
-const RECENT_PLACEMENTS = [
-  { name: 'Sarah Johnson',    initials: 'SJ', initBg: 'bg-blue-100 text-blue-700',    dept: 'Computer Science', company: 'Google',    pkg: '24.0', badge: 'Placed',        badgeCls: 'bg-green-50 text-green-700 ring-green-600/20',  dot: 'bg-emerald-500' },
-  { name: 'Michael Chen',     initials: 'MC', initBg: 'bg-purple-100 text-purple-700', dept: 'Information Tech', company: 'Microsoft', pkg: '22.5', badge: 'Placed',        badgeCls: 'bg-green-50 text-green-700 ring-green-600/20',  dot: 'bg-emerald-500' },
-  { name: 'Jessica Williams', initials: 'JW', initBg: 'bg-rose-100 text-rose-700',    dept: 'Mechanical Eng',   company: 'Tesla',     pkg: '18.0', badge: 'Offer Pending', badgeCls: 'bg-amber-50 text-amber-700 ring-amber-600/20',  dot: 'bg-amber-500'   },
-  { name: 'David Kim',        initials: 'DK', initBg: 'bg-teal-100 text-teal-700',    dept: 'Electrical Eng',   company: 'Samsung',   pkg: '16.5', badge: 'Placed',        badgeCls: 'bg-green-50 text-green-700 ring-green-600/20',  dot: 'bg-emerald-500' },
-];
-
 export default function AdminDashboard() {
   const { user } = useAuth();
 
   return (
-    <div className="bg-background-light font-sans antialiased h-screen flex flex-row overflow-hidden">
-      {/* Sidebar stays dark */}
-      <AdminSidebar />
-
-      {/* Main Content — light theme */}
-      <main className="flex-1 h-full overflow-y-auto pb-16 lg:pb-0">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main className="flex-1 h-full overflow-y-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
           {/* Header */}
           <header className="mb-8">
@@ -223,6 +195,5 @@ export default function AdminDashboard() {
 
         </div>
       </main>
-    </div>
   );
 }

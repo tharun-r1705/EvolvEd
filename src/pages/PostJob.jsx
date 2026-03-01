@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import RecruiterSidebar from '../components/RecruiterSidebar.jsx';
-
 export default function PostJob() {
   const [skills, setSkills] = useState(['Python', 'React Native', 'UI/UX Design']);
   const [newSkill, setNewSkill] = useState('');
@@ -25,11 +23,8 @@ export default function PostJob() {
   const sectionClass = "bg-white rounded-2xl shadow-md ring-1 ring-slate-200 p-5 sm:p-6";
 
   return (
-    <div className="font-sans bg-background-light h-screen flex flex-row overflow-hidden">
-      <RecruiterSidebar />
-
-      <main className="flex-1 h-full overflow-y-auto scrollbar-hide pb-16 lg:pb-0">
-        <div className="flex flex-col max-w-[1000px] mx-auto w-full gap-6 p-4 sm:p-6 lg:p-8">
+    <main className="flex-1 h-full overflow-y-auto scrollbar-hide">
+      <div className="flex flex-col max-w-[1000px] mx-auto w-full gap-6 p-4 sm:p-6 lg:p-8">
 
           {/* Page Title */}
           <div className="flex flex-col gap-2">
@@ -326,6 +321,5 @@ export default function PostJob() {
           </div>
         </div>
       </main>
-    </div>
   );
 }
