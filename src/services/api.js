@@ -127,6 +127,19 @@ export const goalsService = {
 };
 
 // ---------------------------------------------------------------------------
+// Roadmap endpoints
+// ---------------------------------------------------------------------------
+export const roadmapService = {
+  generate: (data) => api.post('/student/roadmaps', data),
+  list: (status) => api.get('/student/roadmaps', { params: status ? { status } : {} }),
+  get: (id) => api.get(`/student/roadmaps/${id}`),
+  getModuleTest: (id, moduleIndex) => api.get(`/student/roadmaps/${id}/modules/${moduleIndex}/test`),
+  submitModuleTest: (id, moduleIndex, answers) => api.post(`/student/roadmaps/${id}/modules/${moduleIndex}/test`, { answers }),
+  updateModuleStatus: (id, moduleIndex, status) => api.patch(`/student/roadmaps/${id}/modules/${moduleIndex}/status`, { status }),
+  archive: (id) => api.patch(`/student/roadmaps/${id}/archive`),
+};
+
+// ---------------------------------------------------------------------------
 // Recruiter endpoints
 // ---------------------------------------------------------------------------
 export const recruiterService = {

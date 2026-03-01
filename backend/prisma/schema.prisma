@@ -180,6 +180,7 @@ model Student {
   learningActivities LearningActivity[]
   chatConversations  ChatConversation[]
   goals              StudentGoal[]
+  roadmaps           Roadmap[]
 
   @@index([department])
   @@index([readinessScore])
@@ -818,4 +819,58 @@ model StudentGoal {
   @@index([studentId])
   @@index([studentId, status])
   @@map("student_goals")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// ROADMAPS (Phase 7 — AI Roadmap Generator)
+// ─────────────────────────────────────────────────────────────────
+
+model Roadmap {
+  id          String   @id @default(uuid()) @db.Uuid
+  studentId   String   @map("student_id") @db.Uuid
+  title       String
+  description String?  @db.Text
+  targetRole  String   @map("target_role")
+  modules     Json     // array of module objects with resources + quiz
+  status      String   @default("active")  // "active" | "completed" | "archived"
+  progress    Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  student        Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  moduleProgress RoadmapProgress[]
+
+  @@index([studentId])
+  @@index([studentId, status])
+  @@map("roadmaps")
+}
+
+model RoadmapProgress {
+  id          String    @id @default(uuid()) @db.Uuid
+  roadmapId   String    @map("roadmap_id") @db.Uuid
+  moduleIndex Int       @map("module_index")
+  status      String    @default("not_started") // "not_started" | "in_progress" | "completed"
+  testScore   Int?      @map("test_score")
+  completedAt DateTime? @map("completed_at")
+
+  roadmap Roadmap @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+
+  @@unique([roadmapId, moduleIndex])
+  @@index([roadmapId])
+  @@map("roadmap_progress")
+}
+
+model CuratedResource {
+  id             String    @id @default(uuid()) @db.Uuid
+  topic          String
+  title          String
+  url            String
+  platform       String    // "youtube" | "freecodecamp" | "mdn" | "coursera_free" | "github" | "docs" | "other"
+  type           String    // "video" | "article" | "course" | "project"
+  verified       Boolean   @default(false)
+  lastVerifiedAt DateTime? @map("last_verified_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  @@index([topic])
+  @@map("curated_resources")
 }
