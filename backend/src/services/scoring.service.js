@@ -3,12 +3,15 @@
 const prisma = require('../lib/prisma');
 
 // Default score weights (will be overridden by DB values if present)
+// Phase 3 redistribution: added coding_practice (12%) and github_activity (5%)
 const DEFAULT_WEIGHTS = {
-  technical_skills: 28,
-  projects: 20,
-  internships: 18,
-  certifications: 10,
-  assessments: 19,
+  technical_skills: 25,
+  projects: 15,
+  internships: 15,
+  certifications: 8,
+  assessments: 15,
+  coding_practice: 12,
+  github_activity: 5,
   events: 5,
 };
 
@@ -145,6 +148,60 @@ async function calcAssessmentsScore(studentId) {
 }
 
 /**
+ * Calculate coding practice score (0-100) from cached LeetCode profile.
+ * Formula: min((easy*1 + medium*3 + hard*5) / 2, 100)
+ * Bonus: +5 if contest rating >= 1500, +10 if >= 1800
+ * @param {string} studentId
+ * @returns {Promise<number>}
+ */
+async function calcCodingPracticeScore(studentId) {
+  const profile = await prisma.leetCodeProfile.findUnique({
+    where: { studentId },
+    select: { easySolved: true, mediumSolved: true, hardSolved: true, contestRating: true },
+  });
+
+  if (!profile) return 0;
+
+  const base = Math.min(
+    (profile.easySolved * 1 + profile.mediumSolved * 3 + profile.hardSolved * 5) / 2,
+    100
+  );
+
+  let bonus = 0;
+  if (profile.contestRating) {
+    const rating = parseFloat(profile.contestRating);
+    if (rating >= 1800) bonus = 10;
+    else if (rating >= 1500) bonus = 5;
+  }
+
+  return Math.min(Math.round(base + bonus), 100);
+}
+
+/**
+ * Calculate GitHub activity score (0-100) from cached GitHub profile.
+ * Formula:
+ *   repos score:        min(publicRepos * 5, 40)
+ *   stars score:        min(totalStars * 2, 30)
+ *   contributions:      min(contributionCount / 3, 30)
+ * @param {string} studentId
+ * @returns {Promise<number>}
+ */
+async function calcGitHubActivityScore(studentId) {
+  const profile = await prisma.gitHubProfile.findUnique({
+    where: { studentId },
+    select: { publicRepos: true, totalStars: true, contributionCount: true },
+  });
+
+  if (!profile) return 0;
+
+  const reposScore = Math.min(profile.publicRepos * 5, 40);
+  const starsScore = Math.min(profile.totalStars * 2, 30);
+  const contribScore = Math.min(profile.contributionCount / 3, 30);
+
+  return Math.min(Math.round(reposScore + starsScore + contribScore), 100);
+}
+
+/**
  * Calculate profile completion percentage.
  * @param {object} student - Student record with all fields
  * @returns {number} 0-100
@@ -180,7 +237,7 @@ function calcProfileCompletion(student) {
  * @returns {Promise<object>} Updated score breakdown
  */
 async function recalculateScore(studentId) {
-  const [weights, skillsScore, projectsScore, internshipsScore, certsScore, assessScore, eventsScore] =
+  const [weights, skillsScore, projectsScore, internshipsScore, certsScore, assessScore, eventsScore, codingScore, githubScore] =
     await Promise.all([
       loadWeights(),
       calcTechnicalSkillsScore(studentId),
@@ -189,6 +246,8 @@ async function recalculateScore(studentId) {
       calcCertificationsScore(studentId),
       calcAssessmentsScore(studentId),
       calcEventsScore(studentId),
+      calcCodingPracticeScore(studentId),
+      calcGitHubActivityScore(studentId),
     ]);
 
   // Weighted total (each component is 0-100, weight is a percentage)
@@ -198,7 +257,9 @@ async function recalculateScore(studentId) {
     (internshipsScore * weights.internships) / 100 +
     (certsScore * weights.certifications) / 100 +
     (assessScore * weights.assessments) / 100 +
-    (eventsScore * (weights.events || 0)) / 100;
+    (eventsScore * (weights.events || 0)) / 100 +
+    (codingScore * (weights.coding_practice || 0)) / 100 +
+    (githubScore * (weights.github_activity || 0)) / 100;
 
   const roundedTotal = Math.round(totalScore * 100) / 100;
 
@@ -233,6 +294,8 @@ async function recalculateScore(studentId) {
       certifications: certsScore,
       assessments: assessScore,
       events: eventsScore,
+      codingPractice: codingScore,
+      githubActivity: githubScore,
       totalScore: roundedTotal,
       lastCalculatedAt: new Date(),
     },
@@ -243,6 +306,8 @@ async function recalculateScore(studentId) {
       certifications: certsScore,
       assessments: assessScore,
       events: eventsScore,
+      codingPractice: codingScore,
+      githubActivity: githubScore,
       totalScore: roundedTotal,
       lastCalculatedAt: new Date(),
     },
@@ -266,6 +331,8 @@ async function recalculateScore(studentId) {
       certifications: certsScore,
       assessments: assessScore,
       events: eventsScore,
+      codingPractice: codingScore,
+      githubActivity: githubScore,
     },
     weights,
     totalScore: roundedTotal,

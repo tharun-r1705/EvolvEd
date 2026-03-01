@@ -152,18 +152,20 @@ model Student {
   updatedAt         DateTime      @updatedAt @map("updated_at")
   deletedAt         DateTime?     @map("deleted_at")
 
-  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  skills         StudentSkill[]
-  assessments    Assessment[]
-  applications   Application[]
-  rankings       Ranking[]
-  scoreBreakdown ScoreBreakdown?
-  projects       Project[]
-  internships    Internship[]
-  certifications Certification[]
-  events         Event[]
-  placements     Placement[]
-  resumes        Resume[]
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skills          StudentSkill[]
+  assessments     Assessment[]
+  applications    Application[]
+  rankings        Ranking[]
+  scoreBreakdown  ScoreBreakdown?
+  projects        Project[]
+  internships     Internship[]
+  certifications  Certification[]
+  events          Event[]
+  placements      Placement[]
+  resumes         Resume[]
+  leetcodeProfile LeetCodeProfile?
+  githubProfile   GitHubProfile?
 
   @@index([department])
   @@index([readinessScore])
@@ -456,12 +458,78 @@ model ScoreBreakdown {
   certifications   Decimal  @default(0) @db.Decimal(5, 2)
   assessments      Decimal  @default(0) @db.Decimal(5, 2)
   events           Decimal  @default(0) @db.Decimal(5, 2)
+  codingPractice   Decimal  @default(0) @db.Decimal(5, 2) @map("coding_practice")
+  githubActivity   Decimal  @default(0) @db.Decimal(5, 2) @map("github_activity")
   totalScore       Decimal  @default(0) @db.Decimal(5, 2) @map("total_score")
   lastCalculatedAt DateTime @default(now()) @map("last_calculated_at")
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@map("score_breakdowns")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// LEETCODE PROFILE (cached data from LeetCode public GraphQL API)
+// ─────────────────────────────────────────────────────────────────
+
+model LeetCodeProfile {
+  id                  String   @id @default(uuid()) @db.Uuid
+  studentId           String   @unique @map("student_id") @db.Uuid
+  username            String
+  totalSolved         Int      @default(0) @map("total_solved")
+  easySolved          Int      @default(0) @map("easy_solved")
+  mediumSolved        Int      @default(0) @map("medium_solved")
+  hardSolved          Int      @default(0) @map("hard_solved")
+  totalQuestions      Int      @default(0) @map("total_questions")
+  easyTotal           Int      @default(0) @map("easy_total")
+  mediumTotal         Int      @default(0) @map("medium_total")
+  hardTotal           Int      @default(0) @map("hard_total")
+  acceptanceRate      Decimal  @default(0) @db.Decimal(5, 2) @map("acceptance_rate")
+  contestRating       Decimal? @db.Decimal(7, 2) @map("contest_rating")
+  contestRanking      Int?     @map("contest_ranking")
+  streak              Int      @default(0)
+  submissionCalendar  Json?    @map("submission_calendar")
+  topLanguages        Json?    @map("top_languages")
+  recentSubmissions   Json?    @map("recent_submissions")
+  badges              Json?
+  ranking             Int?
+  lastFetchedAt       DateTime @default(now()) @map("last_fetched_at")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@map("leetcode_profiles")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// GITHUB PROFILE (cached data from GitHub REST API)
+// ─────────────────────────────────────────────────────────────────
+
+model GitHubProfile {
+  id                String   @id @default(uuid()) @db.Uuid
+  studentId         String   @unique @map("student_id") @db.Uuid
+  username          String
+  name              String?
+  avatarUrl         String?  @map("avatar_url")
+  bio               String?
+  publicRepos       Int      @default(0) @map("public_repos")
+  followers         Int      @default(0)
+  following         Int      @default(0)
+  totalStars        Int      @default(0) @map("total_stars")
+  totalForks        Int      @default(0) @map("total_forks")
+  topLanguages      Json?    @map("top_languages")
+  contributionCount Int      @default(0) @map("contribution_count")
+  repos             Json?
+  lastFetchedAt     DateTime @default(now()) @map("last_fetched_at")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@map("github_profiles")
 }
 
 // ─────────────────────────────────────────────────────────────────

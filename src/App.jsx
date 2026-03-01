@@ -17,6 +17,7 @@ import StudentProfile from './pages/StudentProfile.jsx';
 import StudentProjects from './pages/StudentProjects.jsx';
 import StudentCertifications from './pages/StudentCertifications.jsx';
 import StudentEvents from './pages/StudentEvents.jsx';
+import StudentCodingProfile from './pages/StudentCodingProfile.jsx';
 import AssessmentBreakdown from './pages/AssessmentBreakdown.jsx';
 
 // Recruiter Pages
@@ -52,6 +53,7 @@ export default function App() {
             <Route path="projects" element={<StudentProjects />} />
             <Route path="certifications" element={<StudentCertifications />} />
             <Route path="events" element={<StudentEvents />} />
+            <Route path="coding" element={<StudentCodingProfile />} />
             <Route path="assessments/:id" element={<AssessmentBreakdown />} />
           </Route>
 

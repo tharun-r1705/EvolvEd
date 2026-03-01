@@ -91,6 +91,14 @@ export const studentService = {
   addEvent: (data) => api.post('/student/events', data),
   updateEvent: (id, data) => api.put(`/student/events/${id}`, data),
   deleteEvent: (id) => api.delete(`/student/events/${id}`),
+
+  // Integrations — LeetCode
+  getLeetCode: () => api.get('/student/integrations/leetcode'),
+  refreshLeetCode: () => api.post('/student/integrations/leetcode/refresh'),
+
+  // Integrations — GitHub
+  getGitHub: () => api.get('/student/integrations/github'),
+  refreshGitHub: () => api.post('/student/integrations/github/refresh'),
 };
 
 // ---------------------------------------------------------------------------

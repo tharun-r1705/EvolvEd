@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { to: '/student/projects',         icon: 'code',            label: 'Projects' },
   { to: '/student/certifications',   icon: 'workspace_premium', label: 'Certifications' },
   { to: '/student/events',           icon: 'event',           label: 'Events' },
+  { to: '/student/coding',           icon: 'terminal',        label: 'Coding Profile' },
   { to: '/student/assessments/1',    icon: 'description',     label: 'Assessments' },
   { to: null, icon: 'verified',      label: 'Skills Profile',    soon: true },
   { to: null, icon: 'work',          label: 'Jobs & Placements', soon: true },
