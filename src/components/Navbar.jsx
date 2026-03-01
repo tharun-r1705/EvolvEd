@@ -23,14 +23,14 @@ export default function Navbar() {
   }
 
   return (
-    <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-6 py-4 lg:px-40 bg-white dark:bg-background-dark sticky top-0 z-50 shadow-md">
+    <header className="flex items-center justify-between whitespace-nowrap border-b border-white/10 px-6 py-4 lg:px-40 bg-midnight-navy sticky top-0 z-50">
       {/* ── Brand ── */}
-      <div className="flex items-center gap-4 text-midnight-navy dark:text-white">
+      <div className="flex items-center gap-4 text-white">
         <div className="size-8 flex items-center justify-center rounded bg-primary/20 text-primary">
           <span className="material-symbols-outlined !text-[24px]">school</span>
         </div>
         <Link to="/">
-          <h2 className="text-midnight-navy dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em]">
+          <h2 className="text-white text-2xl font-bold leading-tight tracking-[-0.015em]">
             EvolvEd
           </h2>
         </Link>
@@ -41,19 +41,19 @@ export default function Navbar() {
         <div className="flex items-center gap-9">
           <a
             href="#features"
-            className="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal hover:text-primary transition-colors font-sans"
+            className="text-slate-300 text-sm font-medium leading-normal hover:text-white transition-colors font-sans"
           >
             Features
           </a>
           <a
             href="#how-it-works"
-            className="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal hover:text-primary transition-colors font-sans"
+            className="text-slate-300 text-sm font-medium leading-normal hover:text-white transition-colors font-sans"
           >
             How It Works
           </a>
           <a
             href="#pricing"
-            className="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal hover:text-primary transition-colors font-sans"
+            className="text-slate-300 text-sm font-medium leading-normal hover:text-white transition-colors font-sans"
           >
             Pricing
           </a>
@@ -62,7 +62,7 @@ export default function Navbar() {
             <>
               <Link
                 to={getDashboardLink()}
-                className="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal hover:text-primary transition-colors font-sans"
+                className="text-slate-300 text-sm font-medium leading-normal hover:text-white transition-colors font-sans"
               >
                 {role === 'student' && 'My Dashboard'}
                 {role === 'recruiter' && 'Recruiter Dashboard'}
@@ -70,7 +70,7 @@ export default function Navbar() {
               </Link>
               <button
                 onClick={handleLogout}
-                className="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal hover:text-primary transition-colors font-sans"
+                className="text-slate-300 text-sm font-medium leading-normal hover:text-white transition-colors font-sans"
               >
                 Logout
               </button>
@@ -78,7 +78,7 @@ export default function Navbar() {
           ) : (
             <Link
               to="/login"
-              className="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal hover:text-primary transition-colors font-sans"
+              className="text-slate-300 text-sm font-medium leading-normal hover:text-white transition-colors font-sans"
             >
               Login
             </Link>
@@ -87,7 +87,7 @@ export default function Navbar() {
 
         {!isAuthenticated && (
           <Link to="/login">
-            <button className="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-primary hover:bg-primary-dark text-white text-sm font-bold leading-normal tracking-[0.015em] transition-colors font-sans shadow-md">
+            <button className="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-primary hover:bg-primary-dark text-midnight-navy text-sm font-bold leading-normal tracking-[0.015em] transition-colors font-sans shadow-md">
               <span className="truncate">Get Started</span>
             </button>
           </Link>
@@ -95,7 +95,7 @@ export default function Navbar() {
       </div>
 
       {/* ── Mobile hamburger ── */}
-      <button className="lg:hidden text-slate-900 dark:text-white">
+      <button className="lg:hidden text-white">
         <span className="material-symbols-outlined">menu</span>
       </button>
     </header>

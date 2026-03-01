@@ -628,6 +628,8 @@ export default function StudentProjects() {
       showToast('Project updated successfully.');
     }
     setModalProject(null);
+    // Auto-sync skills from the updated tech stacks (fire-and-forget)
+    studentService.syncSkills().catch(() => {});
   }
 
   async function handleDelete() {

@@ -26,17 +26,12 @@ export default function Layout() {
   }
 
   const headerClass = [
-    'fixed top-4 left-1/2 -translate-x-1/2',
-    'w-[95%] max-w-7xl',
-    'flex items-center justify-between whitespace-nowrap',
-    'px-8 py-4',
-    'rounded-2xl',
-    'border border-[rgba(255,215,0,0.15)]',
-    'shadow-[0_8px_30px_rgba(0,0,0,0.4)]',
-    'z-50 transition-all duration-300',
+    'fixed top-0 left-0 right-0 w-full',
+    'h-16',
+    'z-50 transition-all duration-500',
     isScrolled
-      ? 'bg-[rgba(7,22,43,0.85)] backdrop-blur-md'
-      : 'bg-[rgba(7,22,43,0.55)] backdrop-blur-xl',
+      ? 'bg-[#0b1629]/95 backdrop-blur-md shadow-[0_1px_0_rgba(255,255,255,0.06)]'
+      : 'bg-[#0b1629] shadow-[0_1px_0_rgba(255,255,255,0.06)]',
   ].join(' ');
 
   const brandClass = 'flex items-center gap-3 text-white';
@@ -47,6 +42,7 @@ export default function Layout() {
     <div className="relative flex flex-col min-h-screen overflow-x-hidden bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased">
       {/* Top Navbar */}
       <header className={headerClass}>
+        <div className="max-w-7xl mx-auto w-full px-8 lg:px-16 h-full flex items-center justify-between">
         <Link to="/" className={brandClass}>
           <div className="size-8 flex items-center justify-center rounded bg-primary/20 text-primary">
             <span className="material-symbols-outlined !text-[24px]">school</span>
@@ -79,6 +75,7 @@ export default function Layout() {
         <button className={mobileMenuButtonClass} onClick={() => setMobileOpen((v) => !v)}>
           <span className="material-symbols-outlined">{mobileOpen ? 'close' : 'menu'}</span>
         </button>
+        </div>
       </header>
 
       {mobileOpen && (
@@ -107,7 +104,7 @@ export default function Layout() {
         </div>
       )}
 
-      <main className="flex-1">
+      <main className="flex-1 pt-16">
         <Outlet />
       </main>
       <Footer />

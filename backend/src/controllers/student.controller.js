@@ -74,6 +74,16 @@ async function removeSkill(req, res, next) {
   }
 }
 
+// POST /api/student/skills/sync
+async function syncSkills(req, res, next) {
+  try {
+    const data = await studentService.syncSkillsFromProfile(req.user.userId);
+    res.json({ message: `Synced: ${data.added} added, ${data.updated} updated.`, ...data });
+  } catch (err) {
+    next(err);
+  }
+}
+
 // GET /api/student/projects
 async function getProjects(req, res, next) {
   try {
@@ -358,6 +368,7 @@ module.exports = {
   getSkills,
   addSkill,
   removeSkill,
+  syncSkills,
   getProjects,
   addProject,
   updateProject,

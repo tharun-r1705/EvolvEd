@@ -1036,6 +1036,134 @@ async function getApplications(userId, query) {
   return paginatedResponse(formatted, total, page, limit);
 }
 
+// ─── SKILL AUTO-SYNC ─────────────────────────────────────────────
+
+/**
+ * Derive a sensible proficiency level label from a numeric score.
+ */
+function profToLevel(p) {
+  if (p >= 75) return 'advanced';
+  if (p >= 50) return 'intermediate';
+  return 'beginner';
+}
+
+/**
+ * Automatically collect skills from project techStacks + GitHub topLanguages
+ * and upsert them with smart proficiency scores.
+ *
+ * Scoring logic:
+ *  - GitHub top languages: rank-based, 1st lang → 82%, falls ~6% per rank, floor 45%
+ *  - Project techStack: frequency-based, used in all projects → 78%, floor 45%
+ *  - If a skill appears in both sources, take the higher score
+ *  - Existing manually-set skills are only raised, never lowered
+ */
+async function syncSkillsFromProfile(userId) {
+  const student = await getStudentByUserId(userId);
+
+  // ── 1. Project frequency map ──────────────────────────────────
+  const projects = await prisma.project.findMany({
+    where: { studentId: student.id },
+    select: { techStack: true },
+  });
+  const totalProjects = projects.length;
+
+  // techName (lower) → count of projects using it
+  const projectFreq = {};
+  for (const p of projects) {
+    for (const raw of (p.techStack || [])) {
+      const t = raw.trim();
+      if (t) projectFreq[t.toLowerCase()] = (projectFreq[t.toLowerCase()] || { name: t, count: 0 });
+      if (t) projectFreq[t.toLowerCase()].count++;
+    }
+  }
+
+  // ── 2. GitHub language rank map ───────────────────────────────
+  const ghProfile = await prisma.gitHubProfile.findUnique({
+    where: { studentId: student.id },
+    select: { topLanguages: true },
+  });
+  // ghRank: langName (lower) → { name, rank (1-based) }
+  const ghRank = {};
+  if (ghProfile?.topLanguages) {
+    const langs = Array.isArray(ghProfile.topLanguages)
+      ? ghProfile.topLanguages
+      : Object.entries(ghProfile.topLanguages).map(([name, count]) => ({ name, count }));
+    langs.forEach((item, idx) => {
+      const name = typeof item === 'object' ? item.name : item;
+      if (name) ghRank[name.trim().toLowerCase()] = { name: name.trim(), rank: idx + 1 };
+    });
+  }
+
+  // ── 3. Build skill → best proficiency map ────────────────────
+  // skillKey (lower) → { displayName, proficiency }
+  const skillMap = {};
+
+  // From projects: ratio of projects using it → 45–78%
+  for (const [key, { name, count }] of Object.entries(projectFreq)) {
+    const ratio = totalProjects > 0 ? count / totalProjects : 0.5;
+    const prof = Math.round(45 + ratio * 33); // 45–78
+    skillMap[key] = { displayName: name, proficiency: prof };
+  }
+
+  // From GitHub: rank-based → 82% for rank-1, –6% per rank, floor 45%
+  for (const [key, { name, rank }] of Object.entries(ghRank)) {
+    const prof = Math.max(45, Math.round(82 - (rank - 1) * 6));
+    if (!skillMap[key] || prof > skillMap[key].proficiency) {
+      skillMap[key] = { displayName: name, proficiency: prof };
+    }
+  }
+
+  if (Object.keys(skillMap).length === 0) return { added: 0, updated: 0 };
+
+  // ── 4. Load existing skills ───────────────────────────────────
+  const existing = await prisma.studentSkill.findMany({
+    where: { studentId: student.id },
+    include: { skill: true },
+  });
+  const existingByName = new Map(existing.map(ss => [ss.skill.name.toLowerCase(), ss]));
+
+  let added = 0;
+  let updated = 0;
+
+  for (const [key, { displayName, proficiency }] of Object.entries(skillMap)) {
+    const existingEntry = existingByName.get(key);
+
+    if (!existingEntry) {
+      const skill = await prisma.skill.upsert({
+        where: { name: displayName },
+        create: { name: displayName, category: 'technical' },
+        update: {},
+      });
+      await prisma.studentSkill.create({
+        data: {
+          studentId: student.id,
+          skillId: skill.id,
+          proficiency,
+          level: profToLevel(proficiency),
+        },
+      });
+      added++;
+    } else {
+      // Only raise, never lower
+      const current = Number(existingEntry.proficiency);
+      if (proficiency > current) {
+        await prisma.studentSkill.update({
+          where: { id: existingEntry.id },
+          data: { proficiency, level: profToLevel(proficiency) },
+        });
+        updated++;
+      }
+    }
+  }
+
+  if (added > 0 || updated > 0) {
+    await recalculateScore(student.id);
+    await recalculateGlobalRankings().catch(() => {});
+  }
+
+  return { added, updated };
+}
+
 module.exports = {
   getDashboard,
   getReadinessScore,
@@ -1051,6 +1179,7 @@ module.exports = {
   getSkills,
   addSkill,
   removeSkill,
+  syncSkillsFromProfile,
   getProjects,
   addProject,
   updateProject,

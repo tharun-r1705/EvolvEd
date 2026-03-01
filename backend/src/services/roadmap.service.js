@@ -428,6 +428,18 @@ async function archiveRoadmap(userId, roadmapId) {
 }
 
 /**
+ * Permanently delete a roadmap (and its modules via cascade).
+ */
+async function deleteRoadmap(userId, roadmapId) {
+  const studentId = await getStudentId(userId);
+  const roadmap = await prisma.roadmap.findUnique({ where: { id: roadmapId } });
+  if (!roadmap || roadmap.studentId !== studentId) throw new AppError('Roadmap not found', 404);
+
+  await prisma.roadmap.delete({ where: { id: roadmapId } });
+  return { deleted: true };
+}
+
+/**
  * Conversational roadmap creator.
  * Takes a conversation history, responds naturally using the student's real profile,
  * and when it has gathered enough info (role + timeline) returns a GENERATE signal
@@ -448,8 +460,8 @@ async function chatForRoadmap(userId, messages) {
       certifications:{ take: 10 },
       events:        { take: 10 },
       scoreBreakdown: true,
-      leetCodeProfile: true,
-      gitHubProfile:   true,
+      leetcodeProfile: true,
+      githubProfile:   true,
     },
   });
 
@@ -459,11 +471,11 @@ async function chatForRoadmap(userId, messages) {
   const projects    = student.projects.map(p => `"${p.title}" — ${(p.techStack || []).join(', ') || 'unspecified stack'}`).join('; ') || 'None';
   const internships = student.internships.map(i => `${i.role} at ${i.company}`).join('; ') || 'None';
   const certs       = student.certifications.map(c => c.title).join(', ') || 'None';
-  const lc          = student.leetCodeProfile
-    ? `${student.leetCodeProfile.totalSolved} problems solved (Easy: ${student.leetCodeProfile.easySolved}, Medium: ${student.leetCodeProfile.mediumSolved}, Hard: ${student.leetCodeProfile.hardSolved})`
+  const lc          = student.leetcodeProfile
+    ? `${student.leetcodeProfile.totalSolved} problems solved (Easy: ${student.leetcodeProfile.easySolved}, Medium: ${student.leetcodeProfile.mediumSolved}, Hard: ${student.leetcodeProfile.hardSolved})`
     : 'Not connected';
-  const gh          = student.gitHubProfile
-    ? `${student.gitHubProfile.publicRepos} repos, ${student.gitHubProfile.contributionCount} contributions`
+  const gh          = student.githubProfile
+    ? `${student.githubProfile.publicRepos} repos, ${student.githubProfile.contributionCount} contributions`
     : 'Not connected';
   const readiness   = student.scoreBreakdown
     ? Number(student.scoreBreakdown.totalScore).toFixed(1)
@@ -575,5 +587,6 @@ module.exports = {
   submitModuleTest,
   updateModuleStatus,
   archiveRoadmap,
+  deleteRoadmap,
   getRoadmapContextForChat,
 };

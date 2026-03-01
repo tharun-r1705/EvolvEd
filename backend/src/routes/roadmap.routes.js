@@ -36,4 +36,7 @@ router.patch('/:id/modules/:moduleIndex/status', ctrl.updateModuleStatus);
 // PATCH  /api/student/roadmaps/:id/archive  — archive roadmap
 router.patch('/:id/archive', ctrl.archiveRoadmap);
 
+// DELETE /api/student/roadmaps/:id           — permanently delete roadmap
+router.delete('/:id', ctrl.deleteRoadmap);
+
 module.exports = router;

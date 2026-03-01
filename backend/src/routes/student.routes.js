@@ -39,6 +39,7 @@ router.put('/resumes/:resumeId', validate(updateResumeSchema), ctrl.updateResume
 router.delete('/resumes/:resumeId', ctrl.deleteResume);
 
 router.get('/skills', ctrl.getSkills);
+router.post('/skills/sync', ctrl.syncSkills);          // must be before /:skillId
 router.post('/skills', validate(addSkillSchema), ctrl.addSkill);
 router.delete('/skills/:skillId', ctrl.removeSkill);
 

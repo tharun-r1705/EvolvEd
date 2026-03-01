@@ -631,6 +631,8 @@ export default function StudentCodingProfile() {
       try {
         const res = await studentService.getGitHub();
         setGithub(res.data);
+        // Re-score existing skills now that we have fresh GitHub data
+        studentService.syncSkills().catch(() => {});
       } catch (err) {
         showToast('Failed to load GitHub data: ' + getApiError(err), 'error');
         setGithub({ connected: false, message: getApiError(err) });
@@ -659,6 +661,8 @@ export default function StudentCodingProfile() {
       const res = await studentService.refreshGitHub();
       setGithub(res.data);
       showToast('GitHub profile refreshed successfully.');
+      // Auto-sync top languages into skills (fire-and-forget)
+      studentService.syncSkills().catch(() => {});
     } catch (err) {
       showToast('Refresh failed: ' + getApiError(err), 'error');
     } finally {

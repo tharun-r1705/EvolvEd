@@ -94,11 +94,13 @@ function RoadmapChatPanel({ onGenerated, onCancel }) {
   const [input, setInput]                     = useState('');
   const [loading, setLoading]                 = useState(false);
   const [generatingSummary, setGeneratingSummary] = useState(null);
-  const messagesEndRef                        = useRef(null);
+  const messagesBoxRef                        = useRef(null);
   const inputRef                              = useRef(null);
 
+  // Scroll only the messages container — never the page
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = messagesBoxRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [messages, loading]);
 
   useEffect(() => { inputRef.current?.focus(); }, []);
@@ -167,12 +169,11 @@ function RoadmapChatPanel({ onGenerated, onCancel }) {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-4">
+      <div ref={messagesBoxRef} className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-4">
         {messages.map((m, i) => (
           <ChatBubble key={i} role={m.role} content={m.content} />
         ))}
         {loading && <TypingIndicator />}
-        <div ref={messagesEndRef} />
       </div>
 
       {/* Input */}
@@ -215,16 +216,32 @@ function RoadmapChatPanel({ onGenerated, onCancel }) {
 // ─────────────────────────────────────────────────────────────────
 // Roadmap Card
 // ─────────────────────────────────────────────────────────────────
-function RoadmapCard({ roadmap, onClick }) {
-  const pct = roadmap.progress ?? 0;
+function RoadmapCard({ roadmap, onClick, onDelete }) {
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting]           = useState(false);
+  const pct  = roadmap.progress ?? 0;
   const date = new Date(roadmap.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 
+  async function handleDelete(e) {
+    e.stopPropagation();
+    if (!confirmDelete) { setConfirmDelete(true); return; }
+    setDeleting(true);
+    try {
+      await roadmapService.delete(roadmap.id);
+      onDelete(roadmap.id);
+    } catch {
+      setDeleting(false);
+      setConfirmDelete(false);
+    }
+  }
+
   return (
-    <button
+    <div
       onClick={onClick}
-      className="group text-left w-full bg-white hover:bg-slate-50 border border-slate-200 hover:border-primary/40 rounded-2xl p-5 transition-all duration-200 flex flex-col gap-4 shadow-md"
+      className="group relative bg-white hover:bg-slate-50 border border-slate-200 hover:border-primary/40 rounded-2xl p-5 transition-all duration-200 flex flex-col gap-4 shadow-md cursor-pointer"
     >
-      <div className="flex items-start justify-between gap-3">
+      {/* Header row: title + [badge | delete] */}
+      <div className="flex items-start gap-3">
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-secondary text-sm leading-snug truncate group-hover:text-primary transition-colors">{roadmap.title}</h3>
           <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
@@ -232,7 +249,26 @@ function RoadmapCard({ roadmap, onClick }) {
             {roadmap.targetRole}
           </p>
         </div>
-        <StatusBadge status={roadmap.status} />
+        {/* Badge + delete — kept in one flex group so they never overlap */}
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          <StatusBadge status={roadmap.status} />
+          <button
+            onClick={handleDelete}
+            onBlur={() => setConfirmDelete(false)}
+            disabled={deleting}
+            title={confirmDelete ? 'Click again to confirm' : 'Delete roadmap'}
+            className={`h-7 w-7 rounded-lg flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 ${
+              confirmDelete
+                ? 'bg-red-500 text-white shadow-md !opacity-100'
+                : 'bg-slate-100 text-slate-400 hover:bg-red-50 hover:text-red-500'
+            } disabled:opacity-40`}
+          >
+            {deleting
+              ? <span className="h-3 w-3 rounded-full border-2 border-current border-t-transparent animate-spin" />
+              : <span className="material-symbols-outlined text-[14px]">{confirmDelete ? 'warning' : 'delete'}</span>
+            }
+          </button>
+        </div>
       </div>
 
       {roadmap.description && (
@@ -252,11 +288,25 @@ function RoadmapCard({ roadmap, onClick }) {
 
       <div className="flex items-center justify-between text-xs text-slate-400">
         <span>{date}</span>
-        <span className="flex items-center gap-1 text-slate-400 group-hover:text-primary transition-colors">
+        <span className="flex items-center gap-1 group-hover:text-primary transition-colors">
           Open <span className="material-symbols-outlined text-sm">arrow_forward</span>
         </span>
       </div>
-    </button>
+
+      {/* Confirm banner */}
+      {confirmDelete && !deleting && (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="absolute inset-x-0 bottom-0 bg-red-50 border-t border-red-200 rounded-b-2xl px-4 py-2 flex items-center justify-between text-xs"
+        >
+          <span className="text-red-600 font-medium">Delete permanently?</span>
+          <div className="flex gap-2">
+            <button onClick={(e) => { e.stopPropagation(); setConfirmDelete(false); }} className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors">Cancel</button>
+            <button onClick={handleDelete} className="px-2.5 py-1 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors">Delete</button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -269,7 +319,11 @@ export default function StudentRoadmaps() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('active');
-  const [showChat, setShowChat] = useState(false);
+  const [showChat, setShowChat]   = useState(false);
+
+  function handleDelete(id) {
+    setRoadmaps(prev => prev.filter(r => r.id !== id));
+  }
 
   const fetchRoadmaps = useCallback(async () => {
     setLoading(true);
@@ -375,7 +429,7 @@ export default function StudentRoadmaps() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {filtered.map((r) => (
-              <RoadmapCard key={r.id} roadmap={r} onClick={() => navigate(`/student/roadmaps/${r.id}`)} />
+              <RoadmapCard key={r.id} roadmap={r} onClick={() => navigate(`/student/roadmaps/${r.id}`)} onDelete={handleDelete} />
             ))}
           </div>
         )}

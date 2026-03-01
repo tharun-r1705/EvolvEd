@@ -98,6 +98,7 @@ export const studentService = {
   getAssessments: () => api.get('/student/assessments'),
   getAssessmentById: (id) => api.get(`/student/assessments/${id}`),
   getSkills: () => api.get('/student/skills'),
+  syncSkills: () => api.post('/student/skills/sync'),
   getApplications: () => api.get('/student/applications'),
 
   // Profile
@@ -181,6 +182,7 @@ export const roadmapService = {
   submitModuleTest: (id, moduleIndex, answers) => api.post(`/student/roadmaps/${id}/modules/${moduleIndex}/test`, { answers }),
   updateModuleStatus: (id, moduleIndex, status) => api.patch(`/student/roadmaps/${id}/modules/${moduleIndex}/status`, { status }),
   archive: (id) => api.patch(`/student/roadmaps/${id}/archive`),
+  delete: (id) => api.delete(`/student/roadmaps/${id}`),
 };
 
 // ---------------------------------------------------------------------------

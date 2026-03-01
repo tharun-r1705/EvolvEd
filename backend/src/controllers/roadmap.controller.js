@@ -58,6 +58,11 @@ const archiveRoadmap = catchAsync(async (req, res) => {
   res.json({ success: true, data: roadmap });
 });
 
+const deleteRoadmap = catchAsync(async (req, res) => {
+  await roadmapService.deleteRoadmap(req.user.userId, req.params.id);
+  res.json({ success: true, data: { deleted: true } });
+});
+
 module.exports = {
   chatRoadmap,
   generateRoadmap,
@@ -67,4 +72,5 @@ module.exports = {
   submitModuleTest,
   updateModuleStatus,
   archiveRoadmap,
+  deleteRoadmap,
 };
