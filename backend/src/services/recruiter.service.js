@@ -5,6 +5,7 @@ const AppError = require('../utils/AppError');
 const { parsePagination, paginatedResponse } = require('../utils/pagination');
 const { recalculateJobRankings } = require('./ranking.service');
 const { exportCandidates } = require('./export.service');
+const { uploadFromBuffer, deleteFromCloudinary } = require('../config/cloudinary');
 
 // ─── HELPER ──────────────────────────────────────────────────────
 
@@ -593,6 +594,137 @@ async function updateApplicationStatus(userId, applicationId, status) {
   return { message: `Application status updated to '${status}'.`, status: updated.status };
 }
 
+// ─── PROFILE ─────────────────────────────────────────────────────
+
+async function getProfile(userId) {
+  const recruiter = await getRecruiterByUserId(userId);
+  return {
+    id: recruiter.id,
+    fullName: recruiter.fullName,
+    designation: recruiter.designation,
+    phone: recruiter.phone,
+    bio: recruiter.bio,
+    linkedin: recruiter.linkedin,
+    avatarUrl: recruiter.avatarUrl,
+    company: recruiter.company
+      ? {
+          id: recruiter.company.id,
+          name: recruiter.company.name,
+          industry: recruiter.company.industry,
+          website: recruiter.company.website,
+          logoUrl: recruiter.company.logoUrl,
+          location: recruiter.company.location,
+          size: recruiter.company.size,
+          description: recruiter.company.description,
+          careersUrl: recruiter.company.careersUrl,
+        }
+      : null,
+  };
+}
+
+async function updateProfile(userId, data) {
+  const recruiter = await getRecruiterByUserId(userId);
+
+  const { company: companyData, ...recruiterData } = data;
+
+  // Update recruiter fields (only defined values)
+  const recruiterUpdate = {};
+  if (recruiterData.fullName    !== undefined) recruiterUpdate.fullName    = recruiterData.fullName;
+  if (recruiterData.designation !== undefined) recruiterUpdate.designation = recruiterData.designation;
+  if (recruiterData.phone       !== undefined) recruiterUpdate.phone       = recruiterData.phone;
+  if (recruiterData.bio         !== undefined) recruiterUpdate.bio         = recruiterData.bio;
+  if (recruiterData.linkedin    !== undefined) recruiterUpdate.linkedin    = recruiterData.linkedin;
+
+  const updatedRecruiter = await prisma.recruiter.update({
+    where: { id: recruiter.id },
+    data: recruiterUpdate,
+    include: { company: true },
+  });
+
+  // Update company fields if provided (recruiter can edit their own company)
+  if (companyData && recruiter.companyId) {
+    const companyUpdate = {};
+    if (companyData.name        !== undefined) companyUpdate.name        = companyData.name;
+    if (companyData.industry    !== undefined) companyUpdate.industry    = companyData.industry;
+    if (companyData.website     !== undefined) companyUpdate.website     = companyData.website;
+    if (companyData.location    !== undefined) companyUpdate.location    = companyData.location;
+    if (companyData.size        !== undefined) companyUpdate.size        = companyData.size;
+    if (companyData.description !== undefined) companyUpdate.description = companyData.description;
+    if (companyData.careersUrl  !== undefined) companyUpdate.careersUrl  = companyData.careersUrl;
+
+    if (Object.keys(companyUpdate).length > 0) {
+      await prisma.company.update({
+        where: { id: recruiter.companyId },
+        data: companyUpdate,
+      });
+    }
+  }
+
+  return getProfile(userId);
+}
+
+async function uploadRecruiterAvatar(userId, fileBuffer) {
+  const recruiter = await getRecruiterByUserId(userId);
+
+  // Delete old avatar if it exists on Cloudinary
+  if (recruiter.avatarUrl && recruiter.avatarUrl.includes('cloudinary')) {
+    const parts = recruiter.avatarUrl.split('/');
+    const folder = parts.slice(-2, -1)[0];
+    const filename = parts[parts.length - 1].split('.')[0];
+    await deleteFromCloudinary(`${folder}/${filename}`).catch(() => {});
+  }
+
+  const result = await uploadFromBuffer(fileBuffer, {
+    folder: 'evolved/recruiters/avatars',
+    public_id: `recruiter_${recruiter.id}`,
+    overwrite: true,
+    resource_type: 'image',
+    transformation: [
+      { width: 400, height: 400, crop: 'fill', gravity: 'face' },
+      { quality: 'auto', fetch_format: 'auto' },
+    ],
+  });
+
+  await prisma.recruiter.update({
+    where: { id: recruiter.id },
+    data: { avatarUrl: result.secure_url },
+  });
+
+  return { message: 'Avatar uploaded successfully.', avatarUrl: result.secure_url };
+}
+
+async function uploadCompanyLogo(userId, fileBuffer) {
+  const recruiter = await getRecruiterByUserId(userId);
+
+  if (!recruiter.companyId) throw AppError.badRequest('No company associated with this recruiter.');
+
+  // Delete old logo if it exists on Cloudinary
+  if (recruiter.company.logoUrl && recruiter.company.logoUrl.includes('cloudinary')) {
+    const parts = recruiter.company.logoUrl.split('/');
+    const folder = parts.slice(-2, -1)[0];
+    const filename = parts[parts.length - 1].split('.')[0];
+    await deleteFromCloudinary(`${folder}/${filename}`).catch(() => {});
+  }
+
+  const result = await uploadFromBuffer(fileBuffer, {
+    folder: 'evolved/companies/logos',
+    public_id: `company_${recruiter.companyId}`,
+    overwrite: true,
+    resource_type: 'image',
+    transformation: [
+      { width: 400, height: 400, crop: 'pad', background: 'white' },
+      { quality: 'auto', fetch_format: 'auto' },
+    ],
+  });
+
+  await prisma.company.update({
+    where: { id: recruiter.companyId },
+    data: { logoUrl: result.secure_url },
+  });
+
+  return { message: 'Company logo uploaded successfully.', logoUrl: result.secure_url };
+}
+
 module.exports = {
   getDashboard,
   getCandidates,
@@ -605,4 +737,8 @@ module.exports = {
   exportCandidateProfileReport,
   getApplicants,
   updateApplicationStatus,
+  getProfile,
+  updateProfile,
+  uploadRecruiterAvatar,
+  uploadCompanyLogo,
 };

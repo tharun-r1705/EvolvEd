@@ -125,6 +125,48 @@ async function getAnalytics(req, res, next) {
   }
 }
 
+// GET /api/recruiter/profile
+async function getProfile(req, res, next) {
+  try {
+    const data = await recruiterService.getProfile(req.user.userId);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// PUT /api/recruiter/profile
+async function updateProfile(req, res, next) {
+  try {
+    const data = await recruiterService.updateProfile(req.user.userId, req.body);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// POST /api/recruiter/profile/avatar
+async function uploadAvatar(req, res, next) {
+  try {
+    if (!req.file) throw require('../utils/AppError').badRequest('No file uploaded.');
+    const data = await recruiterService.uploadRecruiterAvatar(req.user.userId, req.file.buffer);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// POST /api/recruiter/profile/company-logo
+async function uploadCompanyLogo(req, res, next) {
+  try {
+    if (!req.file) throw require('../utils/AppError').badRequest('No file uploaded.');
+    const data = await recruiterService.uploadCompanyLogo(req.user.userId, req.file.buffer);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getDashboard,
   getCandidates,
@@ -137,4 +179,8 @@ module.exports = {
   getApplicants,
   updateApplicationStatus,
   getAnalytics,
+  getProfile,
+  updateProfile,
+  uploadAvatar,
+  uploadCompanyLogo,
 };

@@ -223,6 +223,8 @@ model Recruiter {
   companyId   String    @map("company_id") @db.Uuid
   designation String?
   phone       String?
+  bio         String?
+  linkedin    String?
   avatarUrl   String?   @map("avatar_url")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
@@ -262,15 +264,18 @@ model Admin {
 // ─────────────────────────────────────────────────────────────────
 
 model Company {
-  id        String    @id @default(uuid()) @db.Uuid
-  name      String    @unique
-  industry  String?
-  website   String?
-  logoUrl   String?   @map("logo_url")
-  location  String?
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String    @unique
+  industry    String?
+  website     String?
+  logoUrl     String?   @map("logo_url")
+  location    String?
+  size        String?
+  description String?
+  careersUrl  String?   @map("careers_url")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
 
   recruiters      Recruiter[]
   jobs            Job[]

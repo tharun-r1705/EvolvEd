@@ -5,12 +5,19 @@ const ctrl = require('../controllers/recruiter.controller');
 const authenticate = require('../middleware/authenticate');
 const authorize = require('../middleware/authorize');
 const validate = require('../middleware/validate');
-const { createJobSchema, candidateSearchSchema } = require('../validators/recruiter.schema');
+const { createJobSchema, candidateSearchSchema, updateRecruiterProfileSchema } = require('../validators/recruiter.schema');
+const { uploadAvatar, uploadCompanyLogo } = require('../middleware/upload');
 
 // All recruiter routes require authentication + recruiter role
 router.use(authenticate, authorize('recruiter'));
 
 router.get('/dashboard', ctrl.getDashboard);
+
+// Profile
+router.get('/profile',               ctrl.getProfile);
+router.put('/profile',               validate(updateRecruiterProfileSchema), ctrl.updateProfile);
+router.post('/profile/avatar',       uploadAvatar, ctrl.uploadAvatar);
+router.post('/profile/company-logo', uploadCompanyLogo, ctrl.uploadCompanyLogo);
 
 // Candidate search — export must come before /:id to avoid route shadowing
 router.get('/candidates/export', ctrl.exportCandidates);

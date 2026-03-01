@@ -74,9 +74,34 @@ const shortlistSchema = z.object({
   notes: z.string().trim().max(500).optional().nullable(),
 });
 
+const updateRecruiterProfileSchema = z.object({
+  fullName: z.string().trim().min(2, 'Name must be at least 2 characters.').max(100).optional(),
+  designation: z.string().trim().max(100).optional().nullable(),
+  phone: z
+    .string()
+    .trim()
+    .regex(/^[+\d\s\-()\\.]{7,20}$/, 'Invalid phone number format.')
+    .optional()
+    .nullable(),
+  bio: z.string().trim().max(500, 'Bio must be 500 characters or less.').optional().nullable(),
+  linkedin: z.string().trim().url('Invalid LinkedIn URL.').optional().nullable(),
+  company: z
+    .object({
+      name: z.string().trim().min(1).max(200).optional(),
+      industry: z.string().trim().max(100).optional().nullable(),
+      website: z.string().trim().url('Invalid website URL.').optional().nullable(),
+      location: z.string().trim().max(200).optional().nullable(),
+      size: z.string().trim().max(50).optional().nullable(),
+      description: z.string().trim().max(1000).optional().nullable(),
+      careersUrl: z.string().trim().url('Invalid careers URL.').optional().nullable(),
+    })
+    .optional(),
+});
+
 module.exports = {
   createJobSchema,
   updateJobSchema,
   candidateSearchSchema,
   shortlistSchema,
+  updateRecruiterProfileSchema,
 };

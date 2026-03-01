@@ -229,6 +229,13 @@ export const recruiterService = {
   getJobs: () => api.get('/recruiter/jobs'),
   createJob: (data) => api.post('/recruiter/jobs', data),
   getAnalytics: () => api.get('/recruiter/analytics'),
+  // Profile
+  getProfile: () => api.get('/recruiter/profile'),
+  updateProfile: (data) => api.put('/recruiter/profile', data),
+  uploadAvatar: (formData) =>
+    api.post('/recruiter/profile/avatar', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  uploadCompanyLogo: (formData) =>
+    api.post('/recruiter/profile/company-logo', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
 };
 
 // ---------------------------------------------------------------------------

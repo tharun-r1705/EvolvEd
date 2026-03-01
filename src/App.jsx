@@ -38,6 +38,7 @@ const RecruiterDashboard  = lazy(() => import('./pages/RecruiterDashboard.jsx'))
 const CandidateSearch     = lazy(() => import('./pages/CandidateSearch.jsx'));
 const CandidateProfile    = lazy(() => import('./pages/CandidateProfile.jsx'));
 const PostJob             = lazy(() => import('./pages/PostJob.jsx'));
+const RecruiterProfile    = lazy(() => import('./pages/RecruiterProfile.jsx'));
 
 // Admin Pages (lazy-loaded)
 const AdminDashboard      = lazy(() => import('./pages/AdminDashboard.jsx'));
@@ -165,6 +166,7 @@ export default function App() {
               <Route path="candidates" element={<CandidateSearch />} />
               <Route path="candidates/:id" element={<CandidateProfile />} />
               <Route path="jobs/new" element={<PostJob />} />
+              <Route path="profile" element={<RecruiterProfile />} />
             </Route>
           </Route>
 
