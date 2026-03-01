@@ -35,31 +35,22 @@ async function recalculateGlobalRankings() {
     });
   }
 
-  // Batch upsert
-  await prisma.$transaction(
-    ranked.map((r) =>
-      prisma.ranking.upsert({
-        where: {
-          studentId_jobId: {
-            studentId: r.studentId,
-            jobId: r.jobId,
-          },
-        },
-        create: {
-          studentId: r.studentId,
-          jobId: r.jobId,
-          rank: r.rank,
-          score: r.score,
-          calculatedAt: new Date(),
-        },
-        update: {
-          rank: r.rank,
-          score: r.score,
-          calculatedAt: new Date(),
-        },
-      })
-    )
-  );
+  // NOTE:
+  // Prisma cannot upsert through a composite unique where one key part is null.
+  // Global rankings use jobId = null, so refresh that slice atomically.
+  const calculatedAt = new Date();
+  await prisma.$transaction([
+    prisma.ranking.deleteMany({ where: { jobId: null } }),
+    prisma.ranking.createMany({
+      data: ranked.map((r) => ({
+        studentId: r.studentId,
+        jobId: null,
+        rank: r.rank,
+        score: r.score,
+        calculatedAt,
+      })),
+    }),
+  ]);
 
   return ranked.length;
 }

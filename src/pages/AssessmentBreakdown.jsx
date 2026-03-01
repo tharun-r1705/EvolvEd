@@ -1,287 +1,451 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState, useCallback } from 'react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
+} from 'recharts';
 import StudentSidebar from '../components/StudentSidebar.jsx';
+import { studentService } from '../services/api.js';
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function formatDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function pctColor(pct) {
+  if (pct >= 80) return '#16a34a';
+  if (pct >= 60) return '#c6a43f';
+  return '#dc2626';
+}
+
+function ordinal(n) {
+  if (!n && n !== 0) return '—';
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
+function statusBadgeClass(status) {
+  const map = {
+    passed: 'text-green-700 bg-green-50 ring-green-600/20',
+    failed: 'text-red-700 bg-red-50 ring-red-600/20',
+    completed: 'text-blue-700 bg-blue-50 ring-blue-700/10',
+    pending: 'text-yellow-700 bg-yellow-50 ring-yellow-600/20',
+  };
+  return `inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset ${map[status] ?? 'text-slate-700 bg-slate-50 ring-slate-600/20'}`;
+}
+
+// ─── Skeleton ─────────────────────────────────────────────────────────────────
+
+function Skeleton({ className = '' }) {
+  return <div className={`animate-pulse rounded-lg bg-slate-200 ${className}`} />;
+}
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-8">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-100 space-y-3">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-10 w-20" />
+            <Skeleton className="h-2 w-full" />
+          </div>
+        ))}
+      </div>
+      <div className="grid gap-8 lg:grid-cols-3">
+        <div className="lg:col-span-2 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+          <Skeleton className="h-6 w-40 mb-2" />
+          <Skeleton className="h-4 w-64 mb-6" />
+          <Skeleton className="h-52 w-full rounded" />
+        </div>
+        <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-100 space-y-4">
+          <Skeleton className="h-6 w-36" />
+          {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-16 w-full" />)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Custom Bar Tooltip ────────────────────────────────────────────────────────
+
+function BarTooltip({ active, payload, label }) {
+  if (active && payload?.length) {
+    const { score, maxScore, percentage } = payload[0].payload;
+    return (
+      <div className="rounded-lg bg-secondary px-3 py-2 text-xs text-white shadow-lg">
+        <p className="font-semibold mb-1">{label}</p>
+        <p>Score: <span className="font-bold text-primary">{score} / {maxScore}</span></p>
+        <p>Percentage: <span className="font-bold text-primary">{percentage}%</span></p>
+      </div>
+    );
+  }
+  return null;
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function AssessmentBreakdown() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchAssessment = useCallback(async () => {
+    if (!id) { setError('No assessment ID provided.'); setLoading(false); return; }
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await studentService.getAssessmentById(id);
+      setData(res.data);
+    } catch (err) {
+      if (err.response?.status === 404) {
+        setError('Assessment not found.');
+      } else {
+        setError(err.response?.data?.message || 'Failed to load assessment. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
+
+  useEffect(() => { fetchAssessment(); }, [fetchAssessment]);
+
+  // ── Loading ──
+  if (loading) {
+    return (
+      <div className="flex h-screen w-full flex-row overflow-hidden bg-background-light font-display">
+        <StudentSidebar />
+        <main className="flex-1 h-full overflow-y-auto py-8 px-4 md:px-8">
+          <div className="mx-auto max-w-7xl">
+            <Skeleton className="h-4 w-48 mb-3" />
+            <Skeleton className="h-10 w-96 mb-2" />
+            <Skeleton className="h-4 w-72 mb-8" />
+            <PageSkeleton />
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // ── Error ──
+  if (error) {
+    return (
+      <div className="flex h-screen w-full flex-row overflow-hidden bg-background-light font-display">
+        <StudentSidebar />
+        <main className="flex-1 h-full overflow-y-auto flex items-center justify-center p-8">
+          <div className="text-center max-w-md">
+            <span className="material-symbols-outlined text-5xl text-red-400 mb-4 block">error_outline</span>
+            <h2 className="text-xl font-bold text-secondary mb-2">
+              {error === 'Assessment not found.' ? 'Assessment Not Found' : 'Something went wrong'}
+            </h2>
+            <p className="text-slate-500 mb-6">{error}</p>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={fetchAssessment}
+                className="rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-secondary hover:bg-primary/90 transition-colors"
+              >
+                Try Again
+              </button>
+              <Link
+                to="/student/assessments"
+                className="rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+              >
+                Back to Assessments
+              </Link>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  const {
+    title, subtitle, category, overallScore, maxScore,
+    percentileRank, timeTaken, maxTime, completedDate, status,
+    categoryPerformance, improvements, history,
+  } = data;
+
+  const scorePct = Math.round((overallScore / maxScore) * 100);
+
   return (
-    <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display h-screen flex flex-row overflow-hidden">
+    <div className="flex h-screen w-full flex-row overflow-hidden bg-background-light font-display">
       <StudentSidebar />
 
       <main className="flex-1 h-full overflow-y-auto py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          {/* Page Header */}
+
+          {/* ── Header ── */}
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-2">
-                <Link to="/student/assessments" className="hover:text-primary transition-colors">
-                  Assessments
-                </Link>
+              <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
+                <Link to="/student/dashboard" className="hover:text-primary transition-colors">Dashboard</Link>
                 <span className="material-symbols-outlined text-[12px]">chevron_right</span>
-                <span className="text-slate-900 dark:text-white font-medium">Results Breakdown</span>
+                <span className="font-medium text-secondary">Results Breakdown</span>
               </div>
-              <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-                Full Stack Developer Assessment
-              </h1>
-              <p className="mt-2 text-slate-600 dark:text-slate-400">
-                Detailed performance analysis and readiness scoring for your latest evaluation.
+              <h1 className="text-3xl font-bold tracking-tight text-secondary sm:text-4xl">{title}</h1>
+              {subtitle && <p className="mt-1 text-slate-500 text-sm">{subtitle}</p>}
+              <p className="mt-2 text-slate-500">
+                Detailed performance analysis · <span className="font-medium text-secondary">{category}</span>
               </p>
             </div>
-            <div className="flex gap-3">
-              <button className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10">
-                <span className="material-symbols-outlined text-[18px]">download</span>
-                Download Report
-              </button>
-              <button className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary/90">
-                <span className="material-symbols-outlined text-[18px]">share</span>
-                Share Results
-              </button>
-            </div>
           </div>
 
-          {/* Stats Overview */}
+          {/* ── Stats Overview ── */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Overall Score</p>
+            {/* Overall Score */}
+            <div className="rounded-xl border border-slate-100 bg-white p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-medium text-slate-500">Overall Score</p>
                 <span className="material-symbols-outlined text-primary">school</span>
               </div>
-              <div className="mt-4 flex items-baseline gap-2">
-                <p className="text-3xl font-bold text-slate-900 dark:text-white">850</p>
-                <p className="text-sm text-slate-500 dark:text-slate-400">/ 1000</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-3xl font-bold text-secondary">{overallScore}</p>
+                <p className="text-sm text-slate-400">/ {maxScore}</p>
               </div>
-              <div className="mt-2 w-full rounded-full bg-slate-100 dark:bg-white/10 h-2">
-                <div className="h-2 rounded-full bg-primary" style={{ width: '85%' }} />
+              <div className="mt-3 w-full rounded-full bg-slate-100 h-2">
+                <div
+                  className="h-2 rounded-full bg-primary transition-all duration-700"
+                  style={{ width: `${scorePct}%` }}
+                />
               </div>
+              <p className="mt-1.5 text-xs text-slate-400">{scorePct}% score</p>
             </div>
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Percentile Rank</p>
+
+            {/* Percentile */}
+            <div className="rounded-xl border border-slate-100 bg-white p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-medium text-slate-500">Percentile Rank</p>
                 <span className="material-symbols-outlined text-primary">leaderboard</span>
               </div>
-              <div className="mt-4 flex items-baseline gap-2">
-                <p className="text-3xl font-bold text-slate-900 dark:text-white">92nd</p>
-                <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                  Top 8%
-                </span>
-              </div>
-              <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">Higher than 92% of peers</p>
+              {percentileRank != null ? (
+                <>
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-3xl font-bold text-secondary">{ordinal(percentileRank)}</p>
+                    <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
+                      Top {100 - percentileRank}%
+                    </span>
+                  </div>
+                  <p className="mt-2 text-xs text-slate-400">Higher than {percentileRank}% of peers</p>
+                </>
+              ) : (
+                <p className="text-2xl font-bold text-slate-400 mt-1">—</p>
+              )}
             </div>
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Time Taken</p>
+
+            {/* Time Taken */}
+            <div className="rounded-xl border border-slate-100 bg-white p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-medium text-slate-500">Time Taken</p>
                 <span className="material-symbols-outlined text-primary">schedule</span>
               </div>
-              <div className="mt-4 flex items-baseline gap-2">
-                <p className="text-3xl font-bold text-slate-900 dark:text-white">48m</p>
-                <p className="text-sm text-slate-500 dark:text-slate-400">/ 60m</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-3xl font-bold text-secondary">
+                  {timeTaken != null ? `${timeTaken}m` : '—'}
+                </p>
+                {maxTime != null && <p className="text-sm text-slate-400">/ {maxTime}m</p>}
               </div>
-              <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">Completed on Oct 24, 2023</p>
+              <p className="mt-2 text-xs text-slate-400">Completed on {formatDate(completedDate)}</p>
             </div>
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Status</p>
+
+            {/* Status */}
+            <div className="rounded-xl border border-slate-100 bg-white p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-medium text-slate-500">Status</p>
                 <span className="material-symbols-outlined text-primary">verified</span>
               </div>
-              <div className="mt-4">
-                <p className="text-3xl font-bold text-primary">Passed</p>
+              <div className="mt-1">
+                <span className={statusBadgeClass(status)}>
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                </span>
               </div>
-              <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">Qualified for next round</p>
+              <p className="mt-3 text-xs text-slate-400">
+                {status === 'passed' ? 'Qualified for next round' : status === 'failed' ? 'Did not meet threshold' : 'Assessment recorded'}
+              </p>
             </div>
           </div>
 
+          {/* ── Chart + Improvements ── */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-            {/* Chart Section */}
-            <div className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
-              <div className="mb-6 flex items-center justify-between">
-                <div>
-                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">Category Performance</h2>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Breakdown of scores across key evaluation metrics.</p>
-                </div>
-                <div className="flex items-center gap-2 rounded-lg bg-slate-100 p-1 dark:bg-white/5">
-                  <button className="rounded px-3 py-1 text-xs font-medium bg-white text-slate-900 shadow-sm dark:bg-white/10 dark:text-white">
-                    Score
-                  </button>
-                  <button className="rounded px-3 py-1 text-xs font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
-                    Percentile
-                  </button>
-                </div>
+            {/* Category Performance Bar Chart */}
+            <div className="lg:col-span-2 rounded-xl border border-slate-100 bg-white p-6 shadow-sm">
+              <div className="mb-5">
+                <h2 className="text-lg font-bold text-secondary">Category Performance</h2>
+                <p className="text-sm text-slate-500">Breakdown of scores across evaluation categories.</p>
               </div>
-              {/* Bar chart — BAR_MAX_PX = h-52 (208px) leaving 48px for labels */}
-              {(() => {
-                const BAR_MAX = 208;
-                const bars = [
-                  { label: 'Technical',  pct: 85 },
-                  { label: 'Soft Skills', pct: 65 },
-                  { label: 'Logic',      pct: 92 },
-                  { label: 'Aptitude',   pct: 78 },
-                  { label: 'Verbal',     pct: 88 },
-                ];
-                return (
-                  <div className="relative w-full" style={{ height: '256px' }}>
-                    {/* Grid lines */}
-                    <div className="pointer-events-none absolute inset-x-0 top-0 flex flex-col justify-between" style={{ height: `${BAR_MAX}px` }}>
-                      {[100, 75, 50, 25, 0].map((tick) => (
-                        <div key={tick} className="flex items-center gap-1">
-                          <span className="w-6 shrink-0 text-right text-[10px] text-slate-300 dark:text-slate-600">{tick}</span>
-                          <div className="flex-1 border-t border-dashed border-slate-200 dark:border-white/10" />
-                        </div>
+              {categoryPerformance.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-52 text-slate-400">
+                  <span className="material-symbols-outlined text-4xl mb-2">bar_chart</span>
+                  <p className="text-sm">No category breakdown available for this assessment.</p>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart
+                    data={categoryPerformance}
+                    margin={{ top: 4, right: 8, left: -16, bottom: 0 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                    <XAxis
+                      dataKey="label"
+                      tick={{ fontSize: 11, fill: '#64748b' }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      domain={[0, 100]}
+                      tick={{ fontSize: 11, fill: '#94a3b8' }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <Tooltip content={<BarTooltip />} cursor={{ fill: 'rgba(198,164,63,0.06)' }} />
+                    <Bar dataKey="percentage" radius={[4, 4, 0, 0]} maxBarSize={52}>
+                      {categoryPerformance.map((entry, index) => (
+                        <Cell key={index} fill={pctColor(entry.percentage)} />
                       ))}
-                    </div>
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
 
-                    {/* Bars */}
-                    <div className="absolute inset-x-8 flex items-end justify-between gap-3" style={{ top: 0, height: `${BAR_MAX}px` }}>
-                      {bars.map(({ label, pct }) => {
-                        const barPx = Math.round((pct / 100) * BAR_MAX);
-                        return (
-                          <div key={label} className="group flex flex-1 flex-col items-center justify-end h-full">
-                            {/* Empty track */}
-                            <div className="relative w-full rounded-t-lg bg-slate-100 dark:bg-white/5 overflow-hidden" style={{ height: `${BAR_MAX}px` }}>
-                              {/* Filled portion */}
-                              <div
-                                className="absolute bottom-0 w-full rounded-t-lg bg-[#006064] group-hover:bg-[#004d40] dark:bg-[#4dd0e1] transition-all duration-700"
-                                style={{ height: `${barPx}px` }}
-                              />
-                            </div>
-                          </div>
-                        );
-                      })}
+              {/* Score tags below chart */}
+              {categoryPerformance.length > 0 && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {categoryPerformance.map((c) => (
+                    <div key={c.label} className="flex items-center gap-1.5 rounded-lg bg-slate-50 px-3 py-1.5 text-xs">
+                      <span
+                        className="h-2 w-2 rounded-full shrink-0"
+                        style={{ backgroundColor: pctColor(c.percentage) }}
+                      />
+                      <span className="font-medium text-slate-600">{c.label}:</span>
+                      <span className="font-bold text-secondary">{c.percentage}%</span>
                     </div>
-
-                    {/* Labels */}
-                    <div className="absolute inset-x-8 flex items-start justify-between gap-3" style={{ top: `${BAR_MAX + 6}px` }}>
-                      {bars.map(({ label, pct }) => (
-                        <div key={label} className="flex-1 text-center">
-                          <p className="text-xs font-medium text-slate-600 dark:text-slate-300 leading-tight">{label}</p>
-                          <p className="text-xs font-bold text-slate-900 dark:text-white">{pct}%</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })()}
+                  ))}
+                </div>
+              )}
             </div>
 
-            {/* Recommendation Card */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5 flex flex-col">
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Improvement Focus</h2>
-              <div className="flex-1 flex flex-col gap-4">
-                <div className="flex gap-4 items-start">
-                  <div className="flex-shrink-0 size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                    <span className="material-symbols-outlined">chat</span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-slate-900 dark:text-white text-sm">Communication Skills</h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                      Your Soft Skills score (65%) is below average. Focus on clear articulation in interviews.
-                    </p>
-                    <a className="inline-flex items-center gap-1 text-primary text-xs font-medium mt-2 hover:underline" href="#">
-                      View resources <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-                    </a>
-                  </div>
+            {/* Improvement Focus */}
+            <div className="rounded-xl border border-slate-100 bg-white p-6 shadow-sm flex flex-col">
+              <h2 className="text-lg font-bold text-secondary mb-4">Improvement Focus</h2>
+              {improvements.length === 0 ? (
+                <div className="flex flex-col items-center justify-center flex-1 text-center text-slate-400 py-6">
+                  <span className="material-symbols-outlined text-4xl mb-2 text-green-400">task_alt</span>
+                  <p className="text-sm font-medium text-green-600">All categories above threshold!</p>
+                  <p className="text-xs mt-1">Keep up the strong performance.</p>
                 </div>
-                <div className="flex gap-4 items-start border-t border-slate-100 dark:border-white/5 pt-4">
-                  <div className="flex-shrink-0 size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                    <span className="material-symbols-outlined">calculate</span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-slate-900 dark:text-white text-sm">Numerical Aptitude</h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                      While solid, improving your speed in numerical sections can boost your rank to 98th percentile.
-                    </p>
-                    <a className="inline-flex items-center gap-1 text-primary text-xs font-medium mt-2 hover:underline" href="#">
-                      Practice sets <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-                    </a>
-                  </div>
+              ) : (
+                <div className="flex-1 flex flex-col gap-4">
+                  {improvements.map((imp, i) => (
+                    <div
+                      key={i}
+                      className={`flex gap-3 items-start ${i > 0 ? 'border-t border-slate-100 pt-4' : ''}`}
+                    >
+                      <div className="flex-shrink-0 h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                        <span className="material-symbols-outlined text-[18px]">lightbulb</span>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-secondary text-sm">{imp.area}</h3>
+                        <p className="text-xs text-slate-500 mt-1">{imp.description}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </div>
-              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/5">
-                <div className="rounded-lg bg-background-light dark:bg-black/20 p-4">
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2">
-                    Recruiter Insight
-                  </h4>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 italic">
-                    "Strong technical foundation. Candidates with this profile are highly sought after for backend roles."
-                  </p>
-                </div>
-              </div>
+              )}
             </div>
           </div>
 
-          {/* Historical Table */}
-          <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-white/5 overflow-hidden">
-            <div className="border-b border-slate-200 dark:border-white/10 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          {/* ── Assessment History ── */}
+          <div className="rounded-xl border border-slate-100 bg-white shadow-sm overflow-hidden">
+            <div className="border-b border-slate-100 px-6 py-4 flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white">Assessment History</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Previous performance records and trends.</p>
-              </div>
-              <div className="flex gap-2">
-                <div className="relative">
-                  <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                    <span className="material-symbols-outlined text-[18px]">filter_list</span>
-                  </span>
-                  <select className="h-9 w-full sm:w-40 appearance-none rounded-lg border-slate-200 bg-white pl-9 pr-8 text-sm text-slate-700 focus:border-primary focus:ring-primary dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
-                    <option>All Categories</option>
-                    <option>Technical</option>
-                    <option>Aptitude</option>
-                  </select>
-                  <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-slate-400">
-                    <span className="material-symbols-outlined text-[18px]">arrow_drop_down</span>
-                  </span>
-                </div>
+                <h2 className="text-lg font-bold text-secondary">Assessment History</h2>
+                <p className="text-sm text-slate-500">Your previous assessment records.</p>
               </div>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead className="bg-slate-50 text-slate-500 dark:bg-white/5 dark:text-slate-400">
-                  <tr>
-                    <th className="px-6 py-3 font-medium">Assessment Name</th>
-                    <th className="px-6 py-3 font-medium">Date</th>
-                    <th className="px-6 py-3 font-medium">Category</th>
-                    <th className="px-6 py-3 font-medium">Score</th>
-                    <th className="px-6 py-3 font-medium">Status</th>
-                    <th className="px-6 py-3 font-medium text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200 dark:divide-white/5">
-                  {[
-                    { name: 'Full Stack Developer', sub: 'Level 2 Assessment', date: 'Oct 24, 2023', cat: 'Technical', score: 850, status: 'Passed' },
-                    { name: 'Data Structures Basics', sub: 'Foundation Series', date: 'Sep 12, 2023', cat: 'Technical', score: 720, status: 'Passed' },
-                    { name: 'Communication Skills', sub: 'Soft Skills Series', date: 'Aug 30, 2023', cat: 'Soft Skills', score: 640, status: 'Passed' },
-                    { name: 'Aptitude Test', sub: 'Placement Series', date: 'Aug 5, 2023', cat: 'Aptitude', score: 780, status: 'Passed' },
-                  ].map((row) => (
-                    <tr key={row.name} className="group hover:bg-slate-50 dark:hover:bg-white/5">
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-slate-900 dark:text-white">{row.name}</div>
-                        <div className="text-xs text-slate-500">{row.sub}</div>
-                      </td>
-                      <td className="px-6 py-4 text-slate-600 dark:text-slate-400">{row.date}</td>
-                      <td className="px-6 py-4">
-                        <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-400/10 dark:text-blue-400 dark:ring-blue-400/20">
-                          {row.cat}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-slate-900 dark:text-white">{row.score}</span>
-                          <span className="text-xs text-slate-400">/ 1000</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
-                          <span className="size-1.5 rounded-full bg-current" />
-                          {row.status}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <button className="text-slate-400 hover:text-primary transition-colors">
-                          <span className="material-symbols-outlined">visibility</span>
-                        </button>
-                      </td>
+            {history.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-slate-400">
+                <span className="material-symbols-outlined text-4xl mb-2">history</span>
+                <p className="text-sm">No assessment history yet.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-slate-50 text-slate-500">
+                    <tr>
+                      <th className="px-6 py-3 font-medium">Assessment Name</th>
+                      <th className="px-6 py-3 font-medium">Date</th>
+                      <th className="px-6 py-3 font-medium">Category</th>
+                      <th className="px-6 py-3 font-medium">Score</th>
+                      <th className="px-6 py-3 font-medium">Status</th>
+                      <th className="px-6 py-3 font-medium text-right">Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {history.map((h) => {
+                      const hPct = h.maxScore > 0 ? Math.round((h.score / h.maxScore) * 100) : 0;
+                      const isCurrentRow = h.id === id;
+                      return (
+                        <tr
+                          key={h.id}
+                          className={`group transition-colors ${isCurrentRow ? 'bg-primary/5' : 'hover:bg-slate-50'}`}
+                        >
+                          <td className="px-6 py-4">
+                            <div className="font-medium text-secondary flex items-center gap-2">
+                              {h.name}
+                              {isCurrentRow && (
+                                <span className="text-[10px] font-bold text-primary bg-primary/10 rounded-full px-2 py-0.5">
+                                  Current
+                                </span>
+                              )}
+                            </div>
+                            {h.subtitle && <div className="text-xs text-slate-400">{h.subtitle}</div>}
+                          </td>
+                          <td className="px-6 py-4 text-slate-500">{formatDate(h.date)}</td>
+                          <td className="px-6 py-4">
+                            <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                              {h.category}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-secondary">{h.score}</span>
+                              <span className="text-xs text-slate-400">/ {h.maxScore}</span>
+                              <span
+                                className="text-xs font-medium"
+                                style={{ color: pctColor(hPct) }}
+                              >
+                                ({hPct}%)
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className={statusBadgeClass(h.status)}>
+                              {h.status.charAt(0).toUpperCase() + h.status.slice(1)}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            {isCurrentRow ? (
+                              <span className="text-xs text-slate-300">—</span>
+                            ) : (
+                              <Link
+                                to={`/student/assessments/${h.id}`}
+                                className="text-slate-400 hover:text-primary transition-colors inline-flex"
+                                title="View breakdown"
+                              >
+                                <span className="material-symbols-outlined">visibility</span>
+                              </Link>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       </main>

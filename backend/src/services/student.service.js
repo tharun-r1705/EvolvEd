@@ -34,38 +34,42 @@ async function getDashboard(userId) {
       applications: {
         include: { job: { include: { company: true } } },
         orderBy: { appliedAt: 'desc' },
-        take: 5,
+        take: 3,
       },
     },
   });
 
   if (!student) throw AppError.notFound('Student profile not found.');
 
-  // Count metrics
-  const [totalAssessments, totalApplications, pendingApplications, profileViews] =
-    await Promise.all([
-      prisma.assessment.count({ where: { studentId: student.id } }),
-      prisma.application.count({ where: { studentId: student.id } }),
-      prisma.application.count({ where: { studentId: student.id, status: { in: ['applied', 'shortlisted'] } } }),
-      // Profile views: use shortlists as a proxy (how many recruiters have shortlisted this student)
-      prisma.shortlist.count({ where: { studentId: student.id } }),
-    ]);
-
-  // Readiness trend: get last 6 months of score changes
-  // Since we don't have a history table, we use assessment scores as a proxy trend
+  // Run all independent queries in parallel
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
-  const monthlyAssessments = await prisma.assessment.findMany({
-    where: {
-      studentId: student.id,
-      completedAt: { gte: sixMonthsAgo },
-    },
-    select: { totalScore: true, maxScore: true, completedAt: true },
-    orderBy: { completedAt: 'asc' },
-  });
+  const [
+    totalAssessments,
+    totalApplications,
+    pendingApplications,
+    profileViews,
+    monthlyAssessments,
+    leetcodeProfile,
+    githubProfile,
+    rankInfo,
+  ] = await Promise.all([
+    prisma.assessment.count({ where: { studentId: student.id } }),
+    prisma.application.count({ where: { studentId: student.id } }),
+    prisma.application.count({ where: { studentId: student.id, status: { in: ['applied', 'shortlisted'] } } }),
+    prisma.shortlist.count({ where: { studentId: student.id } }),
+    prisma.assessment.findMany({
+      where: { studentId: student.id, completedAt: { gte: sixMonthsAgo } },
+      select: { totalScore: true, maxScore: true, completedAt: true },
+      orderBy: { completedAt: 'asc' },
+    }),
+    prisma.leetCodeProfile.findUnique({ where: { studentId: student.id } }).catch(() => null),
+    prisma.gitHubProfile.findUnique({ where: { studentId: student.id } }).catch(() => null),
+    getStudentGlobalRank(student.id),
+  ]);
 
-  // Group by month for trend data
+  // Group assessments by month for trend data
   const trendMap = {};
   for (const a of monthlyAssessments) {
     const monthKey = new Date(a.completedAt).toLocaleString('default', { month: 'short' });
@@ -78,10 +82,8 @@ async function getDashboard(userId) {
     value: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length),
   }));
 
-  // Global rank
-  const rankInfo = await getStudentGlobalRank(student.id);
-
   const score = Number(student.readinessScore);
+  const sb = student.scoreBreakdown;
 
   return {
     student: {
@@ -106,14 +108,17 @@ async function getDashboard(userId) {
       pendingActions: pendingApplications,
       profileViews,
     },
-    scoreBreakdown: student.scoreBreakdown
+    scoreBreakdown: sb
       ? {
-          technicalSkills: Number(student.scoreBreakdown.technicalSkills),
-          projects: Number(student.scoreBreakdown.projects),
-          internships: Number(student.scoreBreakdown.internships),
-          certifications: Number(student.scoreBreakdown.certifications),
-          assessments: Number(student.scoreBreakdown.assessments),
-          lastCalculatedAt: student.scoreBreakdown.lastCalculatedAt,
+          technicalSkills: Number(sb.technicalSkills),
+          projects: Number(sb.projects),
+          internships: Number(sb.internships),
+          certifications: Number(sb.certifications),
+          assessments: Number(sb.assessments),
+          events: Number(sb.events || 0),
+          codingPractice: Number(sb.codingPractice || 0),
+          githubActivity: Number(sb.githubActivity || 0),
+          lastCalculatedAt: sb.lastCalculatedAt,
         }
       : null,
     skills: student.skills.map((ss) => ({
@@ -131,6 +136,34 @@ async function getDashboard(userId) {
       status: a.status,
       completedAt: a.completedAt,
     })),
+    recentApplications: student.applications.map((app) => ({
+      id: app.id,
+      status: app.status,
+      appliedAt: app.appliedAt,
+      jobTitle: app.job.title,
+      companyName: app.job.company.name,
+      companyLogoUrl: app.job.company.logoUrl,
+    })),
+    leetcodeSummary: leetcodeProfile
+      ? {
+          username: leetcodeProfile.username,
+          totalSolved: leetcodeProfile.totalSolved,
+          easySolved: leetcodeProfile.easySolved,
+          mediumSolved: leetcodeProfile.mediumSolved,
+          hardSolved: leetcodeProfile.hardSolved,
+          streak: leetcodeProfile.streak,
+          ranking: leetcodeProfile.ranking,
+        }
+      : null,
+    githubSummary: githubProfile
+      ? {
+          username: githubProfile.username,
+          publicRepos: githubProfile.publicRepos,
+          totalStars: githubProfile.totalStars,
+          followers: githubProfile.followers,
+          contributionCount: githubProfile.contributionCount,
+        }
+      : null,
     readinessTrend,
   };
 }
