@@ -105,6 +105,28 @@ export const studentService = {
 };
 
 // ---------------------------------------------------------------------------
+// Chat (AI Chatbot) endpoints
+// ---------------------------------------------------------------------------
+export const chatService = {
+  listConversations: () => api.get('/student/chat/conversations'),
+  createConversation: () => api.post('/student/chat/conversations'),
+  deleteConversation: (id) => api.delete(`/student/chat/conversations/${id}`),
+  getMessages: (id) => api.get(`/student/chat/conversations/${id}/messages`),
+  sendMessage: (id, content) => api.post(`/student/chat/conversations/${id}/messages`, { content }),
+};
+
+// ---------------------------------------------------------------------------
+// Goals endpoints
+// ---------------------------------------------------------------------------
+export const goalsService = {
+  getGoals: (status) => api.get('/student/goals', { params: status ? { status } : {} }),
+  getSummary: () => api.get('/student/goals/summary'),
+  createGoal: (data) => api.post('/student/goals', data),
+  updateGoal: (goalId, data) => api.put(`/student/goals/${goalId}`, data),
+  deleteGoal: (goalId) => api.delete(`/student/goals/${goalId}`),
+};
+
+// ---------------------------------------------------------------------------
 // Recruiter endpoints
 // ---------------------------------------------------------------------------
 export const recruiterService = {

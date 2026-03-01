@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import Layout from './components/Layout.jsx';
+import FloatingChatButton from './components/FloatingChatButton.jsx';
 
 // Public Pages
 import Home from './pages/Home.jsx';
@@ -21,6 +22,7 @@ import StudentCodingProfile from './pages/StudentCodingProfile.jsx';
 import AssessmentBreakdown from './pages/AssessmentBreakdown.jsx';
 import StudentResumes from './pages/StudentResumes.jsx';
 import StudentLearningPace from './pages/StudentLearningPace.jsx';
+import StudentChat from './pages/StudentChat.jsx';
 
 // Recruiter Pages
 import RecruiterDashboard from './pages/RecruiterDashboard.jsx';
@@ -59,6 +61,7 @@ export default function App() {
             <Route path="assessments/:id" element={<AssessmentBreakdown />} />
             <Route path="resumes" element={<StudentResumes />} />
             <Route path="learning-pace" element={<StudentLearningPace />} />
+            <Route path="chat" element={<StudentChat />} />
           </Route>
 
           {/* ── Recruiter Routes (protected) ── */}
@@ -84,6 +87,8 @@ export default function App() {
           {/* ── 404 ── */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        {/* Floating AI chat button — renders on all student pages except /student/chat */}
+        <FloatingChatButton />
       </BrowserRouter>
     </AuthProvider>
   );

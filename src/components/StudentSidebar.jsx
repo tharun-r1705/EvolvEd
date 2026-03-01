@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { to: '/student/assessments/1',    icon: 'description',        label: 'Assessments' },
   { to: '/student/resumes',          icon: 'description',        label: 'Resumes' },
   { to: '/student/learning-pace',    icon: 'speed',              label: 'Learning Pace' },
+  { to: '/student/chat',             icon: 'smart_toy',          label: 'AI Assistant',       highlight: true },
   { to: null, icon: 'work',          label: 'Jobs & Placements', soon: true },
 ];
 
@@ -55,17 +56,25 @@ export default function StudentSidebar() {
                 <span className="text-[10px] font-semibold uppercase tracking-wider bg-white/10 text-slate-400 px-1.5 py-0.5 rounded">Soon</span>
               </div>
             ) : (
-              <Link
+            <Link
                 key={item.label}
                 to={item.to}
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
                   isActive(item)
                     ? 'bg-white/10 text-white'
+                    : item.highlight
+                    ? 'text-primary hover:bg-white/10 hover:text-white'
                     : 'text-slate-300 hover:bg-white/10 hover:text-white'
                 }`}
               >
-                <span className="material-symbols-outlined">{item.icon}</span>
-                {item.label}
+                <span className={`material-symbols-outlined ${item.highlight && !isActive(item) ? 'text-primary' : ''}`}>{item.icon}</span>
+                <span className="flex-1">{item.label}</span>
+                {item.highlight && !isActive(item) && (
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+                  </span>
+                )}
               </Link>
             )
           )}
