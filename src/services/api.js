@@ -228,6 +228,10 @@ export const recruiterService = {
   shortlistCandidate: (id) => api.post(`/recruiter/candidates/${id}/shortlist`),
   getJobs: () => api.get('/recruiter/jobs'),
   createJob: (data) => api.post('/recruiter/jobs', data),
+  getJobById: (id) => api.get(`/recruiter/jobs/${id}`),
+  updateJob: (id, data) => api.put(`/recruiter/jobs/${id}`, data),
+  deleteJob: (id) => api.delete(`/recruiter/jobs/${id}`),
+  toggleJobStatus: (id) => api.patch(`/recruiter/jobs/${id}/status`),
   getAnalytics: () => api.get('/recruiter/analytics'),
   // Profile
   getProfile: () => api.get('/recruiter/profile'),

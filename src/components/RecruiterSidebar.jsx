@@ -3,18 +3,18 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const NAV_ITEMS = [
-  { to: '/recruiter',            icon: 'dashboard',      label: 'Dashboard',  exact: true },
-  { to: '/recruiter/jobs/new',   icon: 'work',           label: 'Jobs' },
-  { to: '/recruiter/candidates', icon: 'group',          label: 'Candidates' },
-  { to: '#',                     icon: 'calendar_month', label: 'Interviews', soon: true },
-  { to: '#',                     icon: 'analytics',      label: 'Reports',    soon: true },
+  { to: '/recruiter',            icon: 'dashboard',       label: 'Dashboard',  exact: true },
+  { to: '/recruiter/jobs',       icon: 'work',            label: 'Jobs' },
+  { to: '/recruiter/candidates', icon: 'group',           label: 'Candidates' },
+  { to: '#',                     icon: 'calendar_month',  label: 'Interviews', soon: true },
+  { to: '#',                     icon: 'analytics',       label: 'Reports',    soon: true },
   { to: '/recruiter/profile',    icon: 'manage_accounts', label: 'Profile' },
 ];
 
 const BOTTOM_NAV_ITEMS = [
-  { to: '/recruiter',            icon: 'dashboard',      label: 'Home',       exact: true },
-  { to: '/recruiter/candidates', icon: 'group',          label: 'Candidates' },
-  { to: '/recruiter/jobs/new',   icon: 'work',           label: 'Jobs' },
+  { to: '/recruiter',            icon: 'dashboard',       label: 'Home',       exact: true },
+  { to: '/recruiter/candidates', icon: 'group',           label: 'Candidates' },
+  { to: '/recruiter/jobs',       icon: 'work',            label: 'Jobs' },
   { to: '/recruiter/profile',    icon: 'manage_accounts', label: 'Profile' },
 ];
 

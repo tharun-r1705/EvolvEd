@@ -347,6 +347,10 @@ async function getJobs(userId, query) {
     employmentType: j.employmentType,
     location: j.location,
     minimumReadinessScore: j.minimumReadinessScore,
+    salaryMin: j.salaryMin != null ? Number(j.salaryMin) : null,
+    salaryMax: j.salaryMax != null ? Number(j.salaryMax) : null,
+    workMode: j.workMode,
+    deadline: j.deadline,
     visibility: j.visibility,
     isActive: j.isActive,
     applicationsCount: j._count.applications,
@@ -386,6 +390,12 @@ async function createJob(userId, data) {
         minimumReadinessScore: jobData.minimumReadinessScore || 0,
         visibility: jobData.visibility || 'public',
         notifyEligible: jobData.notifyEligible || false,
+        salaryMin: jobData.salaryMin ?? null,
+        salaryMax: jobData.salaryMax ?? null,
+        workMode: jobData.workMode ?? null,
+        deadline: jobData.deadline ? new Date(jobData.deadline) : null,
+        responsibilities: jobData.responsibilities ?? null,
+        qualifications: jobData.qualifications ?? null,
       },
     });
 
@@ -405,6 +415,136 @@ async function createJob(userId, data) {
   return {
     message: 'Job posted successfully.',
     job: { id: job.id, title: job.title, createdAt: job.createdAt },
+  };
+}
+
+// ─── JOB CRUD ────────────────────────────────────────────────────
+
+async function getJobById(userId, jobId) {
+  const recruiter = await getRecruiterByUserId(userId);
+
+  const job = await prisma.job.findFirst({
+    where: { id: jobId, recruiterId: recruiter.id, deletedAt: null },
+    include: {
+      skills: { include: { skill: true } },
+      _count: { select: { applications: true } },
+    },
+  });
+  if (!job) throw AppError.notFound('Job not found.');
+
+  return {
+    id: job.id,
+    title: job.title,
+    department: job.department,
+    employmentType: job.employmentType,
+    location: job.location,
+    description: job.description,
+    minimumReadinessScore: job.minimumReadinessScore,
+    salaryMin: job.salaryMin != null ? Number(job.salaryMin) : null,
+    salaryMax: job.salaryMax != null ? Number(job.salaryMax) : null,
+    workMode: job.workMode,
+    deadline: job.deadline,
+    responsibilities: job.responsibilities,
+    qualifications: job.qualifications,
+    visibility: job.visibility,
+    notifyEligible: job.notifyEligible,
+    isActive: job.isActive,
+    applicationsCount: job._count.applications,
+    skills: job.skills.map((js) => js.skill.name),
+    createdAt: job.createdAt,
+    updatedAt: job.updatedAt,
+  };
+}
+
+async function updateJob(userId, jobId, data) {
+  const recruiter = await getRecruiterByUserId(userId);
+
+  const existing = await prisma.job.findFirst({
+    where: { id: jobId, recruiterId: recruiter.id, deletedAt: null },
+  });
+  if (!existing) throw AppError.notFound('Job not found.');
+
+  const { requiredSkills, ...jobData } = data;
+
+  const updateData = {};
+  if (jobData.title               !== undefined) updateData.title               = jobData.title;
+  if (jobData.department          !== undefined) updateData.department          = jobData.department;
+  if (jobData.employmentType      !== undefined) updateData.employmentType      = jobData.employmentType;
+  if (jobData.location            !== undefined) updateData.location            = jobData.location;
+  if (jobData.description         !== undefined) updateData.description         = jobData.description;
+  if (jobData.minimumReadinessScore !== undefined) updateData.minimumReadinessScore = jobData.minimumReadinessScore;
+  if (jobData.visibility          !== undefined) updateData.visibility          = jobData.visibility;
+  if (jobData.notifyEligible      !== undefined) updateData.notifyEligible      = jobData.notifyEligible;
+  if (jobData.salaryMin           !== undefined) updateData.salaryMin           = jobData.salaryMin;
+  if (jobData.salaryMax           !== undefined) updateData.salaryMax           = jobData.salaryMax;
+  if (jobData.workMode            !== undefined) updateData.workMode            = jobData.workMode;
+  if (jobData.deadline            !== undefined) updateData.deadline            = jobData.deadline ? new Date(jobData.deadline) : null;
+  if (jobData.responsibilities    !== undefined) updateData.responsibilities    = jobData.responsibilities;
+  if (jobData.qualifications      !== undefined) updateData.qualifications      = jobData.qualifications;
+
+  await prisma.$transaction(async (tx) => {
+    await tx.job.update({ where: { id: jobId }, data: updateData });
+
+    if (requiredSkills !== undefined) {
+      // Replace skills entirely
+      const skillRecords = await Promise.all(
+        requiredSkills.map((name) =>
+          prisma.skill.upsert({
+            where: { name },
+            create: { name, category: 'technical' },
+            update: {},
+          })
+        )
+      );
+      await tx.jobSkill.deleteMany({ where: { jobId } });
+      if (skillRecords.length > 0) {
+        await tx.jobSkill.createMany({
+          data: skillRecords.map((s) => ({ jobId, skillId: s.id })),
+          skipDuplicates: true,
+        });
+      }
+    }
+  });
+
+  // Re-trigger rankings if skills or score changed
+  const rankingChanged = requiredSkills !== undefined || jobData.minimumReadinessScore !== undefined;
+  if (rankingChanged) recalculateJobRankings(jobId).catch(() => {});
+
+  return getJobById(userId, jobId);
+}
+
+async function deleteJob(userId, jobId) {
+  const recruiter = await getRecruiterByUserId(userId);
+
+  const existing = await prisma.job.findFirst({
+    where: { id: jobId, recruiterId: recruiter.id, deletedAt: null },
+  });
+  if (!existing) throw AppError.notFound('Job not found.');
+
+  await prisma.job.update({
+    where: { id: jobId },
+    data: { deletedAt: new Date() },
+  });
+
+  return { message: 'Job deleted successfully.' };
+}
+
+async function toggleJobStatus(userId, jobId) {
+  const recruiter = await getRecruiterByUserId(userId);
+
+  const existing = await prisma.job.findFirst({
+    where: { id: jobId, recruiterId: recruiter.id, deletedAt: null },
+  });
+  if (!existing) throw AppError.notFound('Job not found.');
+
+  const updated = await prisma.job.update({
+    where: { id: jobId },
+    data: { isActive: !existing.isActive },
+  });
+
+  return {
+    message: `Job ${updated.isActive ? 'activated' : 'closed'} successfully.`,
+    isActive: updated.isActive,
   };
 }
 
@@ -732,6 +872,10 @@ module.exports = {
   shortlistCandidate,
   getJobs,
   createJob,
+  getJobById,
+  updateJob,
+  deleteJob,
+  toggleJobStatus,
   getAnalytics,
   exportCandidatesForRecruiter,
   exportCandidateProfileReport,

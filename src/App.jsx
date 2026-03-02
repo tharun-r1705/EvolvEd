@@ -37,6 +37,7 @@ const Leaderboard         = lazy(() => import('./pages/Leaderboard.jsx'));
 const RecruiterDashboard  = lazy(() => import('./pages/RecruiterDashboard.jsx'));
 const CandidateSearch     = lazy(() => import('./pages/CandidateSearch.jsx'));
 const CandidateProfile    = lazy(() => import('./pages/CandidateProfile.jsx'));
+const RecruiterJobs       = lazy(() => import('./pages/RecruiterJobs.jsx'));
 const PostJob             = lazy(() => import('./pages/PostJob.jsx'));
 const RecruiterProfile    = lazy(() => import('./pages/RecruiterProfile.jsx'));
 
@@ -165,7 +166,9 @@ export default function App() {
               <Route index element={<RecruiterDashboard />} />
               <Route path="candidates" element={<CandidateSearch />} />
               <Route path="candidates/:id" element={<CandidateProfile />} />
+              <Route path="jobs" element={<RecruiterJobs />} />
               <Route path="jobs/new" element={<PostJob />} />
+              <Route path="jobs/:jobId/edit" element={<PostJob />} />
               <Route path="profile" element={<RecruiterProfile />} />
             </Route>
           </Route>

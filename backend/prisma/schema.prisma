@@ -570,6 +570,12 @@ model Job {
   location             String
   description          String
   minimumReadinessScore Int          @default(0) @map("minimum_readiness_score")
+  salaryMin            Decimal?      @db.Decimal(10, 2) @map("salary_min")
+  salaryMax            Decimal?      @db.Decimal(10, 2) @map("salary_max")
+  workMode             String?       @map("work_mode")
+  deadline             DateTime?     @map("deadline")
+  responsibilities     String?       @db.Text
+  qualifications       String?       @db.Text
   visibility           JobVisibility @default(public)
   notifyEligible       Boolean       @default(false) @map("notify_eligible")
   isActive             Boolean       @default(true) @map("is_active")

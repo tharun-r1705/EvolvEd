@@ -115,6 +115,46 @@ async function updateApplicationStatus(req, res, next) {
   }
 }
 
+// GET /api/recruiter/jobs/:jobId
+async function getJobById(req, res, next) {
+  try {
+    const data = await recruiterService.getJobById(req.user.userId, req.params.jobId);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// PUT /api/recruiter/jobs/:jobId
+async function updateJob(req, res, next) {
+  try {
+    const data = await recruiterService.updateJob(req.user.userId, req.params.jobId, req.body);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// DELETE /api/recruiter/jobs/:jobId
+async function deleteJob(req, res, next) {
+  try {
+    const data = await recruiterService.deleteJob(req.user.userId, req.params.jobId);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// PATCH /api/recruiter/jobs/:jobId/status
+async function toggleJobStatus(req, res, next) {
+  try {
+    const data = await recruiterService.toggleJobStatus(req.user.userId, req.params.jobId);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
 // GET /api/recruiter/analytics
 async function getAnalytics(req, res, next) {
   try {
@@ -176,6 +216,10 @@ module.exports = {
   shortlistCandidate,
   getJobs,
   createJob,
+  getJobById,
+  updateJob,
+  deleteJob,
+  toggleJobStatus,
   getApplicants,
   updateApplicationStatus,
   getAnalytics,
