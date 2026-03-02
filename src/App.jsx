@@ -32,6 +32,7 @@ const RoadmapView         = lazy(() => import('./pages/RoadmapView.jsx'));
 const MockInterview       = lazy(() => import('./pages/MockInterview.jsx'));
 const InterviewSession    = lazy(() => import('./pages/InterviewSession.jsx'));
 const Leaderboard         = lazy(() => import('./pages/Leaderboard.jsx'));
+const StudentApplications = lazy(() => import('./pages/StudentApplications.jsx'));
 
 // Recruiter Pages (lazy-loaded)
 const RecruiterDashboard  = lazy(() => import('./pages/RecruiterDashboard.jsx'));
@@ -41,10 +42,15 @@ const RecruiterJobs       = lazy(() => import('./pages/RecruiterJobs.jsx'));
 const PostJob             = lazy(() => import('./pages/PostJob.jsx'));
 const JobApplicants       = lazy(() => import('./pages/JobApplicants.jsx'));
 const RecruiterProfile    = lazy(() => import('./pages/RecruiterProfile.jsx'));
+const RecruiterAnalytics  = lazy(() => import('./pages/RecruiterAnalytics.jsx'));
 
 // Admin Pages (lazy-loaded)
 const AdminDashboard      = lazy(() => import('./pages/AdminDashboard.jsx'));
 const ManageStudents      = lazy(() => import('./pages/ManageStudents.jsx'));
+const AdminStudentDetail  = lazy(() => import('./pages/AdminStudentDetail.jsx'));
+const AdminRecruiters     = lazy(() => import('./pages/AdminRecruiters.jsx'));
+const AdminPlacementDrives = lazy(() => import('./pages/AdminPlacementDrives.jsx'));
+const AdminCompanies      = lazy(() => import('./pages/AdminCompanies.jsx'));
 
 // ── Content-area spinner (sidebar stays visible) ──────────────────────────────
 function ContentLoader() {
@@ -145,6 +151,7 @@ export default function App() {
               <Route path="interviews" element={<MockInterview />} />
               <Route path="leaderboard" element={<Leaderboard />} />
               <Route path="chat" element={<StudentChat />} />
+              <Route path="applications" element={<StudentApplications />} />
             </Route>
             {/* Full-screen immersive interview — no sidebar, outside the shell */}
             <Route
@@ -172,6 +179,7 @@ export default function App() {
               <Route path="jobs/:jobId/edit" element={<PostJob />} />
               <Route path="jobs/:jobId/applicants" element={<JobApplicants />} />
               <Route path="profile" element={<RecruiterProfile />} />
+              <Route path="analytics" element={<RecruiterAnalytics />} />
             </Route>
           </Route>
 
@@ -184,6 +192,10 @@ export default function App() {
             <Route element={<AdminShell />}>
               <Route index element={<AdminDashboard />} />
               <Route path="students" element={<ManageStudents />} />
+              <Route path="students/:id" element={<AdminStudentDetail />} />
+              <Route path="recruiters" element={<AdminRecruiters />} />
+              <Route path="placement-drives" element={<AdminPlacementDrives />} />
+              <Route path="companies" element={<AdminCompanies />} />
             </Route>
           </Route>
 

@@ -15,7 +15,7 @@ const NAV_ITEMS = [
   { to: '/student/leaderboard',      icon: 'leaderboard',        label: 'Leaderboard' },
   { to: '/student/interviews',       icon: 'mic',                label: 'Mock Interviews' },
   { to: '/student/chat',             icon: 'smart_toy',          label: 'AI Assistant',       highlight: true },
-  { to: null, icon: 'work',          label: 'Jobs & Placements', soon: true },
+  { to: '/student/applications', icon: 'work', label: 'Jobs & Placements' },
 ];
 
 // The 5 most important nav items shown in the bottom bar

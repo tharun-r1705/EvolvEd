@@ -3,10 +3,11 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const MAIN_NAV = [
-  { to: '/admin',          icon: 'dashboard',        label: 'Dashboard',       exact: true },
-  { to: '/admin/students', icon: 'school',            label: 'Students' },
-  { to: '#',               icon: 'business_center',   label: 'Recruiters',      soon: true },
-  { to: '#',               icon: 'event_available',   label: 'Placement Drives', soon: true },
+  { to: '/admin',                  icon: 'dashboard',       label: 'Dashboard',        exact: true },
+  { to: '/admin/students',         icon: 'school',          label: 'Students' },
+  { to: '/admin/recruiters',       icon: 'business_center', label: 'Recruiters' },
+  { to: '/admin/placement-drives', icon: 'event_available', label: 'Placement Drives' },
+  { to: '/admin/companies',        icon: 'business',        label: 'Companies' },
 ];
 
 const SETTINGS_NAV = [
@@ -14,8 +15,10 @@ const SETTINGS_NAV = [
 ];
 
 const BOTTOM_NAV_ITEMS = [
-  { to: '/admin',          icon: 'dashboard', label: 'Home',     exact: true },
-  { to: '/admin/students', icon: 'school',    label: 'Students' },
+  { to: '/admin',                  icon: 'dashboard',       label: 'Home',      exact: true },
+  { to: '/admin/students',         icon: 'school',          label: 'Students' },
+  { to: '/admin/recruiters',       icon: 'business_center', label: 'Recruiters' },
+  { to: '/admin/companies',        icon: 'business',        label: 'Companies' },
 ];
 
 export default function AdminSidebar() {

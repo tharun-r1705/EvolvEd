@@ -7,7 +7,7 @@ const NAV_ITEMS = [
   { to: '/recruiter/jobs',       icon: 'work',            label: 'Jobs' },
   { to: '/recruiter/candidates', icon: 'group',           label: 'Candidates' },
   { to: '#',                     icon: 'calendar_month',  label: 'Interviews', soon: true },
-  { to: '#',                     icon: 'analytics',       label: 'Reports',    soon: true },
+  { to: '/recruiter/analytics',  icon: 'analytics',       label: 'Reports' },
   { to: '/recruiter/profile',    icon: 'manage_accounts', label: 'Profile' },
 ];
 
