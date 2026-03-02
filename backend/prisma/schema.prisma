@@ -655,12 +655,14 @@ model Shortlist {
 // ─────────────────────────────────────────────────────────────────
 
 model Ranking {
-  id           String   @id @default(uuid()) @db.Uuid
-  studentId    String   @map("student_id") @db.Uuid
-  jobId        String?  @map("job_id") @db.Uuid
-  rank         Int
-  score        Decimal  @db.Decimal(5, 2)
-  calculatedAt DateTime @default(now()) @map("calculated_at")
+  id              String   @id @default(uuid()) @db.Uuid
+  studentId       String   @map("student_id") @db.Uuid
+  jobId           String?  @map("job_id") @db.Uuid
+  rank            Int
+  score           Decimal  @db.Decimal(5, 2)
+  aiJustification String?  @db.Text @map("ai_justification")
+  scoreBreakdown  Json?    @map("score_breakdown")
+  calculatedAt    DateTime @default(now()) @map("calculated_at")
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
   job     Job?    @relation(fields: [jobId], references: [id], onDelete: Cascade)

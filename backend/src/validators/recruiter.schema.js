@@ -161,10 +161,18 @@ const updateRecruiterProfileSchema = z.object({
     .optional(),
 });
 
+const jobRankingsQuerySchema = z.object({
+  page: z.coerce.number().int().positive().optional().default(1),
+  limit: z.coerce.number().int().positive().max(100).optional().default(50),
+  minFitScore: z.coerce.number().min(0).max(100).optional(),
+  sortBy: z.enum(['fitScore', 'readinessScore', 'applicationDate']).optional().default('fitScore'),
+});
+
 module.exports = {
   createJobSchema,
   updateJobSchema,
   candidateSearchSchema,
   shortlistSchema,
   updateRecruiterProfileSchema,
+  jobRankingsQuerySchema,
 };

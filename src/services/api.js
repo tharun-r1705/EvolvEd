@@ -240,6 +240,9 @@ export const recruiterService = {
     api.post('/recruiter/profile/avatar', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
   uploadCompanyLogo: (formData) =>
     api.post('/recruiter/profile/company-logo', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  // Matching (Phase 5)
+  calculateMatches: (jobId) => api.post(`/recruiter/jobs/${jobId}/calculate`),
+  getJobRankings: (jobId, params) => api.get(`/recruiter/jobs/${jobId}/rankings`, { params }),
 };
 
 // ---------------------------------------------------------------------------

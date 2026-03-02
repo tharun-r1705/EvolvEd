@@ -238,10 +238,13 @@ function JobCard({ job, companyLogoUrl, onEdit, onToggle, onDuplicate, onDelete 
 
       {/* Footer */}
       <div className="flex items-center justify-between pt-1 border-t border-slate-100">
-        <span className="flex items-center gap-1.5 text-xs text-slate-500">
+        <Link
+          to={`/recruiter/jobs/${job.id}/applicants`}
+          className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-primary transition-colors"
+        >
           <span className="material-symbols-outlined !text-[16px]">group</span>
           <span className="font-semibold text-secondary">{job.applicationsCount}</span> applicant{job.applicationsCount !== 1 ? 's' : ''}
-        </span>
+        </Link>
         <Link
           to={`/recruiter/jobs/${job.id}/edit`}
           className="text-xs font-semibold text-primary hover:underline"

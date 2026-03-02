@@ -1,6 +1,7 @@
 'use strict';
 
 const recruiterService = require('../services/recruiter.service');
+const matchingService = require('../services/matching.service');
 const { sendCsvResponse } = require('../utils/csvExport');
 
 // GET /api/recruiter/dashboard
@@ -207,6 +208,26 @@ async function uploadCompanyLogo(req, res, next) {
   }
 }
 
+// POST /api/recruiter/jobs/:jobId/calculate
+async function calculateJobMatches(req, res, next) {
+  try {
+    const data = await matchingService.calculateJobMatches(req.user.userId, req.params.jobId);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// GET /api/recruiter/jobs/:jobId/rankings
+async function getJobRankings(req, res, next) {
+  try {
+    const data = await matchingService.getJobRankings(req.user.userId, req.params.jobId, req.query);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getDashboard,
   getCandidates,
@@ -222,6 +243,8 @@ module.exports = {
   toggleJobStatus,
   getApplicants,
   updateApplicationStatus,
+  calculateJobMatches,
+  getJobRankings,
   getAnalytics,
   getProfile,
   updateProfile,

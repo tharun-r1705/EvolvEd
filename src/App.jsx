@@ -39,6 +39,7 @@ const CandidateSearch     = lazy(() => import('./pages/CandidateSearch.jsx'));
 const CandidateProfile    = lazy(() => import('./pages/CandidateProfile.jsx'));
 const RecruiterJobs       = lazy(() => import('./pages/RecruiterJobs.jsx'));
 const PostJob             = lazy(() => import('./pages/PostJob.jsx'));
+const JobApplicants       = lazy(() => import('./pages/JobApplicants.jsx'));
 const RecruiterProfile    = lazy(() => import('./pages/RecruiterProfile.jsx'));
 
 // Admin Pages (lazy-loaded)
@@ -169,6 +170,7 @@ export default function App() {
               <Route path="jobs" element={<RecruiterJobs />} />
               <Route path="jobs/new" element={<PostJob />} />
               <Route path="jobs/:jobId/edit" element={<PostJob />} />
+              <Route path="jobs/:jobId/applicants" element={<JobApplicants />} />
               <Route path="profile" element={<RecruiterProfile />} />
             </Route>
           </Route>
