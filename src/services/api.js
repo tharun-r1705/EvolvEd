@@ -243,6 +243,8 @@ export const recruiterService = {
   // Matching (Phase 5)
   calculateMatches: (jobId) => api.post(`/recruiter/jobs/${jobId}/calculate`),
   getJobRankings: (jobId, params) => api.get(`/recruiter/jobs/${jobId}/rankings`, { params }),
+  // Email (Phase 6)
+  sendShortlistEmails: (jobId, data) => api.post(`/recruiter/jobs/${jobId}/send-shortlist`, data),
 };
 
 // ---------------------------------------------------------------------------

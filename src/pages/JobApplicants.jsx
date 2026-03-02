@@ -15,9 +15,7 @@ function Toast({ message, type = 'success', onDone }) {
       ? 'bg-red-50 text-red-800 ring-red-600/20'
       : 'bg-blue-50 text-blue-800 ring-blue-600/20';
   return (
-    <div
-      className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium shadow-lg ring-1 ring-inset ${colours}`}
-    >
+    <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium shadow-lg ring-1 ring-inset ${colours}`}>
       {type === 'success' ? (
         <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
           <path fillRule="evenodd" d="M16.704 5.296a1 1 0 010 1.414l-7.5 7.5a1 1 0 01-1.414 0l-3.5-3.5a1 1 0 111.414-1.414L8.5 12.086l6.796-6.79a1 1 0 011.408 0z" clipRule="evenodd" />
@@ -67,6 +65,7 @@ function SkeletonCard() {
   return (
     <div className="animate-pulse rounded-2xl bg-white p-5 shadow-md ring-1 ring-slate-200">
       <div className="flex items-start gap-4">
+        <div className="h-5 w-5 rounded bg-slate-200" />
         <div className="h-12 w-12 rounded-full bg-slate-200" />
         <div className="flex-1 space-y-2">
           <div className="h-4 w-40 rounded bg-slate-200" />
@@ -85,7 +84,7 @@ function SkeletonCard() {
 }
 
 // ─── Candidate card ───────────────────────────────────────────────────────────
-function CandidateCard({ item, onShortlist }) {
+function CandidateCard({ item, onShortlist, checked, onCheck }) {
   const [expanded, setExpanded] = useState(false);
   const [shortlisting, setShortlisting] = useState(false);
   const [shortlisted, setShortlisted] = useState(false);
@@ -103,9 +102,24 @@ function CandidateCard({ item, onShortlist }) {
   }
 
   return (
-    <div className="rounded-2xl bg-white p-5 shadow-md ring-1 ring-slate-200 transition-shadow hover:shadow-lg">
+    <div
+      className={`rounded-2xl bg-white p-5 shadow-md ring-1 transition-shadow hover:shadow-lg ${
+        checked ? 'ring-primary/50 bg-primary/[0.02]' : 'ring-slate-200'
+      }`}
+    >
       {/* Header row */}
       <div className="flex flex-wrap items-start gap-4">
+        {/* Checkbox */}
+        <div className="flex items-center pt-1 flex-shrink-0">
+          <input
+            type="checkbox"
+            checked={checked}
+            onChange={(e) => onCheck(item.rankingId, e.target.checked)}
+            className="h-4 w-4 rounded border-slate-300 accent-primary cursor-pointer"
+            aria-label={`Select ${item.student.fullName}`}
+          />
+        </div>
+
         {/* Rank + avatar */}
         <div className="flex items-center gap-3">
           <RankBadge rank={item.rank} />
@@ -124,7 +138,12 @@ function CandidateCard({ item, onShortlist }) {
 
         {/* Name + meta */}
         <div className="flex-1 min-w-0">
-          <p className="font-semibold text-secondary truncate">{item.student.fullName}</p>
+          <Link
+            to={`/recruiter/candidates/${item.student.id}`}
+            className="font-semibold text-secondary hover:text-primary transition-colors truncate block"
+          >
+            {item.student.fullName}
+          </Link>
           <p className="text-xs text-slate-500">
             {item.student.department}
             {item.student.yearOfStudy ? ` · Year ${item.student.yearOfStudy}` : ''}
@@ -245,15 +264,129 @@ function CandidateCard({ item, onShortlist }) {
   );
 }
 
+// ─── Send Email Modal ─────────────────────────────────────────────────────────
+function SendEmailModal({ count, jobId, selectedIds, onClose, onSuccess }) {
+  const [message, setMessage] = useState('');
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState(null);
+
+  async function handleSend() {
+    setSending(true);
+    setError(null);
+    try {
+      const res = await recruiterService.sendShortlistEmails(jobId, {
+        candidateIds: selectedIds,
+        message: message.trim() || undefined,
+      });
+      onSuccess(res.data);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to send emails. Please try again.');
+    } finally {
+      setSending(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onClose}>
+      <div
+        className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-start justify-between mb-5">
+          <div>
+            <h2 className="text-lg font-bold text-secondary">Send Shortlist Emails</h2>
+            <p className="text-sm text-slate-500 mt-0.5">
+              Notify <span className="font-semibold text-secondary">{count}</span> candidate{count !== 1 ? 's' : ''} they've been shortlisted.
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
+          >
+            <span className="material-symbols-outlined !text-[20px]">close</span>
+          </button>
+        </div>
+
+        {/* Info box */}
+        <div className="bg-primary/5 border border-primary/20 rounded-xl p-3 mb-5 flex items-start gap-3">
+          <span className="material-symbols-outlined text-primary !text-[18px] mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>info</span>
+          <p className="text-xs text-slate-600 leading-relaxed">
+            A branded EvolvEd email will be sent to each candidate, congratulating them on being shortlisted. They will also be added to your shortlist.
+          </p>
+        </div>
+
+        {/* Custom message */}
+        <div className="mb-5">
+          <label className="block text-sm font-medium text-secondary mb-1.5">
+            Custom Message <span className="text-slate-400 font-normal">(optional)</span>
+          </label>
+          <textarea
+            rows={4}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            maxLength={1000}
+            placeholder="Add a personal note to the candidates, e.g. interview details, next steps..."
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-secondary placeholder:text-slate-400 resize-none focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/50"
+          />
+          <p className="text-right text-xs text-slate-400 mt-1">{message.length}/1000</p>
+        </div>
+
+        {/* Error */}
+        {error && (
+          <div className="mb-4 bg-red-50 border border-red-200 rounded-xl px-3 py-2.5 flex items-center gap-2 text-red-700 text-sm">
+            <span className="material-symbols-outlined !text-[16px]">error</span>
+            {error}
+          </div>
+        )}
+
+        {/* Actions */}
+        <div className="flex gap-3">
+          <button
+            onClick={onClose}
+            disabled={sending}
+            className="flex-1 h-10 rounded-xl border border-slate-200 text-secondary text-sm font-semibold hover:bg-slate-50 transition-colors disabled:opacity-60"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSend}
+            disabled={sending}
+            className="flex-1 h-10 rounded-xl bg-primary text-secondary text-sm font-bold hover:bg-amber-500 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+          >
+            {sending ? (
+              <>
+                <span className="material-symbols-outlined !text-[16px] animate-spin">progress_activity</span>
+                Sending…
+              </>
+            ) : (
+              <>
+                <span className="material-symbols-outlined !text-[16px]">send</span>
+                Send {count} Email{count !== 1 ? 's' : ''}
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 export default function JobApplicants() {
   const { jobId } = useParams();
 
   const [job, setJob] = useState(null);
-  const [rankings, setRankings] = useState(null); // null = not loaded yet
+  const [rankings, setRankings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [calculating, setCalculating] = useState(false);
   const [toast, setToast] = useState(null);
+
+  // Selection state — Set of rankingIds
+  const [selected, setSelected] = useState(new Set());
+
+  // Modal state
+  const [showEmailModal, setShowEmailModal] = useState(false);
 
   // Filters
   const [minFitScore, setMinFitScore] = useState(0);
@@ -280,10 +413,8 @@ export default function JobApplicants() {
     fetchData();
   }, [fetchData]);
 
-  // ── Filtered + sorted items ────────────────────────────────────────────────
-  const items = (rankings?.items ?? []).filter(
-    (item) => item.fitScore >= minFitScore
-  );
+  // ── Filtered items ─────────────────────────────────────────────────────────
+  const items = (rankings?.items ?? []).filter((item) => item.fitScore >= minFitScore);
 
   // ── Stats ──────────────────────────────────────────────────────────────────
   const total = rankings?.total ?? 0;
@@ -293,15 +424,66 @@ export default function JobApplicants() {
   const topScore = items[0]?.fitScore ?? 0;
   const above75 = items.filter((i) => i.fitScore >= 75).length;
 
+  // ── Selection helpers ──────────────────────────────────────────────────────
+  function handleCheck(rankingId, checked) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (checked) next.add(rankingId);
+      else next.delete(rankingId);
+      return next;
+    });
+  }
+
+  function clearSelection() {
+    setSelected(new Set());
+  }
+
+  function selectTopN(n) {
+    const ids = items.slice(0, n).map((i) => i.rankingId);
+    setSelected(new Set(ids));
+  }
+
+  function selectAbovePct(pct) {
+    const ids = items.filter((i) => i.fitScore >= pct).map((i) => i.rankingId);
+    setSelected(new Set(ids));
+  }
+
+  // Map rankingId → studentId for the email payload
+  const selectedStudentIds = Array.from(selected)
+    .map((rankingId) => items.find((i) => i.rankingId === rankingId)?.student?.id)
+    .filter(Boolean);
+
+  // ── Bulk shortlist ─────────────────────────────────────────────────────────
+  async function handleBulkShortlist() {
+    if (selected.size === 0) return;
+    let success = 0;
+    let fail = 0;
+    for (const rankingId of selected) {
+      const item = items.find((i) => i.rankingId === rankingId);
+      if (!item) continue;
+      try {
+        await recruiterService.shortlistCandidate(item.student.id);
+        success++;
+      } catch {
+        fail++;
+      }
+    }
+    clearSelection();
+    setToast({
+      message: `Shortlisted ${success} candidate${success !== 1 ? 's' : ''}${fail > 0 ? `, ${fail} failed` : ''}`,
+      type: fail > 0 ? 'error' : 'success',
+    });
+  }
+
   // ── Calculate matches ──────────────────────────────────────────────────────
   async function handleCalculate() {
     setCalculating(true);
     try {
       await recruiterService.calculateMatches(jobId);
-      // Poll once after 3 s — AI justifications stream in asynchronously
       await new Promise((r) => setTimeout(r, 3000));
       const res = await recruiterService.getJobRankings(jobId, { page: 1, limit: 50, sortBy });
       setRankings(res.data);
+      clearSelection();
       setToast({ message: `Ranked ${res.data.total} candidates`, type: 'success' });
     } catch (err) {
       setToast({ message: err?.response?.data?.message ?? 'Calculation failed', type: 'error' });
@@ -310,20 +492,16 @@ export default function JobApplicants() {
     }
   }
 
-  // ── Re-fetch when filters change ───────────────────────────────────────────
+  // ── Re-fetch when sort changes ─────────────────────────────────────────────
   async function applyFilters(newSort) {
     const s = newSort ?? sortBy;
     try {
-      const res = await recruiterService.getJobRankings(jobId, {
-        page: 1,
-        limit: 50,
-        sortBy: s,
-      });
+      const res = await recruiterService.getJobRankings(jobId, { page: 1, limit: 50, sortBy: s });
       setRankings(res.data);
     } catch {/* ignore */}
   }
 
-  // ── Shortlist handler ──────────────────────────────────────────────────────
+  // ── Shortlist single handler ───────────────────────────────────────────────
   async function handleShortlist(studentId) {
     try {
       await recruiterService.shortlistCandidate(studentId);
@@ -331,6 +509,16 @@ export default function JobApplicants() {
     } catch (err) {
       setToast({ message: err?.response?.data?.message ?? 'Shortlist failed', type: 'error' });
     }
+  }
+
+  // ── Email modal success ────────────────────────────────────────────────────
+  function handleEmailSuccess(result) {
+    setShowEmailModal(false);
+    clearSelection();
+    setToast({
+      message: `Sent ${result.sent} email${result.sent !== 1 ? 's' : ''}${result.failed > 0 ? `, ${result.failed} failed` : ''} successfully`,
+      type: result.failed > 0 ? 'error' : 'success',
+    });
   }
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -347,6 +535,17 @@ export default function JobApplicants() {
         </div>
       )}
 
+      {/* Email Modal */}
+      {showEmailModal && (
+        <SendEmailModal
+          count={selectedStudentIds.length}
+          jobId={jobId}
+          selectedIds={selectedStudentIds}
+          onClose={() => setShowEmailModal(false)}
+          onSuccess={handleEmailSuccess}
+        />
+      )}
+
       <div className="mx-auto w-full max-w-5xl px-4 py-8 space-y-6">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-1.5 text-xs text-slate-400">
@@ -354,9 +553,7 @@ export default function JobApplicants() {
           <span>/</span>
           <Link to="/recruiter/jobs" className="hover:text-primary">Jobs</Link>
           <span>/</span>
-          <span className="text-slate-600 truncate max-w-[160px]">
-            {job?.title ?? '…'}
-          </span>
+          <span className="text-slate-600 truncate max-w-[160px]">{job?.title ?? '…'}</span>
           <span>/</span>
           <span className="text-secondary font-medium">Applicants</span>
         </nav>
@@ -440,13 +637,49 @@ export default function JobApplicants() {
           </div>
         )}
 
+        {/* Quick-select row */}
+        {!loading && items.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-medium text-slate-500">Quick select:</span>
+            {[5, 10, 20].map((n) => (
+              items.length >= n && (
+                <button
+                  key={n}
+                  onClick={() => selectTopN(n)}
+                  className="rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600 hover:border-primary/40 hover:text-primary transition-colors"
+                >
+                  Top {n}
+                </button>
+              )
+            ))}
+            {above75 > 0 && (
+              <button
+                onClick={() => selectAbovePct(75)}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600 hover:border-primary/40 hover:text-primary transition-colors"
+              >
+                All above 75%
+                <span className="ml-1.5 inline-flex items-center justify-center rounded-full bg-green-100 text-green-700 text-[10px] font-bold px-1.5 py-0.5">
+                  {above75}
+                </span>
+              </button>
+            )}
+            {selected.size > 0 && (
+              <button
+                onClick={clearSelection}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-400 hover:text-red-500 hover:border-red-200 transition-colors"
+              >
+                Clear all
+              </button>
+            )}
+          </div>
+        )}
+
         {/* Content */}
         {loading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((i) => <SkeletonCard key={i} />)}
           </div>
         ) : rankings === null || rankings?.total === 0 ? (
-          /* Empty state */
           <div className="flex flex-col items-center justify-center rounded-2xl bg-white py-20 shadow-md ring-1 ring-slate-200 text-center px-6">
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 mb-4">
               <svg className="h-8 w-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -473,13 +706,55 @@ export default function JobApplicants() {
             <p className="text-sm text-slate-500">No candidates above the selected fit score threshold.</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-4 pb-24">
             {items.map((item) => (
-              <CandidateCard key={item.rankingId} item={item} onShortlist={handleShortlist} />
+              <CandidateCard
+                key={item.rankingId}
+                item={item}
+                onShortlist={handleShortlist}
+                checked={selected.has(item.rankingId)}
+                onCheck={handleCheck}
+              />
             ))}
           </div>
         )}
       </div>
+
+      {/* ── Sticky bulk actions bar ───────────────────────────────────────────── */}
+      {selected.size > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-between gap-3 bg-secondary px-4 sm:px-8 py-3 shadow-2xl border-t border-white/10">
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center justify-center rounded-full bg-primary text-secondary text-xs font-bold px-2.5 py-0.5 min-w-[28px]">
+              {selected.size}
+            </span>
+            <span className="text-sm text-white font-medium">
+              candidate{selected.size !== 1 ? 's' : ''} selected
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={clearSelection}
+              className="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-white/80 hover:bg-white/10 transition-colors"
+            >
+              Clear
+            </button>
+            <button
+              onClick={handleBulkShortlist}
+              className="rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors flex items-center gap-1.5"
+            >
+              <span className="material-symbols-outlined !text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>bookmark</span>
+              Shortlist Selected
+            </button>
+            <button
+              onClick={() => setShowEmailModal(true)}
+              className="rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-secondary hover:bg-amber-500 transition-colors flex items-center gap-1.5"
+            >
+              <span className="material-symbols-outlined !text-[14px]">send</span>
+              Send Shortlist Email
+            </button>
+          </div>
+        </div>
+      )}
 
       {toast && (
         <Toast message={toast.message} type={toast.type} onDone={() => setToast(null)} />

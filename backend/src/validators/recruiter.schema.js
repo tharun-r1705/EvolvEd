@@ -168,6 +168,14 @@ const jobRankingsQuerySchema = z.object({
   sortBy: z.enum(['fitScore', 'readinessScore', 'applicationDate']).optional().default('fitScore'),
 });
 
+const sendShortlistSchema = z.object({
+  candidateIds: z
+    .array(z.string().uuid('Each candidate ID must be a valid UUID.'))
+    .min(1, 'Select at least one candidate.')
+    .max(100, 'Cannot send to more than 100 candidates at once.'),
+  message: z.string().trim().max(1000, 'Message must be 1000 characters or less.').optional(),
+});
+
 module.exports = {
   createJobSchema,
   updateJobSchema,
@@ -175,4 +183,5 @@ module.exports = {
   shortlistSchema,
   updateRecruiterProfileSchema,
   jobRankingsQuerySchema,
+  sendShortlistSchema,
 };

@@ -6,6 +6,7 @@ const { parsePagination, paginatedResponse } = require('../utils/pagination');
 const { recalculateJobRankings } = require('./ranking.service');
 const { exportCandidates } = require('./export.service');
 const { uploadFromBuffer, deleteFromCloudinary } = require('../config/cloudinary');
+const emailService = require('./email.service');
 
 // ─── HELPER ──────────────────────────────────────────────────────
 
@@ -217,6 +218,9 @@ async function getCandidateById(candidateId) {
       certifications: { orderBy: { issueDate: 'desc' } },
       rankings: { where: { jobId: null }, take: 1 },
       scoreBreakdown: true,
+      events: { orderBy: { date: 'desc' }, take: 10 },
+      leetcodeProfile: true,
+      githubProfile: true,
     },
   });
 
@@ -278,6 +282,9 @@ async function getCandidateById(candidateId) {
           assessments: Number(student.scoreBreakdown.assessments),
         }
       : null,
+    events: student.events,
+    leetcodeProfile: student.leetcodeProfile,
+    githubProfile: student.githubProfile,
   };
 }
 
@@ -865,6 +872,72 @@ async function uploadCompanyLogo(userId, fileBuffer) {
   return { message: 'Company logo uploaded successfully.', logoUrl: result.secure_url };
 }
 
+// ─── SEND SHORTLIST EMAILS ───────────────────────────────────────
+
+async function sendShortlistEmails(userId, jobId, { candidateIds, message }) {
+  const recruiter = await getRecruiterByUserId(userId);
+
+  // Verify job belongs to this recruiter
+  const job = await prisma.job.findFirst({
+    where: { id: jobId, recruiterId: recruiter.id, deletedAt: null },
+    include: { company: true },
+  });
+  if (!job) throw AppError.notFound('Job not found.');
+
+  if (!candidateIds || candidateIds.length === 0) {
+    throw AppError.badRequest('Select at least one candidate.');
+  }
+
+  // Fetch candidate emails + names
+  const students = await prisma.student.findMany({
+    where: { id: { in: candidateIds }, deletedAt: null },
+    include: { user: { select: { email: true } } },
+  });
+
+  if (students.length === 0) throw AppError.notFound('No valid candidates found.');
+
+  const recipients = students.map((s) => ({ id: s.id, email: s.user.email, name: s.fullName }));
+  const jobInfo = {
+    jobTitle: job.title,
+    companyName: job.company ? job.company.name : 'EvolvEd Partner Company',
+  };
+  const recruiterInfo = { name: recruiter.fullName };
+
+  // Send emails
+  const emailResult = await emailService.sendShortlistEmailsBatch(recipients, jobInfo, recruiterInfo, message);
+
+  // Shortlist each successfully emailed candidate (upsert to avoid duplicates)
+  const successfulIds = emailResult.results
+    .filter((r) => r.success)
+    .map((r) => recipients.find((p) => p.email === r.email)?.id)
+    .filter(Boolean);
+
+  if (successfulIds.length > 0) {
+    await Promise.all(
+      successfulIds.map((studentId) =>
+        prisma.shortlist.upsert({
+          where: { recruiterId_studentId_jobId: { recruiterId: recruiter.id, studentId, jobId } },
+          create: { recruiterId: recruiter.id, studentId, jobId, notes: message || null },
+          update: { notes: message || null },
+        }).catch(() =>
+          // Fallback: create if upsert unique constraint not available
+          prisma.shortlist.createMany({
+            data: [{ recruiterId: recruiter.id, studentId, jobId, notes: message || null }],
+            skipDuplicates: true,
+          })
+        )
+      )
+    );
+  }
+
+  return {
+    sent: emailResult.sent,
+    failed: emailResult.failed,
+    total: emailResult.total,
+    results: emailResult.results,
+  };
+}
+
 module.exports = {
   getDashboard,
   getCandidates,
@@ -885,4 +958,5 @@ module.exports = {
   updateProfile,
   uploadRecruiterAvatar,
   uploadCompanyLogo,
+  sendShortlistEmails,
 };

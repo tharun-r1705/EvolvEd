@@ -228,6 +228,20 @@ async function getJobRankings(req, res, next) {
   }
 }
 
+// POST /api/recruiter/jobs/:jobId/send-shortlist
+async function sendShortlistEmails(req, res, next) {
+  try {
+    const data = await recruiterService.sendShortlistEmails(
+      req.user.userId,
+      req.params.jobId,
+      req.body
+    );
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getDashboard,
   getCandidates,
@@ -245,6 +259,7 @@ module.exports = {
   updateApplicationStatus,
   calculateJobMatches,
   getJobRankings,
+  sendShortlistEmails,
   getAnalytics,
   getProfile,
   updateProfile,

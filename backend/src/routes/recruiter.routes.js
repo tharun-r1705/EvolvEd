@@ -5,7 +5,7 @@ const ctrl = require('../controllers/recruiter.controller');
 const authenticate = require('../middleware/authenticate');
 const authorize = require('../middleware/authorize');
 const validate = require('../middleware/validate');
-const { createJobSchema, updateJobSchema, candidateSearchSchema, updateRecruiterProfileSchema, jobRankingsQuerySchema } = require('../validators/recruiter.schema');
+const { createJobSchema, updateJobSchema, candidateSearchSchema, updateRecruiterProfileSchema, jobRankingsQuerySchema, sendShortlistSchema } = require('../validators/recruiter.schema');
 const { uploadAvatar, uploadCompanyLogo } = require('../middleware/upload');
 
 // All recruiter routes require authentication + recruiter role
@@ -32,6 +32,7 @@ router.post('/jobs', validate(createJobSchema), ctrl.createJob);
 router.get('/jobs/:jobId/applicants', ctrl.getApplicants);
 router.post('/jobs/:jobId/calculate', ctrl.calculateJobMatches);
 router.get('/jobs/:jobId/rankings', validate(jobRankingsQuerySchema, 'query'), ctrl.getJobRankings);
+router.post('/jobs/:jobId/send-shortlist', validate(sendShortlistSchema), ctrl.sendShortlistEmails);
 router.patch('/jobs/:jobId/status', ctrl.toggleJobStatus);
 // CRUD
 router.get('/jobs/:jobId', ctrl.getJobById);

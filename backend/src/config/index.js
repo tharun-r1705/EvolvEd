@@ -38,6 +38,11 @@ const config = {
     ].filter(Boolean),
   },
 
+  resend: {
+    apiKey: process.env.RESEND_API_KEY,
+    fromEmail: process.env.FROM_EMAIL || 'noreply@evolvedplatform.com',
+  },
+
   rateLimit: {
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 15 * 60 * 1000,
     max: parseInt(process.env.RATE_LIMIT_MAX, 10) || 100,
