@@ -50,6 +50,16 @@ function projectStatusBadge(status) {
   return map[(status || '').toLowerCase()] || 'bg-slate-100 text-slate-600 ring-slate-300/40';
 }
 
+function tagLabel(value) {
+  if (typeof value === 'string' || typeof value === 'number') return String(value);
+  if (value && typeof value === 'object') {
+    if (typeof value.name === 'string' || typeof value.name === 'number') return String(value.name);
+    if (typeof value.label === 'string' || typeof value.label === 'number') return String(value.label);
+    if (typeof value.value === 'string' || typeof value.value === 'number') return String(value.value);
+  }
+  return '';
+}
+
 // SVG circular gauge — r=42 → circumference ≈ 264
 function ScoreGauge({ score }) {
   const circ = 2 * Math.PI * 42;
@@ -472,9 +482,12 @@ export default function CandidateProfile() {
                       <div className={candidate.technicalSkills?.length > 0 ? 'pt-5 border-t border-slate-100' : ''}>
                         <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Soft Skills</p>
                         <div className="flex flex-wrap gap-2">
-                          {candidate.softSkills.map((s) => (
-                            <span key={s} className="px-3 py-1 bg-slate-100 rounded-lg text-sm text-slate-600 border border-slate-200">{s}</span>
-                          ))}
+                          {candidate.softSkills
+                            .map((s) => tagLabel(s).trim())
+                            .filter(Boolean)
+                            .map((label, index) => (
+                              <span key={`${label}-${index}`} className="px-3 py-1 bg-slate-100 rounded-lg text-sm text-slate-600 border border-slate-200">{label}</span>
+                            ))}
                         </div>
                       </div>
                     )}
@@ -711,11 +724,14 @@ export default function CandidateProfile() {
                           {(Array.isArray(candidate.githubProfile.topLanguages)
                             ? candidate.githubProfile.topLanguages
                             : [candidate.githubProfile.topLanguages]
-                          ).map((lang) => (
-                            <span key={lang} className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-lg border border-primary/20">
-                              {lang}
-                            </span>
-                          ))}
+                          )
+                            .map((lang) => tagLabel(lang).trim())
+                            .filter(Boolean)
+                            .map((label, index) => (
+                              <span key={`${label}-${index}`} className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-lg border border-primary/20">
+                                {label}
+                              </span>
+                            ))}
                         </div>
                       </div>
                     )}
