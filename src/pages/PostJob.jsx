@@ -425,7 +425,7 @@ export default function PostJob() {
                   />
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Requirements */}
             <div className={sectionClass}>
@@ -500,12 +500,10 @@ export default function PostJob() {
                   )}
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
-              </div>
-            </motion.div>
 
-            {/* Requirements */}
+            {/* Matching Preview */}
             <motion.div 
               initial={{ opacity: 0, y: 12 }} 
               animate={{ opacity: 1, y: 0 }} 
@@ -523,8 +521,7 @@ export default function PostJob() {
                 <span className="material-symbols-outlined !text-[16px] text-emerald-600">check_circle</span>
                 <span className="text-xs text-emerald-700 font-medium">AI matching will activate on publish</span>
               </div>
-            </div>
-          </div>
+            </motion.div>
         </div>
       </div>
     </main>

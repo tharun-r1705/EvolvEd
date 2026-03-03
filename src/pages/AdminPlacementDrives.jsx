@@ -481,8 +481,9 @@ export default function AdminPlacementDrives() {
                                   style={{ width: `${Math.min(slotsPercent, 100)}%` }}
                                />
                              </div>
-                           )}
-                         </motion.div>
+                            </div>
+                          )}
+                        </motion.div>
                        );
                      })
                }

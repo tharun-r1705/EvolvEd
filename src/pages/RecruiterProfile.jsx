@@ -422,7 +422,9 @@ export default function RecruiterProfile() {
                   </span>
                   {profile?.company?.name && (
                     <span className="text-xs text-slate-500">{profile.company.name}</span>
-              )}
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </motion.div>

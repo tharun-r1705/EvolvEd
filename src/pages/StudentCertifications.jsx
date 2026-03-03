@@ -41,8 +41,57 @@ function Toast({ message, type, onClose }) {
       <p className="text-sm font-medium">{message}</p>
       <button onClick={onClose} className="ml-2 opacity-70 hover:opacity-100">
         <span className="material-symbols-outlined text-base">close</span>
-            </button>
-          </motion.div>
+      </button>
+    </div>
+  );
+}
+
+// ─── Cert Modal ────────────────────────────────────────────────────────────────
+
+function CertModal({ cert, onClose, onSave }) {
+  const isEdit = !!cert;
+  const [form, setForm] = useState({
+    name: cert?.name || '',
+    issuer: cert?.issuer || '',
+    issueDate: cert?.issueDate ? cert.issueDate.slice(0, 10) : '',
+    expiryDate: cert?.expiryDate ? cert.expiryDate.slice(0, 10) : '',
+    credentialId: cert?.credentialId || '',
+    credentialUrl: cert?.credentialUrl || '',
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleField = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
+
+  const handleSubmit = async (e) => {
+    if (e?.preventDefault) e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      await onSave({ ...form, id: cert?.id });
+    } catch (err) {
+      setError(getApiError(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <motion.div
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.2 }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-slate-200 flex-shrink-0">
+          <h2 className="text-lg font-bold text-secondary">
+            {isEdit ? 'Edit Certification' : 'Add Certification'}
+          </h2>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+            <span className="material-symbols-outlined text-slate-500">close</span>
+          </button>
         </div>
 
         {/* Body */}
@@ -147,7 +196,7 @@ function Toast({ message, type, onClose }) {
             {isEdit ? 'Save Changes' : 'Add Certification'}
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
@@ -361,7 +410,7 @@ export default function StudentCertifications() {
               <span className="material-symbols-outlined text-lg">add</span>
               Add Certification
             </button>
-          </div>
+          </motion.div>
         </div>
 
         {/* Content */}

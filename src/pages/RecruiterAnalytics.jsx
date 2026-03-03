@@ -343,7 +343,7 @@ export default function RecruiterAnalytics() {
                   })}
                 </div>
               )}
-            </div>
+            </motion.div>
 
             {/* Quick Actions */}
             <motion.div 
@@ -372,9 +372,6 @@ export default function RecruiterAnalytics() {
                   </Link>
                 ))}
               </div>
-            </motion.div>
-          </div>
-        </div>
             </motion.div>
           </div>
         </div>

@@ -575,7 +575,7 @@ export default function CandidateProfile() {
                       </div>
                     ))}
                   </div>
-                </section>
+                </motion.section>
               )}
 
               {/* Internships */}
@@ -603,7 +603,7 @@ export default function CandidateProfile() {
                       </div>
                     ))}
                   </div>
-                </motion.section>
+                </section>
               )}
 
               {/* Certifications */}
@@ -683,7 +683,7 @@ export default function CandidateProfile() {
                       </div>
                     )}
                   </div>
-                </section>
+                </motion.section>
               )}
 
               {/* GitHub Stats */}

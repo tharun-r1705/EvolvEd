@@ -226,6 +226,7 @@ export default function StudentChat() {
     inputRef.current?.focus();
     // Close sidebar on mobile after selecting a conversation
     if (window.innerWidth < 1024) setSidebarOpen(false);
+  }
 
   async function startNewConversation() {
     try {
