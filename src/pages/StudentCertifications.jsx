@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { studentService } from '../services/api.js';
 
 // ─── Utility ──────────────────────────────────────────────────────────────────
@@ -40,80 +41,8 @@ function Toast({ message, type, onClose }) {
       <p className="text-sm font-medium">{message}</p>
       <button onClick={onClose} className="ml-2 opacity-70 hover:opacity-100">
         <span className="material-symbols-outlined text-base">close</span>
-      </button>
-    </div>
-  );
-}
-
-// ─── Cert Modal ───────────────────────────────────────────────────────────────
-
-const EMPTY_FORM = {
-  name: '', issuer: '', issueDate: '', expiryDate: '', credentialUrl: '', credentialId: '',
-};
-
-function CertModal({ cert, onClose, onSave }) {
-  const isEdit = !!cert?.id;
-  const [form, setForm] = useState(
-    cert
-      ? {
-          name: cert.name || '',
-          issuer: cert.issuer || '',
-          issueDate: cert.issueDate ? cert.issueDate.slice(0, 10) : '',
-          expiryDate: cert.expiryDate ? cert.expiryDate.slice(0, 10) : '',
-          credentialUrl: cert.credentialUrl || '',
-          credentialId: cert.credentialId || '',
-        }
-      : { ...EMPTY_FORM }
-  );
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  function handleField(key, value) {
-    setForm((f) => ({ ...f, [key]: value }));
-  }
-
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-    try {
-      const payload = {
-        name: form.name.trim(),
-        issuer: form.issuer.trim(),
-        issueDate: form.issueDate ? new Date(form.issueDate).toISOString() : undefined,
-        expiryDate: form.expiryDate ? new Date(form.expiryDate).toISOString() : null,
-        credentialUrl: form.credentialUrl.trim() || null,
-        credentialId: form.credentialId.trim() || null,
-      };
-
-      let savedCert;
-      if (isEdit) {
-        const res = await studentService.updateCertification(cert.id, payload);
-        savedCert = res.data.certification;
-      } else {
-        const res = await studentService.addCertification(payload);
-        savedCert = res.data.certification;
-      }
-
-      onSave(savedCert, isEdit ? 'update' : 'add');
-    } catch (err) {
-      setError(getApiError(err));
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[92vh] flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 flex-shrink-0">
-          <h2 className="text-lg font-bold text-secondary">
-            {isEdit ? 'Edit Certification' : 'Add Certification'}
-          </h2>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-slate-100 transition-colors">
-            <span className="material-symbols-outlined text-slate-500">close</span>
-          </button>
+            </button>
+          </motion.div>
         </div>
 
         {/* Body */}
@@ -413,7 +342,12 @@ export default function StudentCertifications() {
       <main className="flex-1 overflow-y-auto bg-background-light">
         {/* Header */}
         <div className="sticky top-0 z-10 bg-background-light/95 backdrop-blur-sm border-b border-slate-200 px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
+          <motion.div 
+            className="flex items-center justify-between"
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          >
             <div>
               <h1 className="text-2xl font-bold text-secondary font-playfair">Certifications</h1>
               <p className="text-sm text-slate-500 mt-0.5">
@@ -457,13 +391,20 @@ export default function StudentCertifications() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {certs.map((c) => (
-                <CertCard
+              {certs.map((c, i) => (
+                <motion.div
                   key={c.id}
-                  cert={c}
-                  onEdit={(cert) => setModalCert(cert)}
-                  onDelete={(cert) => setDeleteTarget(cert)}
-                />
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, ease: 'easeOut', delay: 0.1 + i * 0.07 }}
+                  whileHover={{ y: -2, transition: { duration: 0.2 } }}
+                >
+                  <CertCard
+                    cert={c}
+                    onEdit={(cert) => setModalCert(cert)}
+                    onDelete={(cert) => setDeleteTarget(cert)}
+                  />
+                </motion.div>
               ))}
             </div>
           )}

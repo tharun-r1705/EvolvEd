@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { studentService } from '../services/api.js';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -528,7 +529,12 @@ export default function StudentResumes() {
       <div className="mx-auto w-full max-w-4xl">
 
           {/* Header */}
-          <header className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+          <motion.header 
+            className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end"
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          >
             <div>
               <div className="flex items-center gap-3 mb-1">
                 <Link to="/student" className="text-slate-400 hover:text-primary transition-colors">
@@ -549,7 +555,7 @@ export default function StudentResumes() {
                 Upload Resume
               </button>
             )}
-          </header>
+          </motion.header>
 
           {/* Upload Form */}
           {showUpload && (
@@ -610,16 +616,23 @@ export default function StudentResumes() {
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                {resumes.map((r) => (
-                  <ResumeCard
+                {resumes.map((r, i) => (
+                  <motion.div
                     key={r.id}
-                    resume={r}
-                    onView={setViewTarget}
-                    onEdit={setEditTarget}
-                    onDelete={setDeleteTarget}
-                    onSetDefault={handleSetDefault}
-                    settingDefault={settingDefault}
-                  />
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeOut', delay: 0.1 + i * 0.07 }}
+                    whileHover={{ y: -2, transition: { duration: 0.2 } }}
+                  >
+                    <ResumeCard
+                      resume={r}
+                      onView={setViewTarget}
+                      onEdit={setEditTarget}
+                      onDelete={setDeleteTarget}
+                      onSetDefault={handleSetDefault}
+                      settingDefault={settingDefault}
+                    />
+                  </motion.div>
                 ))}
               </div>
             </>

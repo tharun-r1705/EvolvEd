@@ -23,9 +23,40 @@ app.use(compression({ level: 6, threshold: 512 }));
 app.use(helmet());
 
 // ─── CORS ────────────────────────────────────────────────────────
+const allowedOrigins = [
+  config.frontendUrl,
+  'http://localhost:5173',
+  'http://localhost:3000',
+];
+
+// Add Vercel deployment domains
+if (process.env.VERCEL_URL) {
+  allowedOrigins.push(`https://${process.env.VERCEL_URL}`);
+}
+if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+  allowedOrigins.push(`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`);
+}
+// Add custom domain if configured
+if (process.env.FRONTEND_DOMAIN) {
+  allowedOrigins.push(`https://${process.env.FRONTEND_DOMAIN}`);
+}
+
 app.use(
   cors({
-    origin: [config.frontendUrl, 'http://localhost:5173', 'http://localhost:3000'],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or Postman)
+      if (!origin) return callback(null, true);
+      
+      // Check if origin is in allowed list or matches Vercel preview pattern
+      if (
+        allowedOrigins.includes(origin) ||
+        origin.match(/^https:\/\/.*\.vercel\.app$/)
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,

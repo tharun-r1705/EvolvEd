@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { recruiterService } from '../services/api';
 
 // ─── Toast ────────────────────────────────────────────────────────
@@ -378,7 +379,12 @@ export default function RecruiterJobs() {
       <div className="flex flex-col max-w-[1200px] mx-auto w-full gap-6 p-4 sm:p-6 lg:p-8">
 
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+        <motion.div 
+          initial={{ opacity: 0, y: -16 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4"
+        >
           <div className="flex flex-col gap-1">
             <p className="text-primary text-xs font-semibold uppercase tracking-widest">Job Management</p>
             <h1 className="text-secondary text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Your Jobs</h1>
@@ -389,9 +395,9 @@ export default function RecruiterJobs() {
             className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-primary hover:bg-primary-dark text-secondary text-sm font-bold transition-all shadow-sm hover:shadow-md self-start sm:self-auto"
           >
             <span className="material-symbols-outlined !text-[18px]">add</span>
-            Post New Job
-          </Link>
-        </div>
+              Post New Job
+            </Link>
+          </motion.div>
 
         {/* Stats Strip */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -400,14 +406,20 @@ export default function RecruiterJobs() {
             { label: 'Active',            value: activeCount, icon: 'check_circle',    colour: 'text-emerald-600' },
             { label: 'Drafts',            value: draftCount,  icon: 'edit_note',       colour: 'text-amber-600' },
             { label: 'Total Applications', value: totalApps,  icon: 'group',           colour: 'text-indigo-600' },
-          ].map(({ label, value, icon, colour }) => (
-            <div key={label} className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-4 flex items-center gap-3">
+          ].map(({ label, value, icon, colour }, i) => (
+            <motion.div 
+              key={label}
+              initial={{ opacity: 0, y: 12 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ duration: 0.4, delay: 0.1 + i * 0.07 }}
+              className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-4 flex items-center gap-3"
+            >
               <span className={`material-symbols-outlined !text-[24px] ${colour}`} style={{ fontVariationSettings: "'FILL' 1" }}>{icon}</span>
               <div>
                 <p className="text-lg font-bold text-secondary leading-none">{value}</p>
                 <p className="text-xs text-slate-500 mt-0.5">{label}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 
@@ -472,16 +484,22 @@ export default function RecruiterJobs() {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {filtered.map((job) => (
-              <JobCard
+            {filtered.map((job, i) => (
+              <motion.div
                 key={job.id}
-                job={job}
-                companyLogoUrl={companyLogo}
-                onEdit={() => navigate(`/recruiter/jobs/${job.id}/edit`)}
-                onToggle={() => handleToggle(job.id)}
-                onDuplicate={() => handleDuplicate(job)}
-                onDelete={() => requestDelete(job)}
-              />
+                initial={{ opacity: 0, y: 8 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ duration: 0.3, delay: 0.1 + i * 0.07 }}
+              >
+                <JobCard
+                  job={job}
+                  companyLogoUrl={companyLogo}
+                  onEdit={() => navigate(`/recruiter/jobs/${job.id}/edit`)}
+                  onToggle={() => handleToggle(job.id)}
+                  onDuplicate={() => handleDuplicate(job)}
+                  onDelete={() => requestDelete(job)}
+                />
+              </motion.div>
             ))}
           </div>
         )}

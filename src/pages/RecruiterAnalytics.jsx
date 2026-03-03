@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { recruiterService } from '../services/api.js';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -114,7 +115,12 @@ export default function RecruiterAnalytics() {
       <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto w-full flex flex-col gap-6 lg:gap-8">
 
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <motion.div 
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+          initial={{ opacity: 0, y: -16 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+        >
           <div>
             <p className="text-primary text-xs font-semibold uppercase tracking-widest mb-1">Recruiter Portal</p>
             <h1 className="text-2xl sm:text-3xl font-bold text-secondary tracking-tight">Analytics & Reports</h1>
@@ -126,7 +132,7 @@ export default function RecruiterAnalytics() {
               <span className="hidden sm:inline">Post Job</span>
             </button>
           </Link>
-        </div>
+        </motion.div>
 
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">{error}</div>
@@ -134,8 +140,14 @@ export default function RecruiterAnalytics() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {summaryCards.map(({ label, value, icon, highlight }) => (
-            <div key={label} className="bg-white rounded-2xl p-4 sm:p-5 shadow-md ring-1 ring-slate-200 relative overflow-hidden hover:ring-primary/40 transition-all duration-300">
+          {summaryCards.map(({ label, value, icon, highlight }, i) => (
+            <motion.div 
+              key={label} 
+              className="bg-white rounded-2xl p-4 sm:p-5 shadow-md ring-1 ring-slate-200 relative overflow-hidden hover:ring-primary/40 transition-all duration-300"
+              initial={{ opacity: 0, y: 12 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ duration: 0.4, delay: 0.1 + i * 0.07 }}
+            >
               <div className={`absolute top-0 left-0 w-full h-[3px] ${highlight ? 'bg-gradient-to-r from-primary to-primary/30' : 'bg-slate-100'}`} />
               <div className="flex justify-between items-start mb-3">
                 <div className={`p-2 rounded-lg ${highlight ? 'bg-primary/10 text-primary' : 'bg-slate-100 text-slate-400'}`}>
@@ -148,7 +160,7 @@ export default function RecruiterAnalytics() {
               ) : (
                 <h4 className="text-2xl sm:text-3xl font-bold text-secondary mt-0.5">{value ?? '—'}</h4>
               )}
-            </div>
+            </motion.div>
           ))}
         </div>
 
@@ -159,7 +171,12 @@ export default function RecruiterAnalytics() {
           <div className="lg:col-span-2 flex flex-col gap-6">
 
             {/* Application Trend */}
-            <div className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 p-5 sm:p-6">
+            <motion.div 
+              className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 p-5 sm:p-6"
+              initial={{ opacity: 0, y: 12 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ duration: 0.4, delay: 0.38 }}
+            >
               <div className="mb-5">
                 <h4 className="text-base font-bold text-secondary">Application Trend</h4>
                 <p className="text-sm text-slate-500 mt-0.5">Daily applications received over the last 30 days</p>
@@ -172,10 +189,15 @@ export default function RecruiterAnalytics() {
                   <span>{trend[trend.length - 1]?.date}</span>
                 </div>
               )}
-            </div>
+            </motion.div>
 
             {/* Applications by Status */}
-            <div className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 p-5 sm:p-6">
+            <motion.div 
+              className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 p-5 sm:p-6"
+              initial={{ opacity: 0, y: 12 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ duration: 0.4, delay: 0.45 }}
+            >
               <h4 className="text-base font-bold text-secondary mb-5">Applications by Status</h4>
               {loading ? (
                 <div className="space-y-4">
@@ -216,10 +238,15 @@ export default function RecruiterAnalytics() {
                     })}
                 </div>
               )}
-            </div>
+            </motion.div>
 
             {/* Jobs Breakdown */}
-            <div className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 overflow-hidden">
+            <motion.div 
+              className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 overflow-hidden"
+              initial={{ opacity: 0, y: 12 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ duration: 0.4, delay: 0.52 }}
+            >
               <div className="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between">
                 <h4 className="text-base font-bold text-secondary">Jobs Breakdown</h4>
                 <Link to="/recruiter/jobs" className="text-primary text-sm font-medium hover:underline">
@@ -260,14 +287,19 @@ export default function RecruiterAnalytics() {
                     })}
                 </div>
               )}
-            </div>
+            </motion.div>
           </div>
 
           {/* Right — 1 col */}
           <div className="flex flex-col gap-6">
 
             {/* Top Shortlisted */}
-            <div className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 overflow-hidden">
+            <motion.div 
+              className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 overflow-hidden"
+              initial={{ opacity: 0, y: 12 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ duration: 0.4, delay: 0.38 }}
+            >
               <div className="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between">
                 <h4 className="text-base font-bold text-secondary">Top Shortlisted</h4>
                 <Link to="/recruiter/candidates" className="text-primary text-sm font-medium hover:underline">
@@ -314,7 +346,12 @@ export default function RecruiterAnalytics() {
             </div>
 
             {/* Quick Actions */}
-            <div className="bg-secondary rounded-2xl p-5 sm:p-6 text-white relative overflow-hidden shadow-md">
+            <motion.div 
+              className="bg-secondary rounded-2xl p-5 sm:p-6 text-white relative overflow-hidden shadow-md"
+              initial={{ opacity: 0, y: 12 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ duration: 0.4, delay: 0.45 }}
+            >
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl" />
               <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary/5 rounded-full blur-2xl" />
               <h4 className="text-base font-bold mb-4 relative z-10">Quick Actions</h4>
@@ -335,7 +372,10 @@ export default function RecruiterAnalytics() {
                   </Link>
                 ))}
               </div>
-            </div>
+            </motion.div>
+          </div>
+        </div>
+            </motion.div>
           </div>
         </div>
       </div>

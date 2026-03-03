@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { chatService, goalsService } from '../services/api.js';
 
 // ─── Simple Markdown Renderer ─────────────────────────────────────────────────
@@ -373,7 +374,7 @@ export default function StudentChat() {
         <div className="flex flex-col flex-1 min-w-0">
 
           {/* Header */}
-          <div className="flex items-center gap-3 px-6 py-4 bg-white border-b border-slate-200">
+          <motion.div className="flex items-center gap-3 px-6 py-4 bg-white border-b border-slate-200" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
             <button
               onClick={() => setSidebarOpen((v) => !v)}
               className="text-slate-400 hover:text-slate-600 transition-colors"
@@ -393,7 +394,7 @@ export default function StudentChat() {
               <span className="material-symbols-outlined text-[15px]">flag</span>
               My Goals
             </Link>
-          </div>
+          </motion.div>
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-6 space-y-4">

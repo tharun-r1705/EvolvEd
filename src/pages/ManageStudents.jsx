@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { adminService } from '../services/api';
 
 // ─── Toast ────────────────────────────────────────────────────────────────────
@@ -313,7 +314,12 @@ export default function ManageStudents() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-6">
 
           {/* Page Header */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <motion.div 
+            className="flex flex-col sm:flex-row sm:items-end justify-between gap-4"
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          >
             <div>
               <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-1">Admin Portal</p>
               <h1 className="text-3xl font-bold text-secondary tracking-tight">Manage Students</h1>
@@ -338,7 +344,7 @@ export default function ManageStudents() {
                 Import CSV
               </button>
             </div>
-          </div>
+          </motion.div>
 
           {/* Stats Strip */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -347,8 +353,15 @@ export default function ManageStudents() {
               { label: 'Ready to Place', value: statsData.ready.toLocaleString(),           icon: 'check_circle',    color: 'text-emerald-600', bg: 'bg-emerald-50' },
               { label: 'In Review',      value: statsData.inReview.toLocaleString(),        icon: 'pending_actions', color: 'text-amber-600',   bg: 'bg-amber-50'   },
               { label: 'Needs Prep',     value: statsData.needsPrep.toLocaleString(),       icon: 'warning',         color: 'text-red-600',     bg: 'bg-red-50'     },
-            ].map(({ label, value, icon, color, bg }) => (
-              <div key={label} className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 px-5 py-4 flex items-center gap-4 relative overflow-hidden">
+            ].map(({ label, value, icon, color, bg }, i) => (
+              <motion.div 
+                key={label} 
+                className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 px-5 py-4 flex items-center gap-4 relative overflow-hidden"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.1 + i * 0.07 }}
+                whileHover={{ y: -2, transition: { duration: 0.2 } }}
+              >
                 <div className="absolute -right-4 -top-4 w-20 h-20 rounded-full bg-primary/5 blur-2xl pointer-events-none" />
                 <div className={`size-10 rounded-xl ${bg} flex items-center justify-center flex-shrink-0`}>
                   <span className={`material-symbols-outlined text-[22px] ${color}`}>{icon}</span>
@@ -357,12 +370,17 @@ export default function ManageStudents() {
                   <p className="text-2xl font-bold text-secondary">{value}</p>
                   <p className="text-xs text-slate-500 mt-0.5">{label}</p>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
 
           {/* Search & Filters */}
-          <div className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 p-4">
+          <motion.div 
+            className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 p-4"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.35 }}
+          >
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
               {/* Search */}
               <div className="lg:col-span-4 relative group">
@@ -409,10 +427,15 @@ export default function ManageStudents() {
                 )}
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Data Table */}
-          <div className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 overflow-hidden flex flex-col">
+          <motion.div 
+            className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 overflow-hidden flex flex-col"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.4 }}
+          >
             {error ? (
               <div className="py-16 text-center">
                 <span className="material-symbols-outlined text-4xl text-red-400 mb-2 block">error_outline</span>
@@ -547,7 +570,7 @@ export default function ManageStudents() {
                 </div>
               </>
             )}
-          </div>
+          </motion.div>
 
         </div>
       </main>

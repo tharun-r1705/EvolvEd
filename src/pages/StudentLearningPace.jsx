@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
@@ -243,7 +244,12 @@ export default function StudentLearningPace() {
       <div className="mx-auto w-full max-w-4xl">
 
           {/* Header */}
-          <header className="mb-8 flex items-start justify-between gap-4">
+          <motion.header 
+            className="mb-8 flex items-start justify-between gap-4"
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          >
             <div>
               <div className="flex items-center gap-3 mb-1">
                 <Link to="/student" className="text-slate-400 hover:text-primary transition-colors">
@@ -255,10 +261,15 @@ export default function StudentLearningPace() {
                 How fast you are growing compared to your peers.
               </p>
             </div>
-          </header>
+          </motion.header>
 
           {/* Hero */}
-          <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200 mb-6 relative overflow-hidden">
+          <motion.div 
+            className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200 mb-6 relative overflow-hidden"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
             <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full opacity-5 blur-3xl" style={{ background: color }} />
             <div className="flex flex-col sm:flex-row items-center gap-8">
               <ScoreCircle score={paceScore} color={color} />
@@ -291,9 +302,9 @@ export default function StudentLearningPace() {
                   <div className="flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600">
                     <span className="material-symbols-outlined text-[14px]">history</span>
                     {totalActivities} total activities
-                  </div>
-                </div>
               </div>
+            </div>
+          </motion.div>
             </div>
           </div>
 
@@ -302,7 +313,12 @@ export default function StudentLearningPace() {
             <div className="lg:col-span-8 flex flex-col gap-6">
 
               {/* Component Scores */}
-              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
+              <motion.div 
+                className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+              >
                 <h3 className="text-base font-bold text-secondary mb-5">Pace Components</h3>
                 <div className="grid gap-5 sm:grid-cols-2">
                   {Object.entries(components).map(([key, score]) => {
@@ -326,10 +342,15 @@ export default function StudentLearningPace() {
                     );
                   })}
                 </div>
-              </div>
+              </motion.div>
 
               {/* Weekly Trend Chart */}
-              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
+              <motion.div 
+                className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+              >
                 <div className="mb-5">
                   <h3 className="text-base font-bold text-secondary">12-Week Activity Trend</h3>
                   <p className="text-xs text-slate-500">Number of learning activities per week</p>
@@ -361,7 +382,7 @@ export default function StudentLearningPace() {
                     </BarChart>
                   </ResponsiveContainer>
                 )}
-              </div>
+              </motion.div>
 
               {/* Improvement Tips */}
               <ImprovementTips components={components} />
@@ -369,7 +390,12 @@ export default function StudentLearningPace() {
 
             {/* Right: Recent Activities */}
             <div className="lg:col-span-4">
-              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200 sticky top-6">
+              <motion.div 
+                className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200 sticky top-6"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.25 }}
+              >
                 <h3 className="text-base font-bold text-secondary mb-4">Recent Activities</h3>
                 {recentActivities.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-10 text-slate-400 text-center">
@@ -395,7 +421,7 @@ export default function StudentLearningPace() {
                     })}
                   </div>
                 )}
-              </div>
+              </motion.div>
             </div>
           </div>
         </div>

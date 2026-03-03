@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { recruiterService } from '../services/api';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -213,7 +214,12 @@ export default function CandidateProfile() {
   return (
     <main className="flex-1 h-full w-full overflow-y-auto scrollbar-hide">
       {/* Breadcrumb / back nav */}
-      <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-6 pb-2">
+      <motion.div 
+        initial={{ opacity: 0, y: -16 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+        className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-6 pb-2"
+      >
         <nav className="flex items-center gap-1.5 text-sm text-slate-400">
           <Link to="/recruiter/dashboard" className="hover:text-primary transition-colors">Dashboard</Link>
           <span className="material-symbols-outlined !text-[14px]">chevron_right</span>
@@ -232,7 +238,7 @@ export default function CandidateProfile() {
           <span className="material-symbols-outlined !text-[18px]">arrow_back</span>
           Back to Candidates
         </Link>
-      </div>
+      </motion.div>
 
       <div className="px-4 sm:px-6 lg:px-8 pb-8">
         {/* Error */}
@@ -252,7 +258,12 @@ export default function CandidateProfile() {
             <div className="lg:col-span-4 flex flex-col gap-5">
 
               {/* Profile Card */}
-              <div className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 p-5 sm:p-6 relative overflow-hidden">
+              <motion.div 
+                initial={{ opacity: 0, y: 12 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ duration: 0.4, delay: 0.1 }}
+                className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 p-5 sm:p-6 relative overflow-hidden"
+              >
                 <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-primary/5 to-transparent" />
                 <div className="absolute -right-12 -top-12 w-48 h-48 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
 
@@ -368,10 +379,15 @@ export default function CandidateProfile() {
                     <p className="text-sm text-slate-500 leading-relaxed">{candidate.bio}</p>
                   </div>
                 )}
-              </div>
+              </motion.div>
 
               {/* Download Report Card */}
-              <div className="bg-secondary rounded-2xl p-5 sm:p-6 flex flex-col items-start gap-4 relative overflow-hidden shadow-md">
+              <motion.div 
+                initial={{ opacity: 0, y: 12 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ duration: 0.4, delay: 0.17 }}
+                className="bg-secondary rounded-2xl p-5 sm:p-6 flex flex-col items-start gap-4 relative overflow-hidden shadow-md"
+              >
                 <div className="absolute top-0 right-0 w-20 h-20 bg-primary/10 rounded-full blur-xl" />
                 <div>
                   <div className="flex items-center gap-2 mb-1">
@@ -387,14 +403,19 @@ export default function CandidateProfile() {
                   <span className="material-symbols-outlined !text-[18px]">download</span>
                   Download CSV Report
                 </button>
-              </div>
+              </motion.div>
             </div>
 
             {/* ── Right Column ───────────────────────────────────── */}
             <div className="lg:col-span-8 flex flex-col gap-6">
 
               {/* Readiness Score */}
-              <div className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 p-5 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden">
+              <motion.div 
+                initial={{ opacity: 0, y: 12 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ duration: 0.4, delay: 0.1 }}
+                className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 p-5 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden"
+              >
                 <div className="absolute -right-12 -top-12 w-48 h-48 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
                 <div className="flex-1 z-10">
                   <div className="flex items-center gap-2 mb-2">
@@ -448,11 +469,15 @@ export default function CandidateProfile() {
                   )}
                 </div>
                 <ScoreGauge score={candidate.readinessScore} />
-              </div>
+              </motion.div>
 
               {/* Skills */}
               {(candidate.technicalSkills?.length > 0 || candidate.softSkills?.length > 0) && (
-                <section>
+                <motion.section
+                  initial={{ opacity: 0, y: 12 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  transition={{ duration: 0.4, delay: 0.17 }}
+                >
                   <div className="flex items-center gap-2 mb-4">
                     <span className="material-symbols-outlined text-primary !text-[20px]">code_blocks</span>
                     <h3 className="text-lg font-bold text-secondary">Skills Proficiency</h3>
@@ -492,12 +517,16 @@ export default function CandidateProfile() {
                       </div>
                     )}
                   </div>
-                </section>
+                </motion.section>
               )}
 
               {/* Projects */}
               {candidate.projects?.length > 0 && (
-                <section>
+                <motion.section
+                  initial={{ opacity: 0, y: 12 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  transition={{ duration: 0.4, delay: 0.24 }}
+                >
                   <div className="flex items-center gap-2 mb-4">
                     <span className="material-symbols-outlined text-primary !text-[20px]">folder_open</span>
                     <h3 className="text-lg font-bold text-secondary">Featured Projects</h3>
@@ -574,12 +603,16 @@ export default function CandidateProfile() {
                       </div>
                     ))}
                   </div>
-                </section>
+                </motion.section>
               )}
 
               {/* Certifications */}
               {candidate.certifications?.length > 0 && (
-                <section>
+                <motion.section
+                  initial={{ opacity: 0, y: 12 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  transition={{ duration: 0.4, delay: 0.38 }}
+                >
                   <div className="flex items-center gap-2 mb-4">
                     <span className="material-symbols-outlined text-primary !text-[20px]">workspace_premium</span>
                     <h3 className="text-lg font-bold text-secondary">Certifications</h3>
@@ -605,60 +638,16 @@ export default function CandidateProfile() {
                       ))}
                     </div>
                   </div>
-                </section>
+                </motion.section>
               )}
 
               {/* Assessment History */}
               {candidate.assessmentHistory?.length > 0 && (
-                <section>
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="material-symbols-outlined text-primary !text-[20px]">history_edu</span>
-                    <h3 className="text-lg font-bold text-secondary">Assessment History</h3>
-                    <span className="ml-auto text-xs text-slate-400 font-medium">{candidate.assessmentHistory.length} completed</span>
-                  </div>
-                  <div className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 overflow-hidden">
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left text-sm min-w-[420px]">
-                        <thead className="border-b border-slate-100 bg-slate-50/50">
-                          <tr>
-                            {['Assessment', 'Date', 'Score', 'Status'].map((h) => (
-                              <th key={h} className="px-5 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">{h}</th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                          {candidate.assessmentHistory.map((a) => (
-                            <tr key={a.id} className="hover:bg-slate-50 transition-colors">
-                              <td className="px-5 py-4 font-medium text-secondary">
-                                <div className="flex items-center gap-3">
-                                  <div className="p-2 rounded-lg bg-primary/10">
-                                    <span className="material-symbols-outlined text-primary !text-[18px]">quiz</span>
-                                  </div>
-                                  <div>
-                                    <div className="font-semibold text-sm text-secondary">{a.name}</div>
-                                    <div className="text-xs text-slate-400">{a.type}</div>
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="px-5 py-4 text-slate-500 text-sm">{fmtDate(a.date)}</td>
-                              <td className="px-5 py-4 font-bold text-secondary">{a.score}</td>
-                              <td className="px-5 py-4">
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ring-1 ring-inset ${assessmentBadge(a.status)}`}>
-                                  {a.status ? a.status.charAt(0).toUpperCase() + a.status.slice(1) : '—'}
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </section>
-              )}
-
-              {/* LeetCode Stats */}
-              {candidate.leetcodeProfile && (
-                <section>
+                <motion.section
+                  initial={{ opacity: 0, y: 12 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  transition={{ duration: 0.4, delay: 0.45 }}
+                >
                   <div className="flex items-center gap-2 mb-4">
                     <span className="material-symbols-outlined text-primary !text-[20px]">terminal</span>
                     <h3 className="text-lg font-bold text-secondary">LeetCode Stats</h3>
@@ -699,7 +688,11 @@ export default function CandidateProfile() {
 
               {/* GitHub Stats */}
               {candidate.githubProfile && (
-                <section>
+                <motion.section
+                  initial={{ opacity: 0, y: 12 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  transition={{ duration: 0.4, delay: 0.5 }}
+                >
                   <div className="flex items-center gap-2 mb-4">
                     <span className="material-symbols-outlined text-primary !text-[20px]">code</span>
                     <h3 className="text-lg font-bold text-secondary">GitHub Activity</h3>
@@ -736,19 +729,29 @@ export default function CandidateProfile() {
                       </div>
                     )}
                   </div>
-                </section>
+                </motion.section>
               )}
 
               {/* Events / Achievements */}
               {candidate.events?.length > 0 && (
-                <section>
+                <motion.section
+                  initial={{ opacity: 0, y: 12 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  transition={{ duration: 0.4, delay: 0.55 }}
+                >
                   <div className="flex items-center gap-2 mb-4">
                     <span className="material-symbols-outlined text-primary !text-[20px]">emoji_events</span>
                     <h3 className="text-lg font-bold text-secondary">Events & Achievements</h3>
                   </div>
                   <div className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 p-5 sm:p-6 space-y-4">
-                    {candidate.events.map((ev) => (
-                      <div key={ev.id} className="flex items-start gap-3">
+                    {candidate.events.map((ev, i) => (
+                      <motion.div 
+                        key={ev.id} 
+                        className="flex items-start gap-3"
+                        initial={{ opacity: 0, y: 8 }} 
+                        animate={{ opacity: 1, y: 0 }} 
+                        transition={{ duration: 0.3, delay: 0.55 + i * 0.05 }}
+                      >
                         <div className="p-2 rounded-lg bg-primary/10 flex-shrink-0 mt-0.5">
                           <span className="material-symbols-outlined text-primary !text-[18px]">
                             {ev.type === 'hackathon' ? 'code' : ev.type === 'workshop' ? 'school' : 'emoji_events'}
@@ -765,10 +768,10 @@ export default function CandidateProfile() {
                           </div>
                           {ev.description && <p className="text-xs text-slate-500 mt-1 leading-relaxed">{ev.description}</p>}
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
-                </section>
+                </motion.section>
               )}
 
             </div>

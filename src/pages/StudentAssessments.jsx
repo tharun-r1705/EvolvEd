@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { studentService } from '../services/api.js';
 
 function formatDate(d) {
@@ -55,7 +56,12 @@ export default function StudentAssessments() {
   return (
     <main className="flex-1 h-full overflow-y-auto bg-background-light py-8 px-4 md:px-8">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-6">
+        <motion.div 
+          className="mb-6"
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+        >
           <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
             <Link to="/student" className="hover:text-primary transition-colors">Dashboard</Link>
             <span className="material-symbols-outlined text-[12px]">chevron_right</span>
@@ -63,7 +69,7 @@ export default function StudentAssessments() {
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-secondary">Assessments</h1>
           <p className="mt-1 text-slate-500 text-sm">View your completed assessments and open detailed breakdowns.</p>
-        </div>
+        </motion.div>
 
         {loading ? (
           <div className="space-y-3">
@@ -87,8 +93,15 @@ export default function StudentAssessments() {
           </div>
         ) : (
           <div className="space-y-3">
-            {items.map((a) => (
-              <div key={a.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-md hover:bg-slate-50 transition-colors">
+            {items.map((a, i) => (
+              <motion.div 
+                key={a.id} 
+                className="rounded-xl border border-slate-200 bg-white p-4 shadow-md hover:bg-slate-50 transition-colors"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: 'easeOut', delay: 0.1 + i * 0.06 }}
+                whileHover={{ y: -2, transition: { duration: 0.2 } }}
+              >
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="text-base font-semibold text-secondary">{a.title}</p>
@@ -113,7 +126,7 @@ export default function StudentAssessments() {
                       )}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         )}

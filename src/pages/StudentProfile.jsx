@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
+import { motion } from 'framer-motion';
 import { studentService } from '../services/api.js';
 
 // ─── Constants (mirrors backend validators) ────────────────────────────────
@@ -1273,15 +1274,15 @@ export default function StudentProfile() {
       <div className="mx-auto w-full max-w-4xl">
 
           {/* Header */}
-          <header className="mb-8">
+          <motion.header className="mb-8" initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: 'easeOut' }}>
             <h1 className="text-3xl font-black tracking-tight text-secondary md:text-4xl">
               My Profile
             </h1>
             <p className="mt-2 text-slate-500">Manage your information, integrations, and resumes.</p>
-          </header>
+          </motion.header>
 
           {/* Profile completion banner */}
-          <div className="mb-6 rounded-2xl bg-white p-5 shadow-md ring-1 ring-slate-200">
+          <motion.div className="mb-6 rounded-2xl bg-white p-5 shadow-md ring-1 ring-slate-200" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div>
                 <p className="text-sm font-bold text-secondary">Profile Completion</p>
@@ -1295,10 +1296,10 @@ export default function StudentProfile() {
                 <ProfileCompletion value={profile.profileCompletion || 0} />
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Tab Bar */}
-          <div className="mb-6 flex gap-1 rounded-xl bg-white p-1.5 shadow-md ring-1 ring-slate-200 overflow-x-auto">
+          <motion.div className="mb-6 flex gap-1 rounded-xl bg-white p-1.5 shadow-md ring-1 ring-slate-200 overflow-x-auto" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.15 }}>
             {TABS.map((tab) => (
               <button
                 key={tab.id}
@@ -1312,10 +1313,10 @@ export default function StudentProfile() {
                 <span className="hidden sm:inline">{tab.label}</span>
               </button>
             ))}
-          </div>
+          </motion.div>
 
           {/* Tab Content */}
-          <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200">
+          <motion.div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.2 }}>
             {activeTab === 'personal' && (
               <PersonalInfoTab profile={profile} onSaved={handleSaved} />
             )}
@@ -1328,7 +1329,7 @@ export default function StudentProfile() {
             {activeTab === 'resumes' && (
               <ResumesTab profile={profile} />
             )}
-          </div>
+          </motion.div>
 
         </div>
       </main>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { roadmapService } from '../services/api.js';
 
 // ─────────────────────────────────────────────────────────────────
@@ -504,16 +505,18 @@ export default function RoadmapView() {
     <main className="flex-1 overflow-y-auto bg-background-light">
       <div className="max-w-3xl mx-auto px-6 py-8 flex flex-col gap-8">
         {/* Back */}
-        <button
-          onClick={() => navigate('/student/roadmaps')}
-          className="flex items-center gap-1 text-slate-500 hover:text-secondary text-sm transition-colors w-fit"
-        >
-          <span className="material-symbols-outlined text-base">arrow_back</span>
-          Back to Roadmaps
-        </button>
+        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+          <button
+            onClick={() => navigate('/student/roadmaps')}
+            className="flex items-center gap-1 text-slate-500 hover:text-secondary text-sm transition-colors w-fit"
+          >
+            <span className="material-symbols-outlined text-base">arrow_back</span>
+            Back to Roadmaps
+          </button>
+        </motion.div>
 
         {/* Header card */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 flex flex-col gap-4 shadow-md">
+        <motion.div className="bg-white border border-slate-200 rounded-2xl p-6 flex flex-col gap-4 shadow-md" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div className="flex-1 min-w-0">
               <h1 className="text-xl font-bold text-secondary font-playfair leading-tight">{roadmap.title}</h1>
@@ -560,13 +563,19 @@ export default function RoadmapView() {
               }`}>{roadmap.status}</span>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Modules stepper */}
         <div>
           <h2 className="text-base font-semibold text-secondary mb-5">Learning Modules</h2>
           <div className="flex flex-col">
             {modules.map((mod, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.15 + idx * 0.06 }}
+              >
               <ModuleCard
                 key={idx}
                 mod={mod}
@@ -575,6 +584,7 @@ export default function RoadmapView() {
                 onStatusChange={handleStatusChange}
                 onTakeTest={(moduleIndex, moduleTitle) => setQuiz({ moduleIndex, moduleTitle })}
               />
+              </motion.div>
             ))}
           </div>
         </div>

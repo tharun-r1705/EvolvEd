@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 import { leaderboardService } from '../services/api.js';
 
@@ -171,9 +172,14 @@ function LeaderboardTable({ entries, loading, scope, myStudentId, totalPages, pa
   return (
     <div>
       <div className="space-y-2">
-        {entries.map((entry) => {
+        {entries.map((entry, i) => {
           const isMe = entry.studentId === myStudentId;
           return (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: i * 0.04 }}
+            >
             <div
               key={entry.studentId}
               className={`flex items-center gap-3 rounded-xl p-4 shadow-md ring-1 transition-all ${
@@ -236,6 +242,7 @@ function LeaderboardTable({ entries, loading, scope, myStudentId, totalPages, pa
                 </div>
               </div>
             </div>
+            </motion.div>
           );
         })}
       </div>
@@ -385,13 +392,15 @@ export default function Leaderboard() {
       <div className="mx-auto w-full max-w-5xl">
 
           {/* ── Header ── */}
-          <header className="mb-6">
+          <motion.header className="mb-6" initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: 'easeOut' }}>
             <h1 className="text-3xl font-black tracking-tight text-secondary md:text-4xl">Leaderboard</h1>
             <p className="mt-1 text-slate-500">See how you rank against your peers across departments and skills.</p>
-          </header>
+          </motion.header>
 
           {/* ── My Rank Card ── */}
-          <MyRankCard myRank={myRank} loading={myRankLoading} />
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.1 }}>
+            <MyRankCard myRank={myRank} loading={myRankLoading} />
+          </motion.div>
 
           {/* ── Tab Bar ── */}
           <div className="flex gap-1 rounded-xl bg-white p-1.5 shadow-md ring-1 ring-slate-200 mb-6 overflow-x-auto">

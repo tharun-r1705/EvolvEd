@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { adminService } from '../services/api';
 
 // ─── Toast ────────────────────────────────────────────────────────────────────
@@ -165,7 +166,11 @@ export default function AdminDashboard() {
     );
   }
 
-  const { stats = {}, departmentStats = [], upcomingDrives = [], recentPlacements = [] } = data || {};
+  const raw = data || {};
+  const stats = raw.stats || raw.kpis || {};
+  const departmentStats = raw.departmentStats || raw.departmentPerformance || [];
+  const upcomingDrives = raw.upcomingDrives || [];
+  const recentPlacements = raw.recentPlacements || [];
 
   // bar chart max for dept stats
   const maxDeptScore = departmentStats.length
@@ -173,9 +178,13 @@ export default function AdminDashboard() {
     : 100;
 
   // readiness delta
+  const parsedTrend = typeof stats.readinessTrend === 'string'
+    ? parseFloat(stats.readinessTrend.replace('%', ''))
+    : null;
+
   const readinessDelta = stats.avgReadinessScore != null && stats.avgReadinessLastSemester != null
     ? (stats.avgReadinessScore - stats.avgReadinessLastSemester).toFixed(1)
-    : null;
+    : (Number.isFinite(parsedTrend) ? parsedTrend.toFixed(1) : null);
 
   return (
     <>
@@ -185,11 +194,16 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
           {/* Header */}
-          <header className="mb-8">
+          <motion.header 
+            className="mb-8"
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          >
             <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-1">Admin Portal</p>
             <h2 className="text-3xl font-bold text-secondary mb-1">System Overview</h2>
             <p className="text-slate-500">Here's what's happening across campus today.</p>
-          </header>
+          </motion.header>
 
           {/* KPI Strip */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -205,7 +219,7 @@ export default function AdminDashboard() {
               },
               {
                 label: 'Active Recruiters',
-                value: stats.totalRecruiters?.toLocaleString() ?? '—',
+                value: (stats.totalRecruiters ?? stats.activeRecruiters)?.toLocaleString() ?? '—',
                 badge: null,
                 note: 'registered',
                 icon: 'business_center',
@@ -222,10 +236,14 @@ export default function AdminDashboard() {
                 iconColor: 'text-primary',
                 iconBg: 'bg-primary/10',
               },
-            ].map(({ label, value, badge, positive, note, icon, iconColor, iconBg }) => (
-              <div
+            ].map(({ label, value, badge, positive, note, icon, iconColor, iconBg }, i) => (
+              <motion.div
                 key={label}
                 className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 p-6 flex flex-col justify-between hover:ring-primary/40 transition-colors group"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.1 + i * 0.07 }}
+                whileHover={{ y: -2, transition: { duration: 0.2 } }}
               >
                 <div className="flex justify-between items-start mb-4">
                   <div>
@@ -249,7 +267,7 @@ export default function AdminDashboard() {
                   )}
                   <span className="text-slate-400 text-xs">{note}</span>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
 
@@ -257,7 +275,12 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
 
             {/* Department Performance Bar Chart */}
-            <div className="lg:col-span-2 bg-white rounded-2xl shadow-md ring-1 ring-slate-200 p-6">
+            <motion.div 
+              className="lg:col-span-2 bg-white rounded-2xl shadow-md ring-1 ring-slate-200 p-6"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.3 }}
+            >
               <div className="flex flex-wrap items-center justify-between mb-6 gap-4">
                 <div>
                   <h3 className="text-lg font-bold text-secondary">Department Performance</h3>
@@ -279,7 +302,8 @@ export default function AdminDashboard() {
                       </div>
                     ))}
                   </div>
-                  {departmentStats.map(({ department, avgScore, count }) => {
+                  {departmentStats.map(({ department, avgScore, count, studentCount }) => {
+                    const totalCount = count ?? studentCount ?? 0;
                     const h = Math.round(((avgScore || 0) / 100) * 100);
                     const shortDept = department?.replace('Computer ', 'CS ').replace('Engineering', 'Eng').replace('Science', 'Sci') || '—';
                     return (
@@ -294,7 +318,7 @@ export default function AdminDashboard() {
                         >
                           <div className="opacity-0 group-hover:opacity-100 absolute -top-12 left-1/2 -translate-x-1/2 bg-secondary text-white text-xs py-1.5 px-2.5 rounded-lg whitespace-nowrap transition-opacity shadow-lg z-20 pointer-events-none">
                             <p className="font-semibold">{department}</p>
-                            <p>{Math.round(avgScore || 0)}% avg · {count} students</p>
+                            <p>{Math.round(avgScore || 0)}% avg · {totalCount} students</p>
                           </div>
                         </div>
                         <span className="mt-2 text-xs font-semibold text-slate-400 group-hover:text-secondary transition-colors text-center">{shortDept}</span>
@@ -308,7 +332,12 @@ export default function AdminDashboard() {
             {/* Right Column */}
             <div className="flex flex-col gap-5">
               {/* Upcoming Drives */}
-              <div className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 p-5 flex-1">
+              <motion.div 
+                className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 p-5 flex-1"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.35 }}
+              >
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-base font-bold text-secondary">Upcoming Drives</h3>
                   <Link to="/admin/placement-drives" className="text-xs text-primary font-medium hover:underline">View All</Link>
@@ -321,12 +350,12 @@ export default function AdminDashboard() {
                       <div key={drive.id} className="flex gap-3 items-start p-3 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
                         <div className="size-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden">
                           {drive.company?.logoUrl
-                            ? <img src={drive.company.logoUrl} alt={drive.company.name} className="size-full object-cover" />
+                            ? <img src={drive.company.logoUrl} alt={drive.company?.name || drive.company} className="size-full object-cover" />
                             : <span className="material-symbols-outlined text-slate-400 text-[18px]">business</span>
                           }
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-secondary truncate">{drive.company?.name || '—'}</p>
+                          <p className="text-sm font-semibold text-secondary truncate">{drive.company?.name || drive.company || '—'}</p>
                           <p className="text-xs text-slate-400 truncate">{drive.role}</p>
                           <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                             <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ring-1 ring-inset ${driveBadgeCls(drive.status)}`}>
@@ -335,17 +364,22 @@ export default function AdminDashboard() {
                             {drive.packageLpa && (
                               <span className="text-[10px] text-slate-400">{drive.packageLpa} LPA</span>
                             )}
-                            <span className="text-[10px] text-slate-400">{fmtDate(drive.driveDate)}</span>
+                            <span className="text-[10px] text-slate-400">{fmtDate(drive.driveDate || drive.date)}</span>
                           </div>
                         </div>
                       </div>
                     ))}
                   </div>
                 )}
-              </div>
+              </motion.div>
 
               {/* Quick Actions */}
-              <div className="bg-secondary rounded-2xl p-5 relative overflow-hidden shadow-md flex-shrink-0">
+              <motion.div 
+                className="bg-secondary rounded-2xl p-5 relative overflow-hidden shadow-md flex-shrink-0"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.4 }}
+              >
                 <div className="absolute -right-3 -top-3 opacity-5 pointer-events-none">
                   <span className="material-symbols-outlined text-[100px] text-primary">bolt</span>
                 </div>
@@ -379,15 +413,20 @@ export default function AdminDashboard() {
                     className="bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/30 p-3 rounded-xl text-left transition-all flex flex-col gap-1.5 group disabled:opacity-50"
                   >
                     <span className={`material-symbols-outlined text-primary text-xl group-hover:scale-110 transition-transform ${recalcLoading ? 'animate-spin' : ''}`}>refresh</span>
-                    <span className="text-xs font-medium text-slate-300">{recalcLoading ? 'Recalculating…' : 'Recalc Scores'}</span>
+                    <span className="text-xs font-medium text-slate-300">{recalcLoading ? 'Recalculating…' : 'Recalc Scores'}                    </span>
                   </button>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
 
           {/* Recent Placements */}
-          <div className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 overflow-hidden">
+          <motion.div 
+            className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 overflow-hidden"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.45 }}
+          >
             <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
               <h3 className="text-base font-bold text-secondary">Recent Placements</h3>
               <button
@@ -416,14 +455,20 @@ export default function AdminDashboard() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {recentPlacements.map((p) => {
-                        const name    = p.student?.fullName || '—';
-                        const dept    = p.student?.department || '—';
-                        const company = p.company?.name || '—';
-                        const avatar  = p.student?.avatarUrl;
+                      {recentPlacements.map((p, i) => {
+                        const name    = p.student?.fullName || p.studentName || '—';
+                        const dept    = p.student?.department || p.studentDept || '—';
+                        const company = p.company?.name || p.company || '—';
+                        const avatar  = p.student?.avatarUrl || p.studentAvatar;
                         const color   = avatarColor(name);
                         return (
-                          <tr key={p.id} className="hover:bg-slate-50 transition-colors">
+                          <motion.tr 
+                            key={p.id} 
+                            className="hover:bg-slate-50 transition-colors"
+                            initial={{ opacity: 0, y: 4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3, delay: 0.5 + i * 0.04 }}
+                          >
                             <td className="px-6 py-4 font-medium text-secondary">
                               <div className="flex items-center gap-3">
                                 {avatar
@@ -444,7 +489,7 @@ export default function AdminDashboard() {
                                 {p.status || 'placed'}
                               </span>
                             </td>
-                          </tr>
+                          </motion.tr>
                         );
                       })}
                     </tbody>
@@ -461,7 +506,7 @@ export default function AdminDashboard() {
                 </div>
               </>
             )}
-          </div>
+          </motion.div>
 
         </div>
       </main>

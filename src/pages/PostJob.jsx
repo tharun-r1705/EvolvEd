@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { recruiterService } from '../services/api';
 
 // ─── Toast ───────────────────────────────────────────────────────
@@ -225,7 +226,12 @@ export default function PostJob() {
       <div className="flex flex-col max-w-[1000px] mx-auto w-full gap-6 p-4 sm:p-6 lg:p-8">
 
         {/* Page Title */}
-        <div className="flex flex-col gap-2">
+        <motion.div 
+          initial={{ opacity: 0, y: -16 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          className="flex flex-col gap-2"
+        >
           <div className="flex items-center gap-2 text-slate-400 text-sm font-medium mb-1">
             <Link to="/recruiter" className="hover:text-primary transition-colors">Dashboard</Link>
             <span className="material-symbols-outlined !text-[14px]">chevron_right</span>
@@ -242,7 +248,7 @@ export default function PostJob() {
               ? 'Update the job details below. Changes to skills will re-trigger AI candidate matching.'
               : 'Create a listing to find the best talent based on readiness scores. The more details you provide, the better the candidate matching.'}
           </p>
-        </div>
+        </motion.div>
 
         {/* Form Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -251,7 +257,12 @@ export default function PostJob() {
           <div className="lg:col-span-2 flex flex-col gap-5">
 
             {/* Basic Information */}
-            <div className={sectionClass}>
+            <motion.div 
+              initial={{ opacity: 0, y: 12 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ duration: 0.4, delay: 0.1 }}
+              className={sectionClass}
+            >
               <div className="flex items-center gap-2 mb-5 pb-4 border-b border-slate-100">
                 <div className="size-7 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center text-primary flex-shrink-0">
                   <span className="material-symbols-outlined !text-[16px]">info</span>
@@ -369,10 +380,15 @@ export default function PostJob() {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Job Description */}
-            <div className={sectionClass}>
+            <motion.div 
+              initial={{ opacity: 0, y: 12 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ duration: 0.4, delay: 0.17 }}
+              className={sectionClass}
+            >
               <div className="flex items-center gap-2 mb-5 pb-4 border-b border-slate-100">
                 <div className="size-7 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center text-primary flex-shrink-0">
                   <span className="material-symbols-outlined !text-[16px]">description</span>
@@ -484,85 +500,18 @@ export default function PostJob() {
                   )}
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
-
-          {/* Right Column */}
-          <div className="flex flex-col gap-5">
-
-            {/* Publishing Actions */}
-            <div className={`${sectionClass} sticky top-6`}>
-              <h3 className="text-base font-bold text-secondary mb-1">Publishing</h3>
-              <p className="text-xs text-slate-400 mb-4">Review settings before going live.</p>
-              <div className="flex flex-col gap-3 mb-5">
-                <div className="flex items-center justify-between py-2 border-b border-slate-100">
-                  <span className="text-sm font-medium text-secondary">Visibility</span>
-                  <div className="relative">
-                    <select
-                      className="bg-primary/10 border border-primary/20 rounded-md text-xs text-primary font-semibold px-2 py-1 outline-none focus:border-primary cursor-pointer appearance-none pr-6"
-                      value={form.visibility}
-                      onChange={field('visibility')}
-                    >
-                      {VISIBILITY_OPTS.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
-                    </select>
-                    <span className="material-symbols-outlined absolute right-1 top-1/2 -translate-y-1/2 text-primary pointer-events-none !text-[14px]">expand_more</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between py-1">
-                  <span className="text-sm font-medium text-secondary">Notify eligible candidates</span>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      className="sr-only peer"
-                      type="checkbox"
-                      checked={form.notifyEligible}
-                      onChange={field('notifyEligible')}
-                    />
-                    <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary" />
-                  </label>
-                </div>
               </div>
-              <div className="flex flex-col gap-3">
-                <button
-                  type="button"
-                  disabled={loading}
-                  onClick={() => handleSubmit(false)}
-                  className="w-full flex items-center justify-center gap-2 h-11 rounded-xl bg-primary hover:bg-primary-dark text-secondary text-sm font-bold transition-all shadow-sm hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  {loading && submitMode === 'publish'
-                    ? <span className="material-symbols-outlined animate-spin !text-[18px]">progress_activity</span>
-                    : <span className="material-symbols-outlined !text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>publish</span>
-                  }
-                  {isEdit ? 'Save Changes' : 'Post Job'}
-                </button>
-                <button
-                  type="button"
-                  disabled={loading}
-                  onClick={() => handleSubmit(true)}
-                  className="w-full flex items-center justify-center gap-2 h-11 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-secondary text-sm font-semibold transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  {loading && submitMode === 'draft'
-                    ? <span className="material-symbols-outlined animate-spin !text-[18px]">progress_activity</span>
-                    : <span className="material-symbols-outlined !text-[18px]">save</span>
-                  }
-                  Save as Draft
-                </button>
-              </div>
-            </div>
+            </motion.div>
 
-            {/* Tips */}
-            <div className="rounded-2xl border border-primary/20 p-5 bg-gradient-to-br from-primary/5 to-primary/[0.02] shadow-sm">
-              <div className="flex items-center gap-2 text-primary font-bold text-sm mb-3">
-                <span className="material-symbols-outlined !text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>lightbulb</span>
-                Recruiter Tip
-              </div>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Job postings with detailed skill requirements and salary ranges attract candidates with{' '}
-                <strong className="text-primary">20% higher readiness scores</strong> on average.
-              </p>
-            </div>
-
-            {/* Preview Card */}
-            <div className={sectionClass}>
+            {/* Requirements */}
+            <motion.div 
+              initial={{ opacity: 0, y: 12 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ duration: 0.4, delay: 0.24 }}
+              className={sectionClass}
+            >
               <h4 className="text-sm font-bold text-secondary mb-3 flex items-center gap-2">
                 <span className="material-symbols-outlined !text-[18px] text-primary">preview</span>
                 Matching Preview

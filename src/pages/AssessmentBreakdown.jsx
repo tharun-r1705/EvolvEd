@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from 'recharts';
@@ -175,7 +176,7 @@ export default function AssessmentBreakdown() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
           {/* ── Header ── */}
-          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <motion.div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between" initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: 'easeOut' }}>
             <div>
               <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
                 <Link to="/student/dashboard" className="hover:text-primary transition-colors">Dashboard</Link>
@@ -188,12 +189,12 @@ export default function AssessmentBreakdown() {
                 Detailed performance analysis · <span className="font-medium text-secondary">{category}</span>
               </p>
             </div>
-          </div>
+          </motion.div>
 
           {/* ── Stats Overview ── */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
             {/* Overall Score */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-md">
+            <motion.div className="rounded-xl border border-slate-200 bg-white p-6 shadow-md" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.1 }}>
               <div className="flex items-center justify-between mb-3">
                 <p className="text-sm font-medium text-slate-500">Overall Score</p>
                 <span className="material-symbols-outlined text-primary">school</span>
@@ -209,10 +210,10 @@ export default function AssessmentBreakdown() {
                 />
               </div>
               <p className="mt-1.5 text-xs text-slate-400">{scorePct}% score</p>
-            </div>
+            </motion.div>
 
             {/* Percentile */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-md">
+            <motion.div className="rounded-xl border border-slate-200 bg-white p-6 shadow-md" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.17 }}>
               <div className="flex items-center justify-between mb-3">
                 <p className="text-sm font-medium text-slate-500">Percentile Rank</p>
                 <span className="material-symbols-outlined text-primary">leaderboard</span>
@@ -230,10 +231,10 @@ export default function AssessmentBreakdown() {
               ) : (
                 <p className="text-2xl font-bold text-slate-400 mt-1">—</p>
               )}
-            </div>
+            </motion.div>
 
             {/* Time Taken */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-md">
+            <motion.div className="rounded-xl border border-slate-200 bg-white p-6 shadow-md" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.24 }}>
               <div className="flex items-center justify-between mb-3">
                 <p className="text-sm font-medium text-slate-500">Time Taken</p>
                 <span className="material-symbols-outlined text-primary">schedule</span>
@@ -245,10 +246,10 @@ export default function AssessmentBreakdown() {
                 {maxTime != null && <p className="text-sm text-slate-400">/ {maxTime}m</p>}
               </div>
               <p className="mt-2 text-xs text-slate-400">Completed on {formatDate(completedDate)}</p>
-            </div>
+            </motion.div>
 
             {/* Status */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-md">
+            <motion.div className="rounded-xl border border-slate-200 bg-white p-6 shadow-md" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.31 }}>
               <div className="flex items-center justify-between mb-3">
                 <p className="text-sm font-medium text-slate-500">Status</p>
                 <span className="material-symbols-outlined text-primary">verified</span>
@@ -261,13 +262,13 @@ export default function AssessmentBreakdown() {
               <p className="mt-3 text-xs text-slate-400">
                 {status === 'passed' ? 'Qualified for next round' : status === 'failed' ? 'Did not meet threshold' : 'Assessment recorded'}
               </p>
-            </div>
+            </motion.div>
           </div>
 
           {/* ── Chart + Improvements ── */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
             {/* Category Performance Bar Chart */}
-            <div className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-6 shadow-md">
+            <motion.div className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-6 shadow-md" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.25 }}>
               <div className="mb-5">
                 <h2 className="text-lg font-bold text-secondary">Category Performance</h2>
                 <p className="text-sm text-slate-500">Breakdown of scores across evaluation categories.</p>
@@ -321,10 +322,10 @@ export default function AssessmentBreakdown() {
                   ))}
                 </div>
               )}
-            </div>
+            </motion.div>
 
             {/* Improvement Focus */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-md flex flex-col">
+            <motion.div className="rounded-xl border border-slate-200 bg-white p-6 shadow-md flex flex-col" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.35 }}>
               <h2 className="text-lg font-bold text-secondary mb-4">Improvement Focus</h2>
               {improvements.length === 0 ? (
                 <div className="flex flex-col items-center justify-center flex-1 text-center text-slate-400 py-6">
@@ -350,11 +351,11 @@ export default function AssessmentBreakdown() {
                   ))}
                 </div>
               )}
-            </div>
+            </motion.div>
           </div>
 
           {/* ── Assessment History ── */}
-          <div className="rounded-xl border border-slate-200 bg-white shadow-md overflow-hidden">
+          <motion.div className="rounded-xl border border-slate-200 bg-white shadow-md overflow-hidden" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.35 }}>
             <div className="border-b border-slate-200 px-6 py-4 flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold text-secondary">Assessment History</h2>
@@ -442,7 +443,7 @@ export default function AssessmentBreakdown() {
                 </table>
               </div>
             )}
-          </div>
+          </motion.div>
         </div>
       </main>
   );

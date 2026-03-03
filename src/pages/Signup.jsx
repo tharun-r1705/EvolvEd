@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { authService } from '../services/api.js';
+
+const ease = [0.25, 0.46, 0.45, 0.94];
 
 const DEPARTMENTS = [
   'Computer Science & Engineering',
@@ -78,7 +81,12 @@ export default function Signup() {
   return (
     <div className="flex flex-1 min-h-screen w-full font-display bg-background-light dark:bg-background-dark">
       {/* ── Left Side: Brand & Visual ── */}
-      <div className="hidden lg:flex w-[45%] bg-navy flex-col justify-between p-12 relative overflow-hidden">
+      <motion.div
+        initial={{ opacity: 0, x: -30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.55, ease }}
+        className="hidden lg:flex w-[45%] bg-navy flex-col justify-between p-12 relative overflow-hidden"
+      >
         {/* Decorative radial gradient */}
         <div
           className="absolute inset-0 opacity-10 pointer-events-none"
@@ -158,14 +166,24 @@ export default function Signup() {
             <line x1="80" y1="100" x2="360" y2="100" stroke="white" strokeWidth="1" strokeDasharray="6 4" />
             <line x1="80" y1="140" x2="280" y2="140" stroke="white" strokeWidth="1" strokeDasharray="6 4" />
             <path d="M200 90 L260 60 L320 90 L260 120 Z" stroke="white" strokeWidth="4" strokeLinejoin="round" fill="none" />
-            <path d="M230 105 L230 135 Q260 148 290 135 L290 105" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          <path d="M230 105 L230 135 Q260 148 290 135 L290 105" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
           </svg>
         </div>
-      </div>
+      </motion.div>
 
       {/* ── Right Side: Signup Form ── */}
-      <div className="w-full lg:w-[55%] flex flex-col items-center justify-center p-6 sm:p-12 lg:p-16 bg-background-light overflow-y-auto">
-        <div className="w-full max-w-lg flex flex-col gap-6">
+      <motion.div
+        initial={{ opacity: 0, x: 30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.55, ease }}
+        className="w-full lg:w-[55%] flex flex-col items-center justify-center p-6 sm:p-12 lg:p-16 bg-background-light overflow-y-auto"
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2, ease }}
+          className="w-full max-w-lg flex flex-col gap-6"
+        >
           {/* Mobile Logo */}
           <Link to="/" className="flex lg:hidden items-center gap-2 mb-2 w-fit">
             <div className="flex items-center justify-center rounded-lg bg-primary/10 size-8 border border-primary/20">
@@ -421,13 +439,16 @@ export default function Signup() {
             </label>
 
             {/* Submit */}
-            <button
-              className="mt-2 w-full rounded-lg bg-navy hover:bg-primary text-white font-bold py-3.5 px-4 transition-all duration-300 transform active:scale-[0.98] shadow-lg shadow-navy/20 disabled:opacity-60"
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ duration: 0.15 }}
+              className="mt-2 w-full rounded-lg bg-navy hover:bg-primary text-white font-bold py-3.5 px-4 transition-all duration-300 shadow-lg shadow-navy/20 disabled:opacity-60"
               type="submit"
               disabled={loading}
             >
               {loading ? 'Creating Account…' : 'Create Student Account'}
-            </button>
+            </motion.button>
           </form>
 
           <p className="text-center text-sm text-charcoal/70">
@@ -436,8 +457,8 @@ export default function Signup() {
               Sign In
             </Link>
           </p>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { studentService } from '../services/api.js';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -408,22 +409,42 @@ function StatsBar({ events }) {
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-      <div className="bg-white rounded-xl border border-slate-200 shadow-md p-4 text-center">
+      <motion.div 
+        className="bg-white rounded-xl border border-slate-200 shadow-md p-4 text-center"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+      >
         <p className="text-2xl font-bold text-secondary">{events.length}</p>
         <p className="text-xs text-slate-500 mt-0.5 font-medium">Total Events</p>
-      </div>
-      <div className="bg-white rounded-xl border border-slate-200 shadow-md p-4 text-center">
+      </motion.div>
+      <motion.div 
+        className="bg-white rounded-xl border border-slate-200 shadow-md p-4 text-center"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.17 }}
+      >
         <p className="text-2xl font-bold text-amber-600">{winCount}</p>
         <p className="text-xs text-slate-500 mt-0.5 font-medium">Wins</p>
-      </div>
-      <div className="bg-white rounded-xl border border-slate-200 shadow-md p-4 text-center">
+      </motion.div>
+      <motion.div 
+        className="bg-white rounded-xl border border-slate-200 shadow-md p-4 text-center"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.24 }}
+      >
         <p className="text-2xl font-bold text-blue-600">{topCount}</p>
         <p className="text-xs text-slate-500 mt-0.5 font-medium">Top 3 Finishes</p>
-      </div>
-      <div className="bg-white rounded-xl border border-slate-200 shadow-md p-4 text-center">
+      </motion.div>
+      <motion.div 
+        className="bg-white rounded-xl border border-slate-200 shadow-md p-4 text-center"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.31 }}
+      >
         <p className="text-2xl font-bold text-teal-600">{typeBreakdown.length}</p>
         <p className="text-xs text-slate-500 mt-0.5 font-medium">Event Types</p>
-      </div>
+      </motion.div>
     </div>
   );
 }
@@ -490,7 +511,12 @@ export default function StudentEvents() {
     <main className="flex-1 overflow-y-auto bg-background-light">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background-light/95 backdrop-blur-sm border-b border-slate-200 px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
+          <motion.div 
+            className="flex items-center justify-between"
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          >
             <div>
               <h1 className="text-2xl font-bold text-secondary font-playfair">Events & Activities</h1>
               <p className="text-sm text-slate-500 mt-0.5">
@@ -504,7 +530,7 @@ export default function StudentEvents() {
               <span className="material-symbols-outlined text-lg">add</span>
               Add Event
             </button>
-          </div>
+          </motion.div>
         </div>
 
         {/* Content */}
@@ -543,13 +569,19 @@ export default function StudentEvents() {
               {grouped.map(([year, yearEvents]) => (
                 <div key={year} className="mb-4">
                   <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 px-1">{year}</h2>
-                  {yearEvents.map((ev) => (
-                    <EventTimelineCard
+                  {yearEvents.map((ev, evIdx) => (
+                    <motion.div
                       key={ev.id}
-                      event={ev}
-                      onEdit={(e) => setModalEvent(e)}
-                      onDelete={(e) => setDeleteTarget(e)}
-                    />
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: evIdx * 0.05 }}
+                    >
+                      <EventTimelineCard
+                        event={ev}
+                        onEdit={(e) => setModalEvent(e)}
+                        onDelete={(e) => setDeleteTarget(e)}
+                      />
+                    </motion.div>
                   ))}
                 </div>
               ))}

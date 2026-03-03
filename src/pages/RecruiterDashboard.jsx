@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { recruiterService } from '../services/api.js';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -78,7 +79,12 @@ export default function RecruiterDashboard() {
       <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto w-full flex flex-col gap-6 lg:gap-8">
 
         {/* Welcome Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <motion.div 
+          initial={{ opacity: 0, y: -16 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+        >
           <div>
             <p className="text-primary text-xs font-semibold uppercase tracking-widest mb-1">Recruiter Portal</p>
             <h1 className="text-2xl sm:text-3xl font-bold text-secondary tracking-tight">
@@ -105,7 +111,7 @@ export default function RecruiterDashboard() {
               </button>
             </Link>
           </div>
-        </div>
+        </motion.div>
 
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
@@ -115,8 +121,14 @@ export default function RecruiterDashboard() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {statCards.map(({ title, value, icon, highlight }) => (
-            <div key={title} className="bg-white rounded-2xl p-4 sm:p-5 shadow-md ring-1 ring-slate-200 relative overflow-hidden hover:ring-primary/40 transition-all duration-300">
+          {statCards.map(({ title, value, icon, highlight }, i) => (
+            <motion.div 
+              key={title}
+              initial={{ opacity: 0, y: 12 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ duration: 0.4, delay: 0.1 + i * 0.07 }}
+              className="bg-white rounded-2xl p-4 sm:p-5 shadow-md ring-1 ring-slate-200 relative overflow-hidden hover:ring-primary/40 transition-all duration-300"
+            >
               <div className={`absolute top-0 left-0 w-full h-[3px] ${highlight ? 'bg-gradient-to-r from-primary to-primary/30' : 'bg-slate-100'}`} />
               <div className="flex justify-between items-start mb-3">
                 <div className={`p-2 rounded-lg ${highlight ? 'bg-primary/10 text-primary' : 'bg-slate-100 text-slate-400'}`}>
@@ -129,7 +141,7 @@ export default function RecruiterDashboard() {
               ) : (
                 <h4 className="text-2xl sm:text-3xl font-bold text-secondary mt-0.5">{value ?? '—'}</h4>
               )}
-            </div>
+            </motion.div>
           ))}
         </div>
 
@@ -216,12 +228,18 @@ export default function RecruiterDashboard() {
                         <th className="px-5 sm:px-6 py-4 text-right">Action</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {recent.map((applicant) => {
+                     <tbody className="divide-y divide-slate-100">
+                      {recent.map((applicant, i) => {
                         const score = applicant.score ?? 0;
                         const color = avatarColor(applicant.name);
                         return (
-                          <tr key={applicant.id} className="hover:bg-slate-50 transition-colors">
+                          <motion.tr 
+                            key={applicant.id}
+                            initial={{ opacity: 0, y: 8 }} 
+                            animate={{ opacity: 1, y: 0 }} 
+                            transition={{ duration: 0.3, delay: 0.1 + i * 0.05 }}
+                            className="hover:bg-slate-50 transition-colors"
+                          >
                             <td className="px-5 sm:px-6 py-4">
                               <div className="flex items-center gap-3">
                                 {applicant.avatarUrl ? (
@@ -261,7 +279,7 @@ export default function RecruiterDashboard() {
                                 </button>
                               </Link>
                             </td>
-                          </tr>
+                          </motion.tr>
                         );
                       })}
                     </tbody>

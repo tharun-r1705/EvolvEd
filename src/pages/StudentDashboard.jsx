@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
@@ -319,7 +320,12 @@ export default function StudentDashboard() {
       <div className="mx-auto w-full max-w-6xl">
 
           {/* ── Header ── */}
-          <header className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+          <motion.header
+            className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end"
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          >
             <div>
               <h1 className="text-3xl font-black tracking-tight text-secondary md:text-4xl">
                 Readiness Dashboard
@@ -329,10 +335,15 @@ export default function StudentDashboard() {
                 {' '}— track your placement preparedness.
               </p>
             </div>
-          </header>
+          </motion.header>
 
           {/* ── Hero: Score + Profile Completion ── */}
-          <div className="grid gap-6 lg:grid-cols-12 mb-8">
+          <motion.div
+            className="grid gap-6 lg:grid-cols-12 mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: 'easeOut', delay: 0.1 }}
+          >
             {/* Score Card */}
             <div className="lg:col-span-8 rounded-2xl bg-white p-6 shadow-md ring-1 ring-slate-200 relative overflow-hidden group">
               <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/5 blur-3xl transition-all group-hover:bg-primary/10" />
@@ -414,7 +425,7 @@ export default function StudentDashboard() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* ── Metrics Grid ── */}
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4 mb-8">
@@ -423,14 +434,20 @@ export default function StudentDashboard() {
               { icon: 'work_history', label: 'Applications', value: metrics.applications },
               { icon: 'pending_actions', label: 'Pending Actions', value: metrics.pendingActions },
               { icon: 'groups', label: 'Profile Views', value: metrics.profileViews },
-            ].map(({ icon, label, value }) => (
-              <div key={label} className="rounded-xl bg-white p-5 shadow-md ring-1 ring-slate-200 hover:shadow-md transition-shadow">
+            ].map(({ icon, label, value }, i) => (
+              <motion.div
+                key={label}
+                className="rounded-xl bg-white p-5 shadow-md ring-1 ring-slate-200 hover:shadow-md transition-shadow"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: 'easeOut', delay: 0.2 + i * 0.07 }}
+              >
                 <div className="mb-2 text-slate-400">
                   <span className="material-symbols-outlined">{icon}</span>
                 </div>
                 <p className="text-sm font-medium text-slate-500">{label}</p>
                 <p className="text-2xl font-bold text-secondary">{value ?? 0}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import api, { interviewService } from '../services/api.js';
 
 // ---------------------------------------------------------------------------
@@ -649,7 +650,7 @@ export default function InterviewSession() {
   return (
     <div className="min-h-screen bg-background-light flex flex-col">
       {/* ── Top bar ── */}
-      <div className="border-b border-secondary/20 bg-secondary sticky top-0 z-10">
+      <motion.div className="border-b border-secondary/20 bg-secondary sticky top-0 z-10" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
           <button
             onClick={handleAbandon}
@@ -679,7 +680,7 @@ export default function InterviewSession() {
         <div className="max-w-2xl mx-auto px-4 sm:px-6 pb-2">
           <ProgressBar current={currentIndex} total={totalQ} />
         </div>
-      </div>
+      </motion.div>
 
       {/* ── Main content ── */}
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 sm:px-6 py-8 space-y-6">

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { adminService } from '../services/api.js';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -272,7 +273,12 @@ export default function AdminCompanies() {
       <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto w-full flex flex-col gap-6">
 
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <motion.div 
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+        >
           <div>
             <p className="text-[#c6a43f] text-xs font-semibold uppercase tracking-widest mb-1">Admin · Companies</p>
             <h1 className="text-2xl sm:text-3xl font-bold text-secondary tracking-tight">Companies</h1>
@@ -287,14 +293,19 @@ export default function AdminCompanies() {
             <span className="material-symbols-outlined !text-[18px]">add</span>
             Add Company
           </button>
-        </div>
+        </motion.div>
 
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">{error}</div>
         )}
 
         {/* Search */}
-        <div className="relative max-w-sm">
+        <motion.div 
+          className="relative max-w-sm"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+        >
           <span className="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 !text-[18px]">search</span>
           <input
             type="text"
@@ -303,7 +314,7 @@ export default function AdminCompanies() {
             onChange={(e) => handleSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-secondary placeholder:text-slate-400 focus:border-[#c6a43f] focus:ring-2 focus:ring-[#c6a43f]/30 outline-none transition-all shadow-sm"
           />
-        </div>
+        </motion.div>
 
         {/* Companies Grid */}
         {loading ? (
@@ -336,8 +347,15 @@ export default function AdminCompanies() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {companies.map((c) => (
-              <div key={c.id} className="bg-white rounded-2xl p-5 shadow-md ring-1 ring-slate-200 hover:ring-[#c6a43f]/40 transition-all flex flex-col gap-4">
+            {companies.map((c, i) => (
+              <motion.div 
+                key={c.id} 
+                className="bg-white rounded-2xl p-5 shadow-md ring-1 ring-slate-200 hover:ring-[#c6a43f]/40 transition-all flex flex-col gap-4"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.15 + i * 0.07 }}
+                whileHover={{ y: -2, transition: { duration: 0.2 } }}
+              >
                 {/* Card Header */}
                 <div className="flex items-start gap-3">
                   {c.logoUrl ? (
@@ -415,7 +433,7 @@ export default function AdminCompanies() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         )}

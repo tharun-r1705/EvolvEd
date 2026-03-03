@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext.jsx';
 import { authService } from '../services/api.js';
 import { signInWithProvider } from '../lib/supabase.js';
+
+const ease = [0.25, 0.46, 0.45, 0.94];
 
 export default function Login() {
   const { login } = useAuth();
@@ -56,7 +59,12 @@ export default function Login() {
   return (
     <div className="flex flex-1 min-h-screen w-full font-display bg-background-light dark:bg-background-dark">
       {/* ── Left Side: Brand & Visual ── */}
-      <div className="hidden lg:flex w-1/2 bg-navy flex-col justify-between p-12 relative overflow-hidden">
+      <motion.div
+        initial={{ opacity: 0, x: -30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.55, ease }}
+        className="hidden lg:flex w-1/2 bg-navy flex-col justify-between p-12 relative overflow-hidden"
+      >
         {/* Decorative Abstract Background */}
         <div
           className="absolute inset-0 opacity-10 pointer-events-none"
@@ -123,11 +131,21 @@ export default function Login() {
             <path d="M230 105 L230 135 Q260 148 290 135 L290 105" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
           </svg>
         </div>
-      </div>
+      </motion.div>
 
       {/* ── Right Side: Login Form ── */}
-      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 sm:p-12 lg:p-24 bg-background-light">
-        <div className="w-full max-w-md flex flex-col gap-8">
+      <motion.div
+        initial={{ opacity: 0, x: 30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.55, ease }}
+        className="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 sm:p-12 lg:p-24 bg-background-light"
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2, ease }}
+          className="w-full max-w-md flex flex-col gap-8"
+        >
           {/* Mobile Logo */}
           <Link to="/" className="flex lg:hidden items-center gap-2 mb-4 w-fit">
             <div className="flex items-center justify-center rounded-lg bg-primary/10 size-8 border border-primary/20">
@@ -213,14 +231,17 @@ export default function Login() {
               </a>
             </div>
 
-            {/* Submit Button */}
-            <button
-              className="mt-4 w-full rounded-lg bg-navy hover:bg-primary text-white font-bold py-3.5 px-4 transition-all duration-300 transform active:scale-[0.98] shadow-lg shadow-navy/20 disabled:opacity-60"
+          {/* Submit Button */}
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ duration: 0.15 }}
+              className="mt-4 w-full rounded-lg bg-navy hover:bg-primary text-white font-bold py-3.5 px-4 transition-all duration-300 shadow-lg shadow-navy/20 disabled:opacity-60"
               type="submit"
               disabled={loading}
             >
               {loading ? 'Signing In…' : 'Sign In'}
-            </button>
+            </motion.button>
           </form>
 
           {/* Divider */}
@@ -233,10 +254,13 @@ export default function Login() {
           </div>
 
           {/* Social Login */}
-          <button
+          <motion.button
+            whileHover={{ scale: 1.01, backgroundColor: '#f9fafb' }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: 0.15 }}
             onClick={() => handleOAuth('linkedin_oidc')}
             disabled={!!oauthLoading}
-            className="w-full flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white py-2.5 px-4 hover:bg-gray-50 hover:border-gray-300 transition-all group disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white py-2.5 px-4 hover:bg-gray-50 hover:border-gray-300 transition-colors group disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {oauthLoading === 'linkedin_oidc' ? (
               <div className="size-5 rounded-full border-2 border-[#0077b5] border-t-transparent animate-spin" />
@@ -248,7 +272,7 @@ export default function Login() {
             <span className="text-sm font-medium text-charcoal group-hover:text-navy">
               {oauthLoading === 'linkedin_oidc' ? 'Connecting…' : 'Continue with LinkedIn'}
             </span>
-          </button>
+          </motion.button>
 
           <p className="text-center text-sm text-charcoal/70 mt-4">
             Don't have an account?{' '}
@@ -256,8 +280,8 @@ export default function Login() {
               Apply for Access
             </Link>
           </p>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

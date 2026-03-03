@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const NAV_ITEMS = [
@@ -231,23 +232,32 @@ export default function RecruiterSidebar() {
       </nav>
 
       {/* ── Mobile Drawer ────────────────────────────────────────────────────── */}
-      {/* Backdrop */}
-      <div
-        className={`lg:hidden fixed inset-0 z-50 bg-black/60 transition-opacity duration-300 ${
-          drawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        }`}
-        aria-hidden="true"
-        onClick={() => setDrawerOpen(false)}
-      />
+      <AnimatePresence>
+        {drawerOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              key="recruiter-drawer-backdrop"
+              className="lg:hidden fixed inset-0 z-50 bg-black/60"
+              aria-hidden="true"
+              onClick={() => setDrawerOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            />
 
-      {/* Drawer panel */}
-      <div
-        ref={drawerRef}
-        className={`lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-midnight rounded-t-2xl shadow-2xl transition-transform duration-300 ease-in-out ${
-          drawerOpen ? 'translate-y-0' : 'translate-y-full'
-        }`}
-        style={{ maxHeight: '85vh' }}
-      >
+            {/* Drawer panel */}
+            <motion.div
+              key="recruiter-drawer-panel"
+              ref={drawerRef}
+              className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-midnight rounded-t-2xl shadow-2xl"
+              style={{ maxHeight: '85vh' }}
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            >
         {/* Drag handle */}
         <div className="flex justify-center pt-3 pb-1">
           <div className="w-10 h-1 rounded-full bg-white/20" />
@@ -333,7 +343,10 @@ export default function RecruiterSidebar() {
             </button>
           </div>
         </div>
-      </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
 }

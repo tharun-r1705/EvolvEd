@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { interviewService, studentService } from '../services/api.js';
 
 // ─────────────────────────────────────────────────────────────────
@@ -275,7 +276,7 @@ export default function MockInterview() {
     <main className="flex-1 overflow-y-auto bg-background-light">
       <div className="max-w-4xl mx-auto px-6 py-8 flex flex-col gap-8">
         {/* Header */}
-        <div className="flex items-center justify-between gap-4 flex-wrap">
+        <motion.div className="flex items-center justify-between gap-4 flex-wrap" initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: 'easeOut' }}>
           <div>
             <h1 className="text-3xl font-black tracking-tight text-secondary md:text-4xl font-playfair">Mock Interviews</h1>
             <p className="text-slate-500 mt-1">AI-powered practice interviews with voice &amp; real-time feedback</p>
@@ -287,7 +288,7 @@ export default function MockInterview() {
             <span className="material-symbols-outlined text-base">add</span>
             New Interview
           </button>
-        </div>
+        </motion.div>
 
         {/* Stats */}
         {completed.length > 0 && (
@@ -296,14 +297,20 @@ export default function MockInterview() {
               { label: 'Completed', value: completed.length, icon: 'check_circle', color: 'text-emerald-500' },
               { label: 'Avg Score', value: avgScore ? `${avgScore}/10` : '—', icon: 'analytics', color: 'text-primary' },
               { label: 'Best Score', value: bestScore ? `${bestScore}/10` : '—', icon: 'emoji_events', color: 'text-amber-500' },
-            ].map((s) => (
-              <div key={s.label} className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center gap-3 shadow-md">
+            ].map((s, i) => (
+              <motion.div
+                key={s.label}
+                className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center gap-3 shadow-md"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.1 + i * 0.07 }}
+              >
                 <span className={`material-symbols-outlined text-2xl ${s.color}`}>{s.icon}</span>
                 <div>
                   <p className="text-secondary font-bold text-base">{s.value}</p>
                   <p className="text-xs text-slate-500">{s.label}</p>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         )}
@@ -351,12 +358,19 @@ export default function MockInterview() {
           </div>
         ) : (
           <div className="flex flex-col gap-3">
-            {filtered.map((iv) => (
-              <InterviewCard
+            {filtered.map((iv, i) => (
+              <motion.div
                 key={iv.id}
-                interview={iv}
-                onClick={() => navigate(`/student/interviews/${iv.id}`)}
-              />
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: i * 0.05 }}
+                whileHover={{ y: -2, transition: { duration: 0.2 } }}
+              >
+                <InterviewCard
+                  interview={iv}
+                  onClick={() => navigate(`/student/interviews/${iv.id}`)}
+                />
+              </motion.div>
             ))}
           </div>
         )}

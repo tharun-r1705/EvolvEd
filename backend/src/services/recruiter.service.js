@@ -600,14 +600,18 @@ async function getAnalytics(userId) {
   // Top shortlisted candidates
   const topShortlisted = await prisma.shortlist.findMany({
     where: { recruiterId: recruiter.id },
-    include: {
-      student: {
-        select: { id: true, fullName: true, department: true, readinessScore: true, avatarUrl: true },
-      },
-    },
     orderBy: { createdAt: 'desc' },
     take: 10,
   });
+
+  const shortlistedStudentIds = [...new Set(topShortlisted.map((entry) => entry.studentId))];
+  const shortlistedStudents = shortlistedStudentIds.length
+    ? await prisma.student.findMany({
+        where: { id: { in: shortlistedStudentIds }, deletedAt: null },
+        select: { id: true, fullName: true, department: true, readinessScore: true, avatarUrl: true },
+      })
+    : [];
+  const shortlistedStudentMap = new Map(shortlistedStudents.map((student) => [student.id, student]));
 
   return {
     totalJobs: jobs.length,
@@ -618,13 +622,19 @@ async function getAnalytics(userId) {
       count: s._count.id,
     })),
     applicationTrendByDay,
-    topShortlisted: topShortlisted.map((s) => ({
-      id: s.student.id,
-      name: s.student.fullName,
-      department: s.student.department,
-      readinessScore: Number(s.student.readinessScore),
-      shortlistedAt: s.createdAt,
-    })),
+    topShortlisted: topShortlisted
+      .map((s) => {
+        const student = shortlistedStudentMap.get(s.studentId);
+        if (!student) return null;
+        return {
+          id: student.id,
+          name: student.fullName,
+          department: student.department,
+          readinessScore: Number(student.readinessScore),
+          shortlistedAt: s.createdAt,
+        };
+      })
+      .filter(Boolean),
     jobsBreakdown: jobs.map((j) => ({
       id: j.id,
       title: j.title,

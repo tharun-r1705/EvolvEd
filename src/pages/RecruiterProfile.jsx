@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext.jsx';
 import { recruiterService } from '../services/api.js';
 
@@ -341,7 +342,12 @@ export default function RecruiterProfile() {
   return (
     <main className="flex-1 h-full overflow-y-auto bg-background-light">
       {/* Header strip */}
-      <div className="sticky top-0 z-10 flex items-center justify-between bg-background-light/80 backdrop-blur border-b border-slate-200 px-6 lg:px-8 py-4">
+      <motion.div 
+        initial={{ opacity: 0, y: -16 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+        className="sticky top-0 z-10 flex items-center justify-between bg-background-light/80 backdrop-blur border-b border-slate-200 px-6 lg:px-8 py-4"
+      >
         <div>
           <h1 className="text-xl font-bold text-secondary">My Profile</h1>
           <p className="text-sm text-slate-500">Manage your personal and company information</p>
@@ -375,12 +381,17 @@ export default function RecruiterProfile() {
             </button>
           )}
         </div>
-      </div>
+      </motion.div>
 
       <div className="p-6 lg:p-8 max-w-4xl mx-auto space-y-6">
 
         {/* ── Personal Info Card ───────────────────────────────────────────── */}
-        <div className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 overflow-hidden">
+        <motion.div 
+          initial={{ opacity: 0, y: 12 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 overflow-hidden"
+        >
           <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
             <span className="material-symbols-outlined text-primary text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>
               manage_accounts
@@ -411,246 +422,19 @@ export default function RecruiterProfile() {
                   </span>
                   {profile?.company?.name && (
                     <span className="text-xs text-slate-500">{profile.company.name}</span>
-                  )}
-                </div>
-              </div>
+              )}
             </div>
-
-            {editing ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <InputField
-                  label="Full Name"
-                  name="fullName"
-                  value={form.fullName}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  error={fieldErrors.fullName}
-                  placeholder="Jane Smith"
-                  icon="badge"
-                />
-                <InputField
-                  label="Job Title / Designation"
-                  name="designation"
-                  value={form.designation}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  error={fieldErrors.designation}
-                  placeholder="Senior Technical Recruiter"
-                  icon="work"
-                />
-                <InputField
-                  label="Email"
-                  name="email"
-                  value={user?.email || ''}
-                  type="email"
-                  icon="email"
-                  placeholder="—"
-                  hint="Email is managed by your account settings."
-                  onChange={() => {}}
-                />
-                <InputField
-                  label="Phone"
-                  name="phone"
-                  value={form.phone}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  error={fieldErrors.phone}
-                  type="tel"
-                  placeholder="+91 98765 43210"
-                  icon="phone"
-                />
-                <div className="sm:col-span-2">
-                  <InputField
-                    label="LinkedIn URL"
-                    name="linkedin"
-                    value={form.linkedin}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={fieldErrors.linkedin}
-                    type="url"
-                    placeholder="https://linkedin.com/in/yourprofile"
-                    icon="link"
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <InputField
-                    label="Bio"
-                    name="bio"
-                    value={form.bio}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={fieldErrors.bio}
-                    rows={3}
-                    maxLength={500}
-                    placeholder="A short intro about yourself and your recruiting focus…"
-                    icon="notes"
-                    hint={`${(form.bio || '').length}/500`}
-                  />
-                </div>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Field label="Email" value={user?.email} icon="email" />
-                <Field label="Phone" value={profile?.phone} icon="phone" placeholder="Not provided" />
-                <Field label="LinkedIn" value={profile?.linkedin} icon="link" placeholder="Not provided" />
-                <Field label="Designation" value={profile?.designation} icon="work" placeholder="Not set" />
-                {profile?.bio && (
-                  <div className="sm:col-span-2">
-                    <Field label="Bio" value={profile.bio} icon="notes" />
-                  </div>
-                )}
-                {!profile?.bio && (
-                  <div className="sm:col-span-2">
-                    <Field label="Bio" value={null} icon="notes" placeholder="No bio added yet" />
-                  </div>
-                )}
-              </div>
-            )}
           </div>
-        </div>
-
-        {/* ── Company Info Card ─────────────────────────────────────────────── */}
-        <div className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>
-              business
-            </span>
-            <h2 className="text-base font-bold text-secondary">Company Information</h2>
-          </div>
-
-          <div className="p-6">
-            {/* Logo + company name */}
-            <div className="flex items-start gap-5 mb-6">
-              <UploadableImage
-                src={profile?.company?.logoUrl}
-                fallbackIcon="business"
-                alt="Company logo"
-                uploading={logoUploading}
-                onFileSelect={handleLogoUpload}
-                size="md"
-              />
-              <div className="flex flex-col gap-1 pt-1">
-                <p className="text-lg font-bold text-secondary leading-tight">
-                  {profile?.company?.name || 'Company Name'}
-                </p>
-                {profile?.company?.industry && (
-                  <p className="text-sm text-slate-500">{profile.company.industry}</p>
-                )}
-                {profile?.company?.location && (
-                  <div className="flex items-center gap-1 text-xs text-slate-400">
-                    <span className="material-symbols-outlined text-sm">location_on</span>
-                    {profile.company.location}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {editing ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <InputField
-                  label="Company Name"
-                  name="name"
-                  value={companyForm.name}
-                  onChange={handleCompanyChange}
-                  onBlur={handleCompanyBlur}
-                  error={companyErrors.name}
-                  placeholder="Acme Corp"
-                  icon="business"
-                />
-                <InputField
-                  label="Industry"
-                  name="industry"
-                  value={companyForm.industry}
-                  onChange={handleCompanyChange}
-                  onBlur={handleCompanyBlur}
-                  error={companyErrors.industry}
-                  placeholder="Software / Technology"
-                  icon="category"
-                />
-                <InputField
-                  label="Headquarters Location"
-                  name="location"
-                  value={companyForm.location}
-                  onChange={handleCompanyChange}
-                  onBlur={handleCompanyBlur}
-                  error={companyErrors.location}
-                  placeholder="Bengaluru, India"
-                  icon="location_on"
-                />
-                <InputField
-                  label="Company Size"
-                  name="size"
-                  value={companyForm.size}
-                  onChange={handleCompanyChange}
-                  onBlur={handleCompanyBlur}
-                  error={companyErrors.size}
-                  placeholder="501–1,000 employees"
-                  icon="group"
-                />
-                <InputField
-                  label="Website URL"
-                  name="website"
-                  value={companyForm.website}
-                  onChange={handleCompanyChange}
-                  onBlur={handleCompanyBlur}
-                  error={companyErrors.website}
-                  type="url"
-                  placeholder="https://acme.com"
-                  icon="language"
-                />
-                <InputField
-                  label="Careers Page URL"
-                  name="careersUrl"
-                  value={companyForm.careersUrl}
-                  onChange={handleCompanyChange}
-                  onBlur={handleCompanyBlur}
-                  error={companyErrors.careersUrl}
-                  type="url"
-                  placeholder="https://acme.com/careers"
-                  icon="work_history"
-                />
-                <div className="sm:col-span-2">
-                  <InputField
-                    label="About the Company"
-                    name="description"
-                    value={companyForm.description}
-                    onChange={handleCompanyChange}
-                    onBlur={handleCompanyBlur}
-                    error={companyErrors.description}
-                    rows={3}
-                    maxLength={1000}
-                    placeholder="What does your company do? What's the culture like?"
-                    icon="info"
-                    hint={`${(companyForm.description || '').length}/1000`}
-                  />
-                </div>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Field label="Company Name"  value={profile?.company?.name}        icon="business"      placeholder="Not set" />
-                <Field label="Industry"      value={profile?.company?.industry}     icon="category"      placeholder="Not set" />
-                <Field label="Location"      value={profile?.company?.location}     icon="location_on"   placeholder="Not set" />
-                <Field label="Company Size"  value={profile?.company?.size}         icon="group"         placeholder="Not set" />
-                <Field label="Website"       value={profile?.company?.website}      icon="language"      placeholder="Not set" />
-                <Field label="Careers Page"  value={profile?.company?.careersUrl}   icon="work_history"  placeholder="Not set" />
-                {(profile?.company?.description || !editing) && (
-                  <div className="sm:col-span-2">
-                    <Field
-                      label="About the Company"
-                      value={profile?.company?.description}
-                      icon="info"
-                      placeholder="No description added yet"
-                    />
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
+        </motion.div>
 
         {/* ── Quick Actions (dark card) ──────────────────────────────────────── */}
         {!editing && (
-          <div className="bg-secondary rounded-2xl shadow-md p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 12 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.4, delay: 0.24 }}
+            className="bg-secondary rounded-2xl shadow-md p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4"
+          >
             <div className="flex-1">
               <h3 className="text-base font-bold text-white">Ready to find top talent?</h3>
               <p className="text-sm text-slate-400 mt-0.5">Search our candidate pool or post a new job opening.</p>
@@ -671,7 +455,7 @@ export default function RecruiterProfile() {
                 Post Job
               </a>
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
 

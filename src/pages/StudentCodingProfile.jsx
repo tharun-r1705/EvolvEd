@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { studentService } from '../services/api.js';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -676,7 +677,12 @@ export default function StudentCodingProfile() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
           {/* Page header */}
-          <div className="mb-8">
+          <motion.div 
+            className="mb-8"
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          >
             <div className="flex items-center gap-3 mb-1">
               <div className="w-9 h-9 rounded-xl bg-secondary flex items-center justify-center">
                 <span className="material-symbols-outlined text-primary text-xl">terminal</span>
@@ -688,22 +694,34 @@ export default function StudentCodingProfile() {
                 <p className="text-sm text-slate-500">LeetCode & GitHub activity, synced automatically every 6 hours.</p>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Cards */}
           <div className="flex flex-col gap-6">
-            <LeetCodeCard
-              data={leetcode}
-              loading={lcLoading}
-              onRefresh={handleRefreshLeetCode}
-              refreshing={lcRefreshing}
-            />
-            <GitHubCard
-              data={github}
-              loading={ghLoading}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.15 }}
+            >
+              <LeetCodeCard
+                data={leetcode}
+                loading={lcLoading}
+                onRefresh={handleRefreshLeetCode}
+                refreshing={lcRefreshing}
+              />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.25 }}
+            >
+              <GitHubCard
+                data={github}
+                loading={ghLoading}
               onRefresh={handleRefreshGitHub}
               refreshing={ghRefreshing}
             />
+            </motion.div>
           </div>
 
           {/* Info footer */}

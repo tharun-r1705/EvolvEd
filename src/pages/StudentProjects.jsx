@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { studentService } from '../services/api.js';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -656,7 +657,12 @@ export default function StudentProjects() {
       <main className="flex-1 overflow-y-auto bg-background-light">
         {/* Header */}
         <div className="sticky top-0 z-10 bg-background-light/95 backdrop-blur-sm border-b border-slate-200 px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
+          <motion.div 
+            className="flex items-center justify-between"
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          >
             <div>
               <h1 className="text-2xl font-bold text-secondary font-playfair">My Projects</h1>
               <p className="text-sm text-slate-500 mt-0.5">
@@ -670,7 +676,7 @@ export default function StudentProjects() {
               <span className="material-symbols-outlined text-lg">add</span>
               Add Project
             </button>
-          </div>
+          </motion.div>
 
           {/* Filter */}
           {projects.length > 0 && (
@@ -738,13 +744,20 @@ export default function StudentProjects() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {filtered.map((p) => (
-                <ProjectCard
+              {filtered.map((p, i) => (
+                <motion.div
                   key={p.id}
-                  project={p}
-                  onEdit={(proj) => setModalProject(proj)}
-                  onDelete={(proj) => setDeleteTarget(proj)}
-                />
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, ease: 'easeOut', delay: 0.1 + i * 0.07 }}
+                  whileHover={{ y: -2, transition: { duration: 0.2 } }}
+                >
+                  <ProjectCard
+                    project={p}
+                    onEdit={(proj) => setModalProject(proj)}
+                    onDelete={(proj) => setDeleteTarget(proj)}
+                  />
+                </motion.div>
               ))}
             </div>
           )}

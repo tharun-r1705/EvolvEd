@@ -6,11 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "vercel-build": "npm run build && cd backend && npm install && npx prisma generate"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.98.0",
     "axios": "^1.7.2",
+    "framer-motion": "^12.34.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.23.1",

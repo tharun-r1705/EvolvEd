@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { studentService } from '../services/api.js';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -104,11 +105,15 @@ export default function StudentApplications() {
       <div className="p-4 sm:p-6 lg:p-8 max-w-[1200px] mx-auto w-full flex flex-col gap-6">
 
         {/* Header */}
-        <div>
+        <motion.div
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+        >
           <p className="text-primary text-xs font-semibold uppercase tracking-widest mb-1">Jobs & Placements</p>
           <h1 className="text-2xl sm:text-3xl font-bold text-secondary tracking-tight">My Applications</h1>
           <p className="text-slate-500 text-sm mt-1">Track the status of all your job applications.</p>
-        </div>
+        </motion.div>
 
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">{error}</div>
@@ -116,8 +121,14 @@ export default function StudentApplications() {
 
         {/* Summary Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {summaryStats.map(({ label, value, icon, color, bg }) => (
-            <div key={label} className="bg-white rounded-2xl p-4 sm:p-5 shadow-md ring-1 ring-slate-200 flex items-center gap-4">
+          {summaryStats.map(({ label, value, icon, color, bg }, i) => (
+            <motion.div
+              key={label}
+              className="bg-white rounded-2xl p-4 sm:p-5 shadow-md ring-1 ring-slate-200 flex items-center gap-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: 'easeOut', delay: 0.1 + i * 0.07 }}
+            >
               <div className={`p-2.5 rounded-xl ${bg} flex-shrink-0`}>
                 <span className={`material-symbols-outlined !text-[22px] ${color}`} style={{ fontVariationSettings: "'FILL' 1" }}>{icon}</span>
               </div>
@@ -129,7 +140,7 @@ export default function StudentApplications() {
                   <p className="text-2xl font-bold text-secondary mt-0.5">{value ?? 0}</p>
                 )}
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 

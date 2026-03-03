@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { adminService } from '../services/api';
 
 // ─── Toast ────────────────────────────────────────────────────────────────────
@@ -386,14 +387,19 @@ export default function AdminStudentDetail() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-sm text-slate-500 mb-6">
+          <motion.nav 
+            className="flex items-center gap-2 text-sm text-slate-500 mb-6"
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          >
             <Link to="/admin/students" className="hover:text-primary transition-colors flex items-center gap-1">
               <span className="material-symbols-outlined text-[16px]">arrow_back</span>
               Students
             </Link>
             <span>/</span>
             <span className="text-secondary font-medium truncate max-w-[200px]">{name}</span>
-          </nav>
+          </motion.nav>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -401,7 +407,12 @@ export default function AdminStudentDetail() {
             <div className="flex flex-col gap-5">
 
               {/* Profile Card */}
-              <div className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 p-6 flex flex-col items-center gap-4">
+              <motion.div 
+                className="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 p-6 flex flex-col items-center gap-4"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+              >
                 {/* Avatar */}
                 <div className="relative">
                   {avatarUrl
@@ -495,7 +506,7 @@ export default function AdminStudentDetail() {
                     </button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
             </div>
 
@@ -503,12 +514,17 @@ export default function AdminStudentDetail() {
             <div className="lg:col-span-2 flex flex-col gap-5">
 
               {/* Skills */}
-              <SectionCard
-                title="Technical Skills"
-                icon="code"
-                empty={techSkills.length === 0}
-                emptyText="No technical skills recorded"
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.15 }}
               >
+                <SectionCard
+                  title="Technical Skills"
+                  icon="code"
+                  empty={techSkills.length === 0}
+                  emptyText="No technical skills recorded"
+                >
                 <div className="flex flex-wrap gap-2">
                   {techSkills.map((sk) => (
                     <div key={sk.id || sk.name} className="flex flex-col items-start bg-slate-50 rounded-xl px-3 py-2 gap-1 min-w-[100px]">
@@ -520,29 +536,41 @@ export default function AdminStudentDetail() {
                         <span className="text-[10px] text-slate-400 mt-0.5 block">{proficiencyLabel(sk.proficiency)}</span>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </SectionCard>
+                    ))}
+                  </div>
+                </SectionCard>
+              </motion.div>
 
               {softSkills.length > 0 && (
-                <SectionCard title="Soft Skills" icon="psychology">
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.2 }}
+                >
+                  <SectionCard title="Soft Skills" icon="psychology">
                   <div className="flex flex-wrap gap-2">
                     {softSkills.map((sk) => (
                       <span key={sk.id || sk.name} className="bg-blue-50 text-blue-700 ring-1 ring-blue-600/20 rounded-full px-3 py-1 text-xs font-medium">
                         {sk.name}
                       </span>
-                    ))}
-                  </div>
-                </SectionCard>
+                      ))}
+                    </div>
+                  </SectionCard>
+                </motion.div>
               )}
 
               {/* Projects */}
-              <SectionCard
-                title={`Projects (${projects.length})`}
-                icon="rocket_launch"
-                empty={projects.length === 0}
-                emptyText="No projects"
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.25 }}
               >
+                <SectionCard
+                  title={`Projects (${projects.length})`}
+                  icon="rocket_launch"
+                  empty={projects.length === 0}
+                  emptyText="No projects"
+                >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {projects.map((p) => (
                     <div key={p.id} className="border border-slate-200 rounded-xl p-4 hover:border-primary/30 transition-colors">
@@ -563,13 +591,19 @@ export default function AdminStudentDetail() {
                         </div>
                       )}
                     </div>
-                  ))}
-                </div>
-              </SectionCard>
+                    ))}
+                  </div>
+                </SectionCard>
+              </motion.div>
 
               {/* Internships */}
               {internships.length > 0 && (
-                <SectionCard title={`Internships (${internships.length})`} icon="work">
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.3 }}
+                >
+                  <SectionCard title={`Internships (${internships.length})`} icon="work">
                   <div className="flex flex-col gap-3">
                     {internships.map((i) => (
                       <div key={i.id} className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl">
@@ -587,14 +621,20 @@ export default function AdminStudentDetail() {
                           <span className="text-xs font-semibold text-emerald-600 shrink-0">₹{i.stipend}/mo</span>
                         )}
                       </div>
-                    ))}
-                  </div>
-                </SectionCard>
+                      ))}
+                    </div>
+                  </SectionCard>
+                </motion.div>
               )}
 
               {/* Certifications */}
               {certifications.length > 0 && (
-                <SectionCard title={`Certifications (${certifications.length})`} icon="workspace_premium">
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.35 }}
+                >
+                  <SectionCard title={`Certifications (${certifications.length})`} icon="workspace_premium">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {certifications.map((c) => (
                       <div key={c.id} className="border border-slate-200 rounded-xl p-4 flex items-start gap-3">
@@ -607,18 +647,24 @@ export default function AdminStudentDetail() {
                           {c.issueDate && <p className="text-xs text-slate-400 mt-0.5">{fmtDate(c.issueDate)}</p>}
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </SectionCard>
+                      ))}
+                    </div>
+                  </SectionCard>
+                </motion.div>
               )}
 
               {/* Assessments */}
-              <SectionCard
-                title={`Assessments (${assessments.length})`}
-                icon="quiz"
-                empty={assessments.length === 0}
-                emptyText="No assessments taken"
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.4 }}
               >
+                <SectionCard
+                  title={`Assessments (${assessments.length})`}
+                  icon="quiz"
+                  empty={assessments.length === 0}
+                  emptyText="No assessments taken"
+                >
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
@@ -648,10 +694,16 @@ export default function AdminStudentDetail() {
                   </table>
                 </div>
               </SectionCard>
+              </motion.div>
 
               {/* Coding Profiles */}
               {(leetCode || gitHub) && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <motion.div 
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-5"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.45 }}
+                >
                   {leetCode && (
                     <SectionCard title="LeetCode" icon="code">
                       <div className="grid grid-cols-3 gap-3 text-center">
@@ -695,12 +747,12 @@ export default function AdminStudentDetail() {
                           {gitHub.followers != null ? ` · ${gitHub.followers} followers` : ''}
                         </p>
                       )}
-                    </SectionCard>
-                  )}
-                </div>
-              )}
+                      </SectionCard>
+                    )}
+                  </motion.div>
+                )}
 
-            </div>
+              </div>
           </div>
         </div>
       </main>

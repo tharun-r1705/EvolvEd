@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { recruiterService } from '../services/api.js';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -241,7 +242,12 @@ export default function CandidateSearch() {
         {/* Main Content */}
         <main className="flex-1 flex flex-col h-full bg-background-light overflow-hidden">
           {/* Header */}
-          <div className="px-4 sm:px-6 lg:px-8 py-5 pb-0 flex-shrink-0">
+          <motion.div 
+            initial={{ opacity: 0, y: -16 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="px-4 sm:px-6 lg:px-8 py-5 pb-0 flex-shrink-0"
+          >
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-4">
               <div>
                 <p className="text-primary text-xs font-semibold uppercase tracking-widest mb-1">Talent Discovery</p>
@@ -291,7 +297,7 @@ export default function CandidateSearch() {
                 </button>
               </div>
             )}
-          </div>
+          </motion.div>
 
           {/* Table Container */}
           <div className="flex-1 px-4 sm:px-6 lg:px-8 pb-4 sm:pb-6 lg:pb-8 overflow-hidden flex flex-col">
@@ -322,12 +328,15 @@ export default function CandidateSearch() {
                     <button onClick={clearAll} className="mt-3 text-primary text-sm font-medium hover:underline">Clear all filters</button>
                   </div>
                 ) : (
-                  candidates.map((c) => {
+                  candidates.map((c, i) => {
                     const gold = c.readinessScore >= 90;
                     const color = avatarColor(c.name);
                     return (
-                      <div
+                      <motion.div
                         key={c.id}
+                        initial={{ opacity: 0, y: 8 }} 
+                        animate={{ opacity: 1, y: 0 }} 
+                        transition={{ duration: 0.3, delay: 0.1 + i * 0.04 }}
                         className="sm:grid sm:grid-cols-12 gap-4 px-5 sm:px-6 py-4 hover:bg-slate-50 transition-colors group flex items-center"
                       >
                         {/* Mobile */}
@@ -399,7 +408,7 @@ export default function CandidateSearch() {
                             </Link>
                           </div>
                         </div>
-                      </div>
+                      </motion.div>
                     );
                   })
                 )}

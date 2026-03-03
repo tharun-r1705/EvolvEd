@@ -1,5 +1,6 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Outlet, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { AuthProvider } from './context/AuthContext.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import Layout from './components/Layout.jsx';
@@ -52,6 +53,36 @@ const AdminRecruiters     = lazy(() => import('./pages/AdminRecruiters.jsx'));
 const AdminPlacementDrives = lazy(() => import('./pages/AdminPlacementDrives.jsx'));
 const AdminCompanies      = lazy(() => import('./pages/AdminCompanies.jsx'));
 
+// ── Page-level transition variants ────────────────────────────────────────────
+const pageVariants = {
+  initial: { opacity: 0, y: 14 },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] },
+  },
+  exit: {
+    opacity: 0,
+    y: -6,
+    transition: { duration: 0.18, ease: 'easeIn' },
+  },
+};
+
+// ── Animated page wrapper (used inside shells) ─────────────────────────────────
+function AnimatedPage({ children }) {
+  return (
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      style={{ display: 'contents' }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 // ── Content-area spinner (sidebar stays visible) ──────────────────────────────
 function ContentLoader() {
   return (
@@ -70,18 +101,33 @@ function PageLoader() {
   );
 }
 
+// ── Animated outlet wrapper — keeps sidebar stable, only animates content ──────
+function AnimatedOutlet() {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={location.pathname}
+        variants={pageVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        className="flex flex-1 flex-col overflow-hidden"
+      >
+        <Outlet />
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 // ── Persistent student shell ───────────────────────────────────────────────────
-// StudentSidebar is rendered OUTSIDE Suspense so it never unmounts during
-// lazy-chunk loading — eliminating the full-screen flicker on first navigation.
-// InterviewSession is the only student route without a sidebar (full-screen UI);
-// it is nested inside this shell but renders its own layout via Outlet.
 function StudentShell() {
   return (
     <div className="flex h-screen w-full flex-row overflow-hidden bg-background-light">
       <StudentSidebar />
       <div className="flex flex-1 flex-col overflow-hidden pb-16 lg:pb-0">
         <Suspense fallback={<ContentLoader />}>
-          <Outlet />
+          <AnimatedOutlet />
         </Suspense>
       </div>
     </div>
@@ -95,7 +141,7 @@ function RecruiterShell() {
       <RecruiterSidebar />
       <div className="flex flex-1 flex-col overflow-hidden pb-16 lg:pb-0">
         <Suspense fallback={<ContentLoader />}>
-          <Outlet />
+          <AnimatedOutlet />
         </Suspense>
       </div>
     </div>
@@ -109,10 +155,98 @@ function AdminShell() {
       <AdminSidebar />
       <div className="flex flex-1 flex-col overflow-hidden pb-16 lg:pb-0">
         <Suspense fallback={<ContentLoader />}>
-          <Outlet />
+          <AnimatedOutlet />
         </Suspense>
       </div>
     </div>
+  );
+}
+
+// ── Top-level route transition (public pages) ──────────────────────────────────
+function AnimatedRoutes() {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <Routes location={location} key={location.pathname}>
+        {/* ── Public Routes ── */}
+        <Route element={<Layout />}>
+          <Route path="/" element={<Home />} />
+        </Route>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/auth/callback" element={<OAuthCallback />} />
+
+        {/* ── Student Routes (protected) ── */}
+        <Route
+          path="/student"
+          element={<ProtectedRoute allowedRoles={['student']} />}
+        >
+          <Route element={<StudentShell />}>
+            <Route index element={<StudentDashboard />} />
+            <Route path="profile" element={<StudentProfile />} />
+            <Route path="projects" element={<StudentProjects />} />
+            <Route path="certifications" element={<StudentCertifications />} />
+            <Route path="events" element={<StudentEvents />} />
+            <Route path="coding" element={<StudentCodingProfile />} />
+            <Route path="assessments" element={<StudentAssessments />} />
+            <Route path="assessments/:id" element={<AssessmentBreakdown />} />
+            <Route path="resumes" element={<StudentResumes />} />
+            <Route path="learning-pace" element={<StudentLearningPace />} />
+            <Route path="roadmaps" element={<StudentRoadmaps />} />
+            <Route path="roadmaps/:id" element={<RoadmapView />} />
+            <Route path="interviews" element={<MockInterview />} />
+            <Route path="leaderboard" element={<Leaderboard />} />
+            <Route path="chat" element={<StudentChat />} />
+            <Route path="applications" element={<StudentApplications />} />
+          </Route>
+          {/* Full-screen immersive interview — no sidebar, outside the shell */}
+          <Route
+            path="interviews/:id"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <InterviewSession />
+              </Suspense>
+            }
+          />
+        </Route>
+
+        {/* ── Recruiter Routes (protected) ── */}
+        <Route
+          path="/recruiter"
+          element={<ProtectedRoute allowedRoles={['recruiter']} />}
+        >
+          <Route element={<RecruiterShell />}>
+            <Route index element={<RecruiterDashboard />} />
+            <Route path="candidates" element={<CandidateSearch />} />
+            <Route path="candidates/:id" element={<CandidateProfile />} />
+            <Route path="jobs" element={<RecruiterJobs />} />
+            <Route path="jobs/new" element={<PostJob />} />
+            <Route path="jobs/:jobId/edit" element={<PostJob />} />
+            <Route path="jobs/:jobId/applicants" element={<JobApplicants />} />
+            <Route path="profile" element={<RecruiterProfile />} />
+            <Route path="analytics" element={<RecruiterAnalytics />} />
+          </Route>
+        </Route>
+
+        {/* ── Admin Routes (protected) ── */}
+        <Route
+          path="/admin"
+          element={<ProtectedRoute allowedRoles={['admin']} />}
+        >
+          <Route element={<AdminShell />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="students" element={<ManageStudents />} />
+            <Route path="students/:id" element={<AdminStudentDetail />} />
+            <Route path="recruiters" element={<AdminRecruiters />} />
+            <Route path="placement-drives" element={<AdminPlacementDrives />} />
+            <Route path="companies" element={<AdminCompanies />} />
+          </Route>
+        </Route>
+
+        {/* ── 404 ── */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </AnimatePresence>
   );
 }
 
@@ -120,88 +254,7 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <Routes>
-          {/* ── Public Routes ── */}
-          <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
-          </Route>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/auth/callback" element={<OAuthCallback />} />
-
-          {/* ── Student Routes (protected) ── */}
-          <Route
-            path="/student"
-            element={<ProtectedRoute allowedRoles={['student']} />}
-          >
-            {/* Persistent shell — sidebar never unmounts between pages */}
-            <Route element={<StudentShell />}>
-              <Route index element={<StudentDashboard />} />
-              <Route path="profile" element={<StudentProfile />} />
-              <Route path="projects" element={<StudentProjects />} />
-              <Route path="certifications" element={<StudentCertifications />} />
-              <Route path="events" element={<StudentEvents />} />
-              <Route path="coding" element={<StudentCodingProfile />} />
-              <Route path="assessments" element={<StudentAssessments />} />
-              <Route path="assessments/:id" element={<AssessmentBreakdown />} />
-              <Route path="resumes" element={<StudentResumes />} />
-              <Route path="learning-pace" element={<StudentLearningPace />} />
-              <Route path="roadmaps" element={<StudentRoadmaps />} />
-              <Route path="roadmaps/:id" element={<RoadmapView />} />
-              <Route path="interviews" element={<MockInterview />} />
-              <Route path="leaderboard" element={<Leaderboard />} />
-              <Route path="chat" element={<StudentChat />} />
-              <Route path="applications" element={<StudentApplications />} />
-            </Route>
-            {/* Full-screen immersive interview — no sidebar, outside the shell */}
-            <Route
-              path="interviews/:id"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <InterviewSession />
-                </Suspense>
-              }
-            />
-          </Route>
-
-          {/* ── Recruiter Routes (protected) ── */}
-          <Route
-            path="/recruiter"
-            element={<ProtectedRoute allowedRoles={['recruiter']} />}
-          >
-            {/* Persistent shell — sidebar never unmounts between pages */}
-            <Route element={<RecruiterShell />}>
-              <Route index element={<RecruiterDashboard />} />
-              <Route path="candidates" element={<CandidateSearch />} />
-              <Route path="candidates/:id" element={<CandidateProfile />} />
-              <Route path="jobs" element={<RecruiterJobs />} />
-              <Route path="jobs/new" element={<PostJob />} />
-              <Route path="jobs/:jobId/edit" element={<PostJob />} />
-              <Route path="jobs/:jobId/applicants" element={<JobApplicants />} />
-              <Route path="profile" element={<RecruiterProfile />} />
-              <Route path="analytics" element={<RecruiterAnalytics />} />
-            </Route>
-          </Route>
-
-          {/* ── Admin Routes (protected) ── */}
-          <Route
-            path="/admin"
-            element={<ProtectedRoute allowedRoles={['admin']} />}
-          >
-            {/* Persistent shell — sidebar never unmounts between pages */}
-            <Route element={<AdminShell />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="students" element={<ManageStudents />} />
-              <Route path="students/:id" element={<AdminStudentDetail />} />
-              <Route path="recruiters" element={<AdminRecruiters />} />
-              <Route path="placement-drives" element={<AdminPlacementDrives />} />
-              <Route path="companies" element={<AdminCompanies />} />
-            </Route>
-          </Route>
-
-          {/* ── 404 ── */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AnimatedRoutes />
         {/* Floating AI chat button — renders on all student pages except /student/chat */}
         <FloatingChatButton />
       </BrowserRouter>

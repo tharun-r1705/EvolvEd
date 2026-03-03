@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { recruiterService } from '../services/api';
 
 // ─── Toast ────────────────────────────────────────────────────────────────────
@@ -559,7 +560,12 @@ export default function JobApplicants() {
         </nav>
 
         {/* Header */}
-        <div className="flex flex-wrap items-start justify-between gap-4">
+        <motion.div 
+          className="flex flex-wrap items-start justify-between gap-4"
+          initial={{ opacity: 0, y: -16 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+        >
           <div>
             <h1 className="text-2xl font-bold text-secondary">
               {loading ? 'Loading…' : job?.title ?? 'Job Applicants'}
@@ -580,7 +586,7 @@ export default function JobApplicants() {
             </svg>
             {rankings?.total > 0 ? 'Re-calculate Matches' : 'Calculate Matches'}
           </button>
-        </div>
+        </motion.div>
 
         {/* Stats strip */}
         {!loading && rankings?.total > 0 && (
@@ -590,11 +596,17 @@ export default function JobApplicants() {
               { label: 'Avg Fit Score', value: `${avgFit}%` },
               { label: 'Top Score', value: `${topScore.toFixed(1)}%` },
               { label: 'Above 75%', value: above75 },
-            ].map(({ label, value }) => (
-              <div key={label} className="rounded-2xl bg-white p-4 text-center shadow-md ring-1 ring-slate-200">
+            ].map(({ label, value }, i) => (
+              <motion.div 
+                key={label} 
+                className="rounded-2xl bg-white p-4 text-center shadow-md ring-1 ring-slate-200"
+                initial={{ opacity: 0, y: 12 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ duration: 0.4, delay: 0.1 + i * 0.07 }}
+              >
                 <p className="text-xl font-extrabold text-secondary tabular-nums">{value}</p>
                 <p className="mt-0.5 text-xs text-slate-500">{label}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         )}
@@ -707,14 +719,20 @@ export default function JobApplicants() {
           </div>
         ) : (
           <div className="space-y-4 pb-24">
-            {items.map((item) => (
-              <CandidateCard
+            {items.map((item, i) => (
+              <motion.div
                 key={item.rankingId}
-                item={item}
-                onShortlist={handleShortlist}
-                checked={selected.has(item.rankingId)}
-                onCheck={handleCheck}
-              />
+                initial={{ opacity: 0, y: 8 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ duration: 0.3, delay: 0.1 + i * 0.05 }}
+              >
+                <CandidateCard
+                  item={item}
+                  onShortlist={handleShortlist}
+                  checked={selected.has(item.rankingId)}
+                  onCheck={handleCheck}
+                />
+              </motion.div>
             ))}
           </div>
         )}

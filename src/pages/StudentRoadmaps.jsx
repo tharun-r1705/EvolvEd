@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { roadmapService } from '../services/api.js';
 
 // ─────────────────────────────────────────────────────────────────
@@ -351,7 +352,12 @@ export default function StudentRoadmaps() {
     <main className="flex-1 overflow-y-auto bg-background-light">
       <div className="max-w-5xl mx-auto px-6 py-8 flex flex-col gap-8">
         {/* Header */}
-        <div className="flex items-center justify-between gap-4 flex-wrap">
+        <motion.div 
+          className="flex items-center justify-between gap-4 flex-wrap"
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+        >
           <div>
             <h1 className="text-3xl font-black tracking-tight text-secondary md:text-4xl">My Roadmaps</h1>
             <p className="text-slate-500 mt-1">AI-generated learning paths tailored to your target role</p>
@@ -365,7 +371,7 @@ export default function StudentRoadmaps() {
               Create New Roadmap
             </button>
           )}
-        </div>
+        </motion.div>
 
         {/* Chat panel */}
         {showChat && (
@@ -428,8 +434,16 @@ export default function StudentRoadmaps() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {filtered.map((r) => (
-              <RoadmapCard key={r.id} roadmap={r} onClick={() => navigate(`/student/roadmaps/${r.id}`)} onDelete={handleDelete} />
+            {filtered.map((r, i) => (
+              <motion.div
+                key={r.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: 'easeOut', delay: 0.1 + i * 0.07 }}
+                whileHover={{ y: -2, transition: { duration: 0.2 } }}
+              >
+                <RoadmapCard roadmap={r} onClick={() => navigate(`/student/roadmaps/${r.id}`)} onDelete={handleDelete} />
+              </motion.div>
             ))}
           </div>
         )}
