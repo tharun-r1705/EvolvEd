@@ -302,11 +302,11 @@ export default function StudentLearningPace() {
                   <div className="flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600">
                     <span className="material-symbols-outlined text-[14px]">history</span>
                     {totalActivities} total activities
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
-            </div>
-          </div>
 
           <div className="grid gap-6 lg:grid-cols-12">
             {/* Left: Components + Chart + Tips */}
