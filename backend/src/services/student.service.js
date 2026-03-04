@@ -8,8 +8,24 @@ const { recalculateGlobalRankings, getStudentGlobalRank } = require('./ranking.s
 const { parsePagination, paginatedResponse } = require('../utils/pagination');
 const { cloudinary, uploadFromBuffer, deleteFromCloudinary } = require('../config/cloudinary');
 const { groqChat } = require('../utils/groq');
-const pdfParse = require('pdf-parse');
 const { getLearningPace: _getLearningPace, logActivity } = require('./learningPace.service');
+
+let pdfParseFn = null;
+
+function getPdfParse() {
+  if (pdfParseFn) return pdfParseFn;
+
+  try {
+    const mod = require('pdf-parse');
+    pdfParseFn = typeof mod === 'function' ? mod : mod?.default;
+    if (typeof pdfParseFn !== 'function') {
+      throw new Error('Invalid pdf-parse export');
+    }
+    return pdfParseFn;
+  } catch (err) {
+    throw AppError.internal('PDF parsing is unavailable in this environment. Please try again later.');
+  }
+}
 
 // ─── HELPERS ─────────────────────────────────────────────────────
 
@@ -908,9 +924,11 @@ async function parseLinkedinPdf(userId, fileBuffer) {
   // Extract text from PDF
   let pdfText = '';
   try {
-    const parsed = await pdfParse(fileBuffer);
+    const parsePdf = getPdfParse();
+    const parsed = await parsePdf(fileBuffer);
     pdfText = parsed.text;
   } catch (err) {
+    if (err instanceof AppError) throw err;
     throw AppError.badRequest('Could not read the PDF file. Please ensure it is a valid LinkedIn export.');
   }
 
