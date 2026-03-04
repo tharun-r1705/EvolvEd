@@ -54,8 +54,8 @@ export default function Layout() {
         className={[
           'fixed top-0 left-0 right-0 w-full z-50 transition-all duration-500',
           isScrolled
-            ? 'bg-[#080f1e]/95 backdrop-blur-xl shadow-[0_1px_0_rgba(198,164,63,0.12),0_8px_32px_rgba(0,0,0,0.4)]'
-            : 'bg-transparent',
+            ? 'bg-midnight-navy backdrop-blur-xl shadow-[0_1px_0_rgba(198,164,63,0.16),0_10px_34px_rgba(0,0,0,0.45)] border-b border-white/10'
+            : 'bg-midnight-navy border-b border-white/10',
         ].join(' ')}
       >
         {/* Subtle top gold accent line */}
@@ -69,8 +69,8 @@ export default function Layout() {
               <span className="material-symbols-outlined !text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>school</span>
             </div>
             <div className="flex flex-col leading-none">
-              <span className="text-white text-lg font-bold tracking-[-0.02em] group-hover:text-primary transition-colors duration-300">EvolvEd</span>
-              <span className="text-primary/60 text-[9px] font-semibold uppercase tracking-[0.15em] hidden sm:block">Placement Intelligence</span>
+              <span className={`text-lg font-bold tracking-[-0.02em] group-hover:text-primary transition-colors duration-300 ${isScrolled ? 'text-primary-light' : 'text-white'}`}>EvolvEd</span>
+              <span className="text-primary/80 text-[9px] font-semibold uppercase tracking-[0.15em] hidden sm:block">Placement Intelligence</span>
             </div>
           </Link>
 
@@ -80,7 +80,7 @@ export default function Layout() {
               <a
                 key={href}
                 href={href}
-                className="nav-link-premium relative px-4 py-2 text-white/75 text-sm font-medium hover:text-white transition-colors duration-200 rounded-lg hover:bg-white/5"
+                className={`nav-link-premium relative px-4 py-2.5 text-sm font-semibold transition-colors duration-200 rounded-lg ${isScrolled ? 'text-primary-light hover:text-white hover:bg-white/10' : 'text-white hover:text-white hover:bg-white/10'}`}
               >
                 {label}
               </a>
@@ -88,7 +88,7 @@ export default function Layout() {
             {isAuthenticated && (
               <Link
                 to={getDashboardLink()}
-                className="nav-link-premium relative px-4 py-2 text-white/75 text-sm font-medium hover:text-white transition-colors duration-200 rounded-lg hover:bg-white/5"
+                className={`nav-link-premium relative px-4 py-2.5 text-sm font-semibold transition-colors duration-200 rounded-lg ${isScrolled ? 'text-primary-light hover:text-white hover:bg-white/10' : 'text-white hover:text-white hover:bg-white/10'}`}
               >
                 My Dashboard
               </Link>
@@ -109,7 +109,7 @@ export default function Layout() {
               <>
                 <Link
                   to="/login"
-                  className="h-9 px-5 rounded-lg border border-white/20 text-white/85 hover:text-white hover:border-white/40 hover:bg-white/5 text-sm font-semibold transition-all duration-200"
+                  className={`inline-flex items-center justify-center h-9 px-5 rounded-lg text-sm font-semibold transition-all duration-200 ${isScrolled ? 'border border-primary-light/40 text-primary-light hover:text-white hover:border-white/50 hover:bg-white/10' : 'border border-white/25 text-white hover:text-white hover:border-white/50 hover:bg-white/10'}`}
                 >
                   Sign In
                 </Link>
