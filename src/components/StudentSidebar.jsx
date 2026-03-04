@@ -14,9 +14,9 @@ const NAV_ITEMS = [
   { to: '/student/learning-pace',    icon: 'speed',              label: 'Learning Pace' },
   { to: '/student/roadmaps',         icon: 'map',                label: 'Roadmaps' },
   { to: '/student/leaderboard',      icon: 'leaderboard',        label: 'Leaderboard' },
-  { to: '/student/interviews',       icon: 'mic',                label: 'Mock Interviews' },
+  { to: '/student/interviews',       icon: 'mic',                label: 'Mock Interviews', beta: true },
   { to: '/student/chat',             icon: 'smart_toy',          label: 'AI Assistant',       highlight: true },
-  { to: '/student/applications', icon: 'work', label: 'Jobs & Placements' },
+  { to: '/student/applications', icon: 'work', label: 'Jobs & Placements', beta: true },
 ];
 
 // The 5 most important nav items shown in the bottom bar
@@ -172,6 +172,11 @@ export default function StudentSidebar() {
                   {!collapsed && (
                     <>
                       <span className="flex-1 whitespace-nowrap">{item.label}</span>
+                      {item.beta && (
+                        <span className="text-[10px] font-semibold uppercase tracking-wider bg-primary/20 text-primary px-1.5 py-0.5 rounded">
+                          Beta
+                        </span>
+                      )}
                       {item.highlight && !active && (
                         <span className="relative flex h-2 w-2">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
@@ -383,6 +388,11 @@ export default function StudentSidebar() {
                     {item.icon}
                   </span>
                   <span className="flex-1">{item.label}</span>
+                  {item.beta && (
+                    <span className="text-[10px] font-semibold uppercase tracking-wider bg-primary/20 text-primary px-1.5 py-0.5 rounded">
+                      Beta
+                    </span>
+                  )}
                   {item.highlight && !active && (
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />

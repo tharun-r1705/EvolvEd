@@ -166,8 +166,7 @@ function AdminShell() {
 function AnimatedRoutes() {
   const location = useLocation();
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <Routes location={location} key={location.pathname}>
+    <Routes location={location}>
         {/* ── Public Routes ── */}
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
@@ -246,7 +245,6 @@ function AnimatedRoutes() {
         {/* ── 404 ── */}
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </AnimatePresence>
   );
 }
 
