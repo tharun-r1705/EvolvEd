@@ -49,6 +49,13 @@ const EMPLOYMENT_TYPE_COLORS = {
   'contract':   'bg-orange-50 text-orange-700 ring-orange-600/20',
 };
 
+function normalizeApplicationsResponse(payload) {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.items)) return payload.items;
+  return [];
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function StudentApplications() {
@@ -61,7 +68,7 @@ export default function StudentApplications() {
   useEffect(() => {
     studentService
       .getApplications()
-      .then((res) => setApplications(res.data ?? []))
+      .then((res) => setApplications(normalizeApplicationsResponse(res.data)))
       .catch((err) => setError(err?.response?.data?.message || 'Failed to load applications.'))
       .finally(() => setLoading(false));
   }, []);
