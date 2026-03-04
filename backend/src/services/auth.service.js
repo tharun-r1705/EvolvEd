@@ -167,6 +167,10 @@ async function login(email, password) {
     throw AppError.unauthorized('Your account has been deactivated. Please contact support.');
   }
 
+  if (!user.passwordHash) {
+    throw AppError.unauthorized('This account does not support password login. Please use OAuth sign-in.');
+  }
+
   const passwordValid = await comparePassword(password, user.passwordHash);
   if (!passwordValid) {
     throw AppError.unauthorized('Invalid email or password.');
@@ -179,7 +183,7 @@ async function login(email, password) {
   });
 
   const { accessToken, refreshToken } = generateTokenPair(user);
-  await storeRefreshToken(user.id, refreshToken);
+  await storeRefreshTokenSafe(user.id, refreshToken);
 
   const profile = user.student || user.recruiter || user.admin;
 
@@ -374,6 +378,20 @@ async function storeRefreshToken(userId, token) {
   await prisma.refreshToken.create({
     data: { token, userId, expiresAt },
   });
+}
+
+async function storeRefreshTokenSafe(userId, token) {
+  try {
+    await storeRefreshToken(userId, token);
+  } catch (err) {
+    // Production safety net: if DB schema is missing refresh token table/column,
+    // do not block login. Re-throw all other errors.
+    if (err?.code === 'P2021' || err?.code === 'P2022') {
+      console.warn('[auth] refresh token persistence skipped due to schema mismatch:', err.code);
+      return;
+    }
+    throw err;
+  }
 }
 
 function formatUser(user, profile) {
