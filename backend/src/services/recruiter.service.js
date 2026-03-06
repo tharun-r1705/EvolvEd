@@ -825,10 +825,8 @@ async function uploadRecruiterAvatar(userId, fileBuffer) {
 
   // Delete old avatar if it exists on Cloudinary
   if (recruiter.avatarUrl && recruiter.avatarUrl.includes('cloudinary')) {
-    const parts = recruiter.avatarUrl.split('/');
-    const folder = parts.slice(-2, -1)[0];
-    const filename = parts[parts.length - 1].split('.')[0];
-    await deleteFromCloudinary(`${folder}/${filename}`).catch(() => {});
+    const publicId = `evolved/recruiters/avatars/recruiter_${recruiter.id}`;
+    await deleteFromCloudinary(publicId).catch(() => {});
   }
 
   const result = await uploadFromBuffer(fileBuffer, {
@@ -857,10 +855,8 @@ async function uploadCompanyLogo(userId, fileBuffer) {
 
   // Delete old logo if it exists on Cloudinary
   if (recruiter.company.logoUrl && recruiter.company.logoUrl.includes('cloudinary')) {
-    const parts = recruiter.company.logoUrl.split('/');
-    const folder = parts.slice(-2, -1)[0];
-    const filename = parts[parts.length - 1].split('.')[0];
-    await deleteFromCloudinary(`${folder}/${filename}`).catch(() => {});
+    const publicId = `evolved/companies/logos/company_${recruiter.companyId}`;
+    await deleteFromCloudinary(publicId).catch(() => {});
   }
 
   const result = await uploadFromBuffer(fileBuffer, {

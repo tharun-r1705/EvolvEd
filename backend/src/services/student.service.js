@@ -752,11 +752,8 @@ async function uploadAvatar(userId, fileBuffer, mimetype) {
 
   // Delete old avatar from Cloudinary if it exists
   if (student.avatarUrl && student.avatarUrl.includes('cloudinary')) {
-    // Extract public ID from URL: .../evolved/avatars/<public_id>.<ext>
-    const parts = student.avatarUrl.split('/');
-    const folder = parts.slice(-2, -1)[0];
-    const filename = parts[parts.length - 1].split('.')[0];
-    await deleteFromCloudinary(`${folder}/${filename}`);
+    const publicId = `evolved/avatars/student_${student.id}`;
+    await deleteFromCloudinary(publicId).catch(() => {});
   }
 
   const result = await uploadFromBuffer(fileBuffer, {
@@ -781,6 +778,31 @@ async function uploadAvatar(userId, fileBuffer, mimetype) {
     message: 'Avatar uploaded successfully.',
     avatarUrl: result.secure_url,
     profileCompletion: newScore.profileCompletion,
+  };
+}
+
+async function removeAvatar(userId) {
+  const student = await getStudentByUserId(userId);
+  if (!student.avatarUrl) {
+    throw AppError.badRequest('No profile photo to remove.');
+  }
+
+  if (student.avatarUrl.includes('cloudinary')) {
+    // The public ID is typically "evolved/avatars/student_<id>"
+    const publicId = `evolved/avatars/student_${student.id}`;
+    await deleteFromCloudinary(publicId).catch(() => {});
+  }
+
+  await prisma.student.update({
+    where: { id: student.id },
+    data: { avatarUrl: null },
+  });
+
+  const newScore = await recalculateScore(student.id);
+
+  return {
+    message: 'Profile photo removed successfully.',
+    profileCompletion: newScore.profileCompletion
   };
 }
 
@@ -1188,6 +1210,7 @@ module.exports = {
   getProfile,
   updateProfile,
   uploadAvatar,
+  removeAvatar,
   getResumes,
   uploadResume,
   updateResume,

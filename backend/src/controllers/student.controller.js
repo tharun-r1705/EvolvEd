@@ -291,6 +291,16 @@ async function uploadAvatar(req, res, next) {
   }
 }
 
+// DELETE /api/student/profile/avatar
+async function removeAvatar(req, res, next) {
+  try {
+    const data = await studentService.removeAvatar(req.user.userId);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
 // GET /api/student/resumes
 async function getResumes(req, res, next) {
   try {
@@ -359,6 +369,7 @@ module.exports = {
   getProfile,
   updateProfile,
   uploadAvatar,
+  removeAvatar,
   getResumes,
   uploadResume,
   updateResume,

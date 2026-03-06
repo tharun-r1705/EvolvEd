@@ -106,6 +106,8 @@ export const studentService = {
   updateProfile: (data) => api.put('/student/profile', data),
   uploadAvatar: (formData) =>
     api.post('/student/profile/avatar', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  removeAvatar: () =>
+    api.delete('/student/profile/avatar'),
   parseLinkedinPdf: (formData) =>
     api.post('/student/profile/linkedin-pdf', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
 

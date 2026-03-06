@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -20,6 +20,15 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [oauthLoading, setOauthLoading] = useState(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('error') === 'oauth_failed') {
+      setError('Social authentication failed. Please make sure your permissions are set up correctly.');
+      // Clean up the URL
+      navigate('/login', { replace: true });
+    }
+  }, [location, navigate]);
 
   async function handleOAuth(provider) {
     try {

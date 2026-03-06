@@ -19,7 +19,7 @@ export const supabase = createClient(
  * Kick off OAuth sign-in via Supabase.
  * Supabase will redirect back to /auth/callback after the user authenticates.
  *
- * @param {'google' | 'linkedin_oidc'} provider
+ * @param {'google' | 'linkedin_oidc' | 'linkedin'} provider
  */
 export async function signInWithProvider(provider) {
   const { error } = await supabase.auth.signInWithOAuth({

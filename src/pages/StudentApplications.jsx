@@ -61,7 +61,7 @@ export default function StudentApplications() {
   useEffect(() => {
     studentService
       .getApplications()
-      .then((res) => setApplications(res.data ?? []))
+      .then((res) => setApplications(res.data?.data ?? []))
       .catch((err) => setError(err?.response?.data?.message || 'Failed to load applications.'))
       .finally(() => setLoading(false));
   }, []);

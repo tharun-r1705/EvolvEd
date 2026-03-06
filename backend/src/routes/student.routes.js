@@ -30,8 +30,7 @@ router.get('/readiness-score', ctrl.getReadinessScore);
 
 router.get('/profile', ctrl.getProfile);
 router.put('/profile', validate(updateProfileSchema), ctrl.updateProfile);
-router.post('/profile/avatar', uploadAvatar, ctrl.uploadAvatar);
-router.post('/profile/linkedin-pdf', uploadLinkedinPdf, ctrl.parseLinkedinPdf);
+router.post('/profile/avatar', uploadAvatar, ctrl.uploadAvatar);router.delete('/profile/avatar', ctrl.removeAvatar);router.post('/profile/linkedin-pdf', uploadLinkedinPdf, ctrl.parseLinkedinPdf);
 
 router.get('/resumes', ctrl.getResumes);
 router.post('/resumes', uploadResume, validate(addResumeSchema), ctrl.uploadResume);

@@ -195,6 +195,24 @@ function PersonalInfoTab({ profile, onSaved }) {
     }
   }
 
+  const [removingAvatar, setRemovingAvatar] = useState(false);
+
+  async function handleAvatarRemove() {
+    if (!profile.avatarUrl) return;
+    setRemovingAvatar(true);
+    try {
+      const res = await studentService.removeAvatar();
+      setAvatarPreview(null);
+      setAvatarFile(null);
+      onSaved(res.data);
+      setToast({ message: 'Profile photo removed.', type: 'success' });
+    } catch (err) {
+      setToast({ message: getApiError(err), type: 'error' });
+    } finally {
+      setRemovingAvatar(false);
+    }
+  }
+
   return (
     <form onSubmit={handleSave} className="flex flex-col gap-8">
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
@@ -228,26 +246,62 @@ function PersonalInfoTab({ profile, onSaved }) {
         <div className="flex flex-col gap-1.5">
           <p className="text-sm font-semibold text-secondary">Profile Photo</p>
           <p className="text-xs text-slate-500">JPG, PNG or WebP. Max 2 MB. Recommended: 400×400px.</p>
-          {avatarFile && (
-            <button
-              type="button"
-              onClick={handleAvatarUpload}
-              disabled={uploadingAvatar}
-              className="mt-1 inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-secondary hover:bg-primary/90 disabled:opacity-50 transition-colors w-fit"
-            >
-              {uploadingAvatar ? (
-                <>
-                  <span className="material-symbols-outlined text-[14px] animate-spin">progress_activity</span>
-                  Uploading...
-                </>
-              ) : (
-                <>
-                  <span className="material-symbols-outlined text-[14px]">upload</span>
-                  Upload Photo
-                </>
-              )}
-            </button>
-          )}
+          <div className="flex gap-2">
+            {avatarFile && (
+              <button
+                type="button"
+                onClick={handleAvatarUpload}
+                disabled={uploadingAvatar}
+                className="mt-1 inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-secondary hover:bg-primary/90 disabled:opacity-50 transition-colors w-fit"
+              >
+                {uploadingAvatar ? (
+                  <>
+                    <span className="material-symbols-outlined text-[14px] animate-spin">progress_activity</span>
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined text-[14px]">upload</span>
+                    Upload Photo
+                  </>
+                )}
+              </button>
+            )}
+
+            {profile.avatarUrl && !avatarFile && (
+              <button
+                type="button"
+                onClick={handleAvatarRemove}
+                disabled={removingAvatar}
+                className="mt-1 inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 text-red-600 px-3 py-1.5 text-xs font-bold hover:bg-red-100 hover:border-red-300 disabled:opacity-50 transition-colors w-fit"
+              >
+                {removingAvatar ? (
+                  <>
+                    <span className="material-symbols-outlined text-[14px] animate-spin">progress_activity</span>
+                    Removing...
+                  </>
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined text-[14px]">delete</span>
+                    Remove Photo
+                  </>
+                )}
+              </button>
+            )}
+
+            {avatarFile && (
+              <button
+                type="button"
+                onClick={() => {
+                  setAvatarFile(null);
+                  setAvatarPreview(profile.avatarUrl || null);
+                }}
+                className="mt-1 inline-flex items-center gap-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 px-3 py-1.5 text-xs font-bold transition-colors w-fit"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -1182,7 +1236,7 @@ function ResumesTab({ profile }) {
         )}
       </section>
     </div>
-    </>  
+    </>
   );
 }
 
